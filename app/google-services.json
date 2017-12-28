@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "380306489742",
+    "firebase_url": "https://ghrapp-e4d73.firebaseio.com",
+    "project_id": "ghrapp-e4d73",
+    "storage_bucket": "ghrapp-e4d73.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:380306489742:android:120c025e0bd00003",
+        "android_client_info": {
+          "package_name": "com.example.acer.goldenhour"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "380306489742-j54sevp2sd8oc5ake57utsicgpqdf2ro.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.acer.goldenhour",
+            "certificate_hash": "44a2164cd80f20c30572718c801cad9251cf6ac1"
+          }
+        },
+        {
+          "client_id": "380306489742-f40i6khjto1vl7qr2m7ovkv1eupcuobq.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCDTsQjXGOG6J1-d-zytNinvXV2DrgIdT0"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "380306489742-f40i6khjto1vl7qr2m7ovkv1eupcuobq.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">GoldenHour</string>
+    <string name="title_activity_driver_login">DriverLoginActivity</string>
+    <string name="title_activity_driver_map">Map</string>
+</resources>

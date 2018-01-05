@@ -4,28 +4,31 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.example.acer.goldenhour.DriverLoginActivity"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    tools:context="com.example.acer.goldenhour.DriverLoginActivity">
 
     <EditText
+        android:id="@+id/email"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="E - mail"
-        android:id="@+id/email"/>
+        android:hint="E - mail" />
+
     <EditText
+        android:id="@+id/password"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Password"
-        android:id="@+id/password"/>
+        android:hint="Password" />
+
     <Button
+        android:id="@+id/login"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Login"
-        android:id="@+id/login"/>
+        android:text="Login" />
+
     <Button
+        android:id="@+id/registration"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Registration"
-        android:id="@+id/registration"/>
+        android:text="Registration" />
 
 </LinearLayout>

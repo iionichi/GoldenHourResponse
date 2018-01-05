@@ -3,7 +3,9 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/GoldenHour.iml" filepath="$PROJECT_DIR$/GoldenHour.iml" />
+      <module fileurl="file://E:\Deep\GoldenHour\GoldenHour.iml" filepath="E:\Deep\GoldenHour\GoldenHour.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
+      <module fileurl="file://E:\Deep\GoldenHour\app\app.iml" filepath="E:\Deep\GoldenHour\app\app.iml" />
     </modules>
   </component>
 </project>

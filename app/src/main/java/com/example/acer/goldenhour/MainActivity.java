@@ -8,7 +8,7 @@ import android.widget.Button;
 
 public class MainActivity extends AppCompatActivity {
 
-    private Button mDriver, mCustomer;
+    private Button mDriver, mCustomer,mHospital;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -17,7 +17,7 @@ public class MainActivity extends AppCompatActivity {
 
         mDriver = (Button) findViewById(R.id.driver);
         mCustomer = (Button) findViewById(R.id.customer);
-
+        mHospital = (Button) findViewById(R.id.hospital);
         startService(new Intent(MainActivity.this, onAppKilled.class));
 
         mDriver.setOnClickListener(new View.OnClickListener() {
@@ -39,5 +39,15 @@ public class MainActivity extends AppCompatActivity {
                 return;
             }
         });
+       mHospital.setOnClickListener(new View.OnClickListener() {
+           @Override
+           public void onClick(View view) {
+               Intent intent = new Intent(MainActivity.this, HospitalLoginActivity.class);
+               startActivity(intent);
+               finish();
+               return;
+
+           }
+       });
     }
 }

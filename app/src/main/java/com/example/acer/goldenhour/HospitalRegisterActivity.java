@@ -1,37 +1,45 @@
 package com.example.acer.goldenhour;
 
 
-        import android.*;
-        import android.content.Context;
-        import android.content.Intent;
-        import android.content.pm.PackageManager;
-        import android.location.Location;
-        import android.location.LocationManager;
-        import android.support.annotation.NonNull;
-        import android.support.v4.app.ActivityCompat;
-        import android.support.v7.app.AppCompatActivity;
-        import android.os.Bundle;
-        import android.view.View;
-        import android.widget.Button;
-        import android.widget.EditText;
-        import android.widget.Toast;
+import android.content.Context;
+import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.location.Location;
+import android.location.LocationManager;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+import android.support.v4.app.ActivityCompat;
+import android.support.v7.app.AppCompatActivity;
+import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.Toast;
 
-        import com.google.android.gms.tasks.OnCompleteListener;
-        import com.google.android.gms.tasks.Task;
-        import com.google.firebase.auth.AuthResult;
-        import com.google.firebase.auth.FirebaseAuth;
-        import com.google.firebase.auth.FirebaseUser;
-        import com.google.firebase.database.DatabaseReference;
-        import com.google.firebase.database.FirebaseDatabase;
-
-        import java.util.HashMap;
-        import java.util.Map;
+import com.firebase.geofire.GeoFire;
+import com.firebase.geofire.GeoLocation;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthResult;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import java.util.HashMap;
+import java.util.Map;
 
 
 public class HospitalRegisterActivity extends AppCompatActivity {
 
     static final int REQUEST_LOCATION = 1;
     LocationManager locationManager;
+    Location mLastLocation;
+    LocationRequest mLocationRequest;
+
     private EditText mEmail, mPassword;
     private Button mRegistration;
 
@@ -86,12 +94,16 @@ public class HospitalRegisterActivity extends AppCompatActivity {
                             Toast.makeText(HospitalRegisterActivity.this, "Sign Up Error", Toast.LENGTH_SHORT).show();
                         } else {
                             String userId = mAuth.getCurrentUser().getUid();
-                            DatabaseReference currentUserDB = FirebaseDatabase.getInstance().getReference().child("Users").child("Hospital").child(userId);
-                            currentUserDB.setValue(true);
-                            Map locationInfo = new HashMap();
-                            locationInfo.put("Longitude", longitude);
-                            locationInfo.put("Latitude", latitude);
-                            currentUserDB.updateChildren(locationInfo);
+//                            DatabaseReference currentUserDB = FirebaseDatabase.getInstance().getReference().child("Users").child("Hospital").child(userId);
+//                            currentUserDB.setValue(true);
+//                            Map locationInfo = new HashMap();
+//                            locationInfo.put("Longitude", longitude);
+//                            locationInfo.put("Latitude", latitude);
+//                            currentUserDB.updateChildren(locationInfo);
+
+                            DatabaseReference refHospital = FirebaseDatabase.getInstance().getReference().child("Hospital");
+                            GeoFire geoFireHospital = new GeoFire(refHospital);
+                            geoFireHospital.setLocation(userId, new GeoLocation(latitude,longitude));
                             Intent intent = new Intent(HospitalRegisterActivity.this, HospitalMapActivity.class);
                             startActivity(intent);
                             finish();
@@ -104,7 +116,6 @@ public class HospitalRegisterActivity extends AppCompatActivity {
         });
 
     }
-
 
     void getLocation() {
         if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION)
@@ -131,6 +142,7 @@ public class HospitalRegisterActivity extends AppCompatActivity {
             }
         }
 
+
     }
 
     @Override
@@ -143,10 +155,6 @@ public class HospitalRegisterActivity extends AppCompatActivity {
                 break;
         }
     }
-
-
-    }
-
-
+}
 
 

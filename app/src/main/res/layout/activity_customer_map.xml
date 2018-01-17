@@ -5,24 +5,31 @@
     android:layout_height="match_parent"
     tools:context="com.example.acer.goldenhour.CustomerMapActivity">
 
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/logout"
-        android:text="Logout"/>
-
-    <Button
-        android:layout_gravity="right"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/settings"
-        android:text="Settings"/>
-
     <fragment
         android:id="@+id/map"
         android:name="com.google.android.gms.maps.SupportMapFragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/logout"
+            android:text="Logout"/>
+
+        <Button
+            android:layout_gravity="right"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/settings"
+            android:text="Settings"/>
+
+    </LinearLayout>
+
 
     <LinearLayout
         android:layout_width="match_parent"

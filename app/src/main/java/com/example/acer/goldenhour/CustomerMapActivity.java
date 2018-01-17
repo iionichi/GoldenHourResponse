@@ -1,6 +1,5 @@
 package com.example.acer.goldenhour;
 
-import android.*;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
@@ -65,6 +64,8 @@ public class CustomerMapActivity extends FragmentActivity implements OnMapReadyC
     private LinearLayout mDriverInfo;
     private ImageView mDriverProfileImage;
     private TextView mDriverName, mDriverPhone, mDriverAmbulance, mDriverAmbulanceNumber;
+
+    private double longi,lati;//variables to store hospital location
 
     private RadioGroup mRadioGroup;
 
@@ -172,6 +173,7 @@ public class CustomerMapActivity extends FragmentActivity implements OnMapReadyC
                     mRequest.setText("Getting Your Driver");
 
                     getClosestDriver();
+                    //getHospital();
                 }
             }
         });
@@ -231,8 +233,6 @@ public class CustomerMapActivity extends FragmentActivity implements OnMapReadyC
                         public void onCancelled(DatabaseError databaseError) {
                         }
                     });
-
-
                 }
             }
 
@@ -406,5 +406,67 @@ public class CustomerMapActivity extends FragmentActivity implements OnMapReadyC
     @Override
     protected void onStop() {
         super.onStop();
+    }
+
+    private int radiusH = 1;
+    private Boolean hospitalFound = false;
+    private String hospitalFoundId;
+
+    GeoQuery geoQueryH;
+    private void getHospital(){
+        DatabaseReference hospitalLocation = FirebaseDatabase.getInstance().getReference().child("Hospital");
+        GeoFire geoFireH = new GeoFire(hospitalLocation);
+        geoQueryH  = geoFireH.queryAtLocation(new GeoLocation(pickupLocation.latitude, pickupLocation.longitude),radiusH);
+        geoQueryH.removeAllListeners();
+
+        geoQueryH.addGeoQueryEventListener(new GeoQueryEventListener() {
+            @Override
+            public void onKeyEntered(String key, GeoLocation location) {
+                if (!hospitalFound && requestBol){
+                    DatabaseReference mCustomerDatabase = FirebaseDatabase.getInstance().getReference().child("Hospital").child(key);
+                    mCustomerDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(DataSnapshot dataSnapshot) {
+                            if(dataSnapshot.exists() && dataSnapshot.getChildrenCount()> 0){
+                                Map<String, Object> driverMap = (Map<String, Object>) dataSnapshot.getValue();
+                                if(hospitalFound){
+                                    return;
+                                }
+                                hospitalFound = true;
+                                hospitalFoundId = dataSnapshot.getKey();
+                                DatabaseReference driverRef = FirebaseDatabase.getInstance().getReference().child("Users").child("Drivers").child(driverFoundId).child("customerRequest");
+                                HashMap map1 = new HashMap();
+                                map1.put("hospitalFoundId", hospitalFoundId);
+                                driverRef.updateChildren(map1);
+                            }
+                        }
+
+                        @Override
+                        public void onCancelled(DatabaseError databaseError) {
+                        }
+                    });
+                }
+            }
+
+            @Override
+            public void onKeyExited(String key) {
+            }
+
+            @Override
+            public void onKeyMoved(String key, GeoLocation location) {
+            }
+
+            @Override
+            public void onGeoQueryReady() {
+                if(!hospitalFound){
+                    radiusH++;
+                    getHospital();
+                }
+            }
+
+            @Override
+            public void onGeoQueryError(DatabaseError error) {
+            }
+        });
     }
 }

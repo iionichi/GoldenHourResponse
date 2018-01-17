@@ -53,7 +53,7 @@ public class CustomerMapActivity extends FragmentActivity implements OnMapReadyC
 
     SupportMapFragment mapFragment;
 
-    private Button mLogout, mRequest, mSettings;
+    private Button mLogout, mRequest, mSettings,mHospi;
     private LatLng pickupLocation;
 
     private Boolean requestBol = false;
@@ -101,6 +101,7 @@ public class CustomerMapActivity extends FragmentActivity implements OnMapReadyC
         mLogout = (Button) findViewById(R.id.logout);
         mRequest = (Button) findViewById(R.id.request);
         mSettings = (Button) findViewById(R.id.settings);
+        mHospi = (Button) findViewById(R.id.hospi);
 
         mLogout.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -173,7 +174,7 @@ public class CustomerMapActivity extends FragmentActivity implements OnMapReadyC
                     mRequest.setText("Getting Your Driver");
 
                     getClosestDriver();
-                    //getHospital();
+
                 }
             }
         });
@@ -183,6 +184,12 @@ public class CustomerMapActivity extends FragmentActivity implements OnMapReadyC
                 Intent intent = new Intent(CustomerMapActivity.this, CustomerSettingsActivity.class);
                 startActivity(intent);
                 return;
+            }
+        });
+        mHospi.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                getHospital();
             }
         });
     }

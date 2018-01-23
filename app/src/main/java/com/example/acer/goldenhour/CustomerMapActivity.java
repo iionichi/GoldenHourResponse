@@ -65,8 +65,6 @@ public class CustomerMapActivity extends FragmentActivity implements OnMapReadyC
     private ImageView mDriverProfileImage;
     private TextView mDriverName, mDriverPhone, mDriverAmbulance, mDriverAmbulanceNumber;
 
-    private double longi,lati;//variables to store hospital location
-
     private RadioGroup mRadioGroup;
 
     final int LOCATION_REQUEST_CODE = 1;

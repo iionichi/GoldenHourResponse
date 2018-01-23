@@ -61,9 +61,11 @@ public class DriverMapActivity extends FragmentActivity implements OnMapReadyCal
 
     SupportMapFragment mapFragment;
 
-    private LatLng destination;
+    private LatLng destination, destinationLatLng;
 
-    private Button mLogout, mSettings;
+    private Button mLogout, mSettings, mRideStatus;
+
+    private int status = 0;
 
     private Switch mWorkingSwitch;
 
@@ -114,6 +116,32 @@ public class DriverMapActivity extends FragmentActivity implements OnMapReadyCal
         });
         mSettings = (Button) findViewById(R.id.settings);
 
+        /*
+        Ride Status checks where the ambulance is heading to.
+        When the status is 1 the ambulance is heading to the patient.
+        When the status is 2 ambulance is on the way to hospital
+         */
+        mRideStatus = (Button) findViewById(R.id.rideStatus);
+        mRideStatus.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                switch (status){
+                    case 1:
+                        status = 2;
+                        erasePolylines();
+                        if (destinationLatLng.latitude != 0.0 && destinationLatLng.longitude != 0.0){
+                            getRouteToMarker(destinationLatLng);
+                        }
+                        mRideStatus.setText("Drive Completed");
+                        break;
+
+                    case 2:
+                        endRide();
+                        break;
+                }
+            }
+        });
+
         mLogout = (Button) findViewById(R.id.logout);
         mLogout.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -149,11 +177,12 @@ public class DriverMapActivity extends FragmentActivity implements OnMapReadyCal
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 if (dataSnapshot.exists()) {
+                    status = 1;
                     customerId = dataSnapshot.getValue().toString();
                     getAssignedCustomerPickupLocation();
                     getAssignedCustomerInfo();
                 } else {
-                    erasePolylines();
+                    /*erasePolylines();
                     customerId = "";
                     if (pickupMarker != null) {
                         pickupMarker.remove();
@@ -164,7 +193,8 @@ public class DriverMapActivity extends FragmentActivity implements OnMapReadyCal
                     mCustomerInfo.setVisibility(View.GONE);
                     mCustomerName.setText("");
                     mCustomerPhone.setText("");
-                    mCustomerProfileImage.setImageResource(R.mipmap.ic_launcher);
+                    mCustomerProfileImage.setImageResource(R.mipmap.ic_launcher);*/
+                    endRide();
                 }
 
 
@@ -239,6 +269,40 @@ public class DriverMapActivity extends FragmentActivity implements OnMapReadyCal
             public void onCancelled(DatabaseError databaseError) {
             }
         });
+    }
+
+    private void endRide() {
+        mRideStatus.setText("Picked Customer");
+        erasePolylines();
+
+        String userId = FirebaseAuth.getInstance().getUid();
+        DatabaseReference driverRef = FirebaseDatabase.getInstance().getReference().child("Users").child("Drivers").child(userId).child("customerRequest");
+        driverRef.removeValue();
+
+        DatabaseReference ref = FirebaseDatabase.getInstance().getReference("customerRequest");
+        GeoFire geoFire = new GeoFire(ref);
+        geoFire.removeLocation(customerId);
+        customerId = "";
+
+        if (pickupMarker != null) {
+            pickupMarker.remove();
+        }
+
+//        erasePolylines();
+//        customerId = "";
+        if (pickupMarker != null) {
+            pickupMarker.remove();
+        }
+        if (assignedCustomerPickupLocationRefListener != null) {
+            assignedCustomerPickupLocationRef.removeEventListener(assignedCustomerPickupLocationRefListener);
+        }
+        if (assignedHospitalLocationRefListener != null){
+            assignedHospitalLocationRef.removeEventListener(assignedHospitalLocationRefListener);
+        }
+        mCustomerInfo.setVisibility(View.GONE);
+        mCustomerName.setText("");
+        mCustomerPhone.setText("");
+        mCustomerProfileImage.setImageResource(R.mipmap.ic_launcher);
     }
 
     @Override
@@ -437,7 +501,8 @@ public class DriverMapActivity extends FragmentActivity implements OnMapReadyCal
     private ValueEventListener assignedHospitalLocationRefListener;
 
     private void getHospitalLocation() {
-        assignedHospitalLocationRef = FirebaseDatabase.getInstance().getReference().child("Users").child("Drivers").child(driverId).child("customerRequest").child(hospitalFoundId).child("l");
+//        assignedHospitalLocationRef = FirebaseDatabase.getInstance().getReference().child("Users").child("Drivers").child(driverId).child("customerRequest").child(hospitalFoundId).child("l");
+        assignedHospitalLocationRef = FirebaseDatabase.getInstance().getReference().child("Hospital").child(hospitalFoundId).child("l");
         assignedHospitalLocationRefListener = assignedHospitalLocationRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -451,9 +516,8 @@ public class DriverMapActivity extends FragmentActivity implements OnMapReadyCal
                     if (map.get(1) != null) {
                         locationLng = Double.parseDouble(map.get(1).toString());
                     }
-                    LatLng pickupLatLng = new LatLng(locationLat, locationLng);
-                    hospitalMarker = mMap.addMarker(new MarkerOptions().position(pickupLatLng).title("Hospital Location").icon(BitmapDescriptorFactory.fromResource(R.mipmap.ghr_pickup)));
-                    getRouteToMarker(pickupLatLng);
+                    destinationLatLng = new LatLng(locationLat, locationLng);
+                    hospitalMarker = mMap.addMarker(new MarkerOptions().position(destinationLatLng).title("Hospital Location").icon(BitmapDescriptorFactory.fromResource(R.mipmap.ghr_pickup)));
                 }
             }
 

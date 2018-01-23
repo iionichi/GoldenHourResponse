@@ -115,37 +115,7 @@ public class CustomerMapActivity extends FragmentActivity implements OnMapReadyC
             @Override
             public void onClick(View view) {
                 if (requestBol){
-                    requestBol = false;
-                    geoQuery.removeAllListeners();
-                    driverLocationRef.removeEventListener(driverLocationRefListener);
-
-                    if(driverFoundId != null){
-                        DatabaseReference driverRef = FirebaseDatabase.getInstance().getReference().child("Users").child("Drivers").child(driverFoundId).child("customerRequest");
-                        driverRef.removeValue();
-                        driverFoundId = null;
-                    }
-                    driverFound = false;
-                    radius = 1;
-
-                    String userId = FirebaseAuth.getInstance().getUid();
-                    DatabaseReference ref = FirebaseDatabase.getInstance().getReference("customerRequest");
-                    GeoFire geoFire = new GeoFire(ref);
-                    geoFire.removeLocation(userId);
-
-                    if(pickupMarker != null){
-                        pickupMarker.remove();
-                    }
-                    if(mDriverMarker != null){
-                        mDriverMarker.remove();
-                    }
-                    mRequest.setText("Call Ambulance");
-
-                    mDriverInfo.setVisibility(View.GONE);
-                    mDriverName.setText("");
-                    mDriverPhone.setText("");
-                    mDriverAmbulance.setText("");
-                    mDriverAmbulanceNumber.setText("");
-                    mDriverProfileImage.setImageResource(R.mipmap.ic_launcher);
+                    endRide();
                 }
                 else {
                     int selectId = mRadioGroup.getCheckedRadioButtonId();
@@ -229,6 +199,7 @@ public class CustomerMapActivity extends FragmentActivity implements OnMapReadyC
 
                                     getDriverLocation();
                                     getDriverInfo();
+                                    getHasRideEnded();
                                     mRequest.setText("Looking For Ambulance Location");
                                 }
                             }
@@ -262,6 +233,19 @@ public class CustomerMapActivity extends FragmentActivity implements OnMapReadyC
             }
         });
     }
+
+    /*--------------- Map specific functions -----
+    |  Function(s) getDriverLocation
+    |
+    |  Purpose:  Get's most updated driver location and it's always checking for movements.
+    |
+    |  Note:
+    |	   Even tho we used geofire to push the location of the driver we can use a normal
+    |      Listener to get it's location with no problem.
+    |
+    |      0 -> Latitude
+    |      1 -> Longitudde
+    *-------------------------------------------------------------------*/
 
     private Marker mDriverMarker;
     private DatabaseReference driverLocationRef;
@@ -314,6 +298,14 @@ public class CustomerMapActivity extends FragmentActivity implements OnMapReadyC
         });
     }
 
+    /*--------------------- getDriverInfo -----
+    |  Function(s) getDriverInfo
+    |
+    |  Purpose:  Get all the user information that we can get from the user's database.
+    |
+    |  Note: --
+    *-------------------------------------------------------------------*/
+
     private void getDriverInfo(){
         mDriverInfo.setVisibility(View.VISIBLE);
         DatabaseReference mCustomerDatabase = FirebaseDatabase.getInstance().getReference().child("Users").child("Drivers").child(driverFoundId);
@@ -342,6 +334,74 @@ public class CustomerMapActivity extends FragmentActivity implements OnMapReadyC
             }
         });
     }
+
+    private DatabaseReference driveHasEndedRef;
+    private ValueEventListener driveHasEndedRefListener;//This event listener give us the ability to cancel the event listener
+    private void getHasRideEnded() {
+        driveHasEndedRef = FirebaseDatabase.getInstance().getReference().child("Users").child("Drivers").child(driverFoundId).child("customerRequest").child("customerRideId");
+        driveHasEndedRefListener = driveHasEndedRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists()) {
+                }
+                else {
+                    endRide();
+                }
+
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+            }
+        });
+    }
+
+    private void endRide(){
+        requestBol = false;
+        geoQuery.removeAllListeners();
+        geoQueryH.removeAllListeners();
+        driverLocationRef.removeEventListener(driverLocationRefListener);
+        driveHasEndedRef.removeEventListener(driveHasEndedRefListener);
+
+        if(driverFoundId != null){
+            DatabaseReference driverRef = FirebaseDatabase.getInstance().getReference().child("Users").child("Drivers").child(driverFoundId).child("customerRequest");
+            driverRef.removeValue();
+            driverFoundId = null;
+        }
+        driverFound = false;
+        radius = 1;
+
+        String userId = FirebaseAuth.getInstance().getUid();
+        DatabaseReference ref = FirebaseDatabase.getInstance().getReference("customerRequest");
+        GeoFire geoFire = new GeoFire(ref);
+        geoFire.removeLocation(userId);
+
+        if(pickupMarker != null){
+            pickupMarker.remove();
+        }
+        if(mDriverMarker != null){
+            mDriverMarker.remove();
+        }
+        mRequest.setText("Call Ambulance");
+
+        mDriverInfo.setVisibility(View.GONE);
+        mDriverName.setText("");
+        mDriverPhone.setText("");
+        mDriverAmbulance.setText("");
+        mDriverAmbulanceNumber.setText("");
+        mDriverProfileImage.setImageResource(R.mipmap.ic_launcher);
+    }
+
+    /*-----------Map specific functions -----
+    |  Function(s) onMapReady, buildGoogleApiClient, onLocationChanged, onConnected
+    |
+    |  Purpose:  Find and update user's location.
+    |
+    |  Note:
+    |	   The update interval is set to 1000Ms and the accuracy is set to PRIORITY_HIGH_ACCURACY,
+    |      If you're having trouble with battery draining too fast then change these to lower values
+    *-------------------------------------------------------------------*/
 
     @Override
     public void onMapReady(GoogleMap googleMap) {

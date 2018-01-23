@@ -89,11 +89,11 @@ public class DriverSettingsActivity extends AppCompatActivity {
                         mPhoneField.setText(mPhone);
                     }
                     if(map.get("ambulance") != null){
-                        mAmbulance = map.get("phone").toString();
+                        mAmbulance = map.get("ambulance").toString();
                         mAmbulanceField.setText(mAmbulance);
                     }
                     if(map.get("service") != null){
-                        mAmbulance = map.get("service").toString();
+                        mService = map.get("service").toString();
                         switch (mService){
                             case "Normal" :
                                 mRadioGroup.check(R.id.normalAmbulance);
@@ -104,7 +104,7 @@ public class DriverSettingsActivity extends AppCompatActivity {
                         }
                     }
                     if(map.get("ambulanceNumber") != null){
-                        mAmbulanceNumber = map.get("phone").toString();
+                        mAmbulanceNumber = map.get("ambulanceNumber").toString();
                         mAmbulanceNumberField.setText(mAmbulanceNumber);
                     }
                 }

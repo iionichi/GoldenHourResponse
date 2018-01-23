@@ -11,6 +11,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -87,13 +88,16 @@ public class HospitalRegisterActivity extends AppCompatActivity {
             public void onClick(View view) {
                 final String email = mEmail.getText().toString();
                 final String password = mPassword.getText().toString();
-                mAuth.createUserWithEmailAndPassword(email, password).addOnCompleteListener(HospitalRegisterActivity.this, new OnCompleteListener<AuthResult>() {
-                    @Override
-                    public void onComplete(@NonNull Task<AuthResult> task) {
-                        if (!task.isSuccessful()) {
-                            Toast.makeText(HospitalRegisterActivity.this, "Sign Up Error", Toast.LENGTH_SHORT).show();
-                        } else {
-                            String userId = mAuth.getCurrentUser().getUid();
+                if (TextUtils.isEmpty(email) || TextUtils.isEmpty(password)) {
+                    Toast.makeText(HospitalRegisterActivity.this, "Please Fill All The Fields", Toast.LENGTH_SHORT).show();
+                } else {
+                    mAuth.createUserWithEmailAndPassword(email, password).addOnCompleteListener(HospitalRegisterActivity.this, new OnCompleteListener<AuthResult>() {
+                        @Override
+                        public void onComplete(@NonNull Task<AuthResult> task) {
+                            if (!task.isSuccessful()) {
+                                Toast.makeText(HospitalRegisterActivity.this, "Sign Up Error", Toast.LENGTH_SHORT).show();
+                            } else {
+                                String userId = mAuth.getCurrentUser().getUid();
 //                            DatabaseReference currentUserDB = FirebaseDatabase.getInstance().getReference().child("Users").child("Hospital").child(userId);
 //                            currentUserDB.setValue(true);
 //                            Map locationInfo = new HashMap();
@@ -101,17 +105,18 @@ public class HospitalRegisterActivity extends AppCompatActivity {
 //                            locationInfo.put("Latitude", latitude);
 //                            currentUserDB.updateChildren(locationInfo);
 
-                            DatabaseReference refHospital = FirebaseDatabase.getInstance().getReference().child("Hospital");
-                            GeoFire geoFireHospital = new GeoFire(refHospital);
-                            geoFireHospital.setLocation(userId, new GeoLocation(latitude,longitude));
-                            Intent intent = new Intent(HospitalRegisterActivity.this, HospitalMapActivity.class);
-                            startActivity(intent);
-                            finish();
-                            return;
+                                DatabaseReference refHospital = FirebaseDatabase.getInstance().getReference().child("Hospital");
+                                GeoFire geoFireHospital = new GeoFire(refHospital);
+                                geoFireHospital.setLocation(userId, new GeoLocation(latitude, longitude));
+                                Intent intent = new Intent(HospitalRegisterActivity.this, HospitalMapActivity.class);
+                                startActivity(intent);
+                                finish();
+                                return;
 
+                            }
                         }
-                    }
-                });
+                    });
+                }
             }
         });
 

@@ -53,8 +53,9 @@ public class CustomerMapActivity extends FragmentActivity implements OnMapReadyC
 
     SupportMapFragment mapFragment;
 
-    private Button mLogout, mRequest, mSettings,mHospi;
+    private Button mLogout, mRequest, mSettings,mHospi,mSos;
     private LatLng pickupLocation;
+
 
     private Boolean requestBol = false;
     private Marker pickupMarker;
@@ -96,10 +97,11 @@ public class CustomerMapActivity extends FragmentActivity implements OnMapReadyC
         mRadioGroup = (RadioGroup) findViewById(R.id.radioGroup);
         mRadioGroup.check(R.id.normalAmbulance);
 
-        mLogout = (Button) findViewById(R.id.logout);
-        mRequest = (Button) findViewById(R.id.request);
-        mSettings = (Button) findViewById(R.id.settings);
-        mHospi = (Button) findViewById(R.id.hospi);
+        mLogout = findViewById(R.id.logout);
+        mRequest = findViewById(R.id.request);
+        mSettings = findViewById(R.id.settings);
+        mHospi = findViewById(R.id.hospi);
+        mSos = findViewById(R.id.sos);
 
         mLogout.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -158,6 +160,15 @@ public class CustomerMapActivity extends FragmentActivity implements OnMapReadyC
             @Override
             public void onClick(View view) {
                 getHospital();
+            }
+        });
+
+        mSos.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(CustomerMapActivity.this, SosActivity.class);
+                startActivity(intent);
+                return;
             }
         });
     }

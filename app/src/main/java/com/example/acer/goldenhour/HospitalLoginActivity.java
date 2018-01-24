@@ -15,8 +15,6 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
 
 public class HospitalLoginActivity extends AppCompatActivity {
 
@@ -38,7 +36,7 @@ public class HospitalLoginActivity extends AppCompatActivity {
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
                 FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
                 if(user != null){
-                    Intent intent = new Intent(HospitalLoginActivity.this,HospitalMapActivity.class);
+                    Intent intent = new Intent(HospitalLoginActivity.this,HospitalActivity.class);
                     startActivity(intent);
                     finish();
                     return;

@@ -53,11 +53,10 @@ public class CustomerMapActivity extends FragmentActivity implements OnMapReadyC
 
     SupportMapFragment mapFragment;
 
-    private Button mLogout, mRequest, mSettings,mHospi,mSos;
+    private Button mLogout, mRequest, mSettings,mHospi;
     private LatLng pickupLocation;
 
-
-    private Boolean requestBol = false;
+    private Boolean requestBol = false, addedCustomerToHospital = false;
     private Marker pickupMarker;
 
     private String requestService;
@@ -97,11 +96,10 @@ public class CustomerMapActivity extends FragmentActivity implements OnMapReadyC
         mRadioGroup = (RadioGroup) findViewById(R.id.radioGroup);
         mRadioGroup.check(R.id.normalAmbulance);
 
-        mLogout = findViewById(R.id.logout);
-        mRequest = findViewById(R.id.request);
-        mSettings = findViewById(R.id.settings);
-        mHospi = findViewById(R.id.hospi);
-        mSos = findViewById(R.id.sos);
+        mLogout = (Button) findViewById(R.id.logout);
+        mRequest = (Button) findViewById(R.id.request);
+        mSettings = (Button) findViewById(R.id.settings);
+        mHospi = (Button) findViewById(R.id.hospi);
 
         mLogout.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -160,15 +158,6 @@ public class CustomerMapActivity extends FragmentActivity implements OnMapReadyC
             @Override
             public void onClick(View view) {
                 getHospital();
-            }
-        });
-
-        mSos.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(CustomerMapActivity.this, SosActivity.class);
-                startActivity(intent);
-                return;
             }
         });
     }
@@ -380,6 +369,13 @@ public class CustomerMapActivity extends FragmentActivity implements OnMapReadyC
             driverRef.removeValue();
             driverFoundId = null;
         }
+        //Remove the customer child from the Hospital
+        if(addedCustomerToHospital){
+            addedCustomerToHospital = false;
+            DatabaseReference addCustomerToHospital = FirebaseDatabase.getInstance().getReference().child("Hospital").child(hospitalFoundId).child("customerRequestId");
+            addCustomerToHospital.removeValue();
+            driverFoundId = null;
+        }
         driverFound = false;
         radius = 1;
 
@@ -514,6 +510,14 @@ public class CustomerMapActivity extends FragmentActivity implements OnMapReadyC
                                 HashMap map1 = new HashMap();
                                 map1.put("hospitalFoundId", hospitalFoundId);
                                 driverRef.updateChildren(map1);
+
+                                //Adding customer information to the hospital found
+                                DatabaseReference addCustomerToHospital = FirebaseDatabase.getInstance().getReference().child("Hospital").child(hospitalFoundId).child("customerRequestId");
+                                String customerId = FirebaseAuth.getInstance().getCurrentUser().getUid();
+                                HashMap map2 = new HashMap();
+                                map2.put("customerId", customerId);
+                                addCustomerToHospital.updateChildren(map2);
+                                addedCustomerToHospital = true;
                             }
                         }
 

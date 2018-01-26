@@ -515,7 +515,7 @@ public class CustomerMapActivity extends FragmentActivity implements OnMapReadyC
                                 DatabaseReference addCustomerToHospital = FirebaseDatabase.getInstance().getReference().child("Hospital").child(hospitalFoundId).child("customerRequestId");
                                 String customerId = FirebaseAuth.getInstance().getCurrentUser().getUid();
                                 HashMap map2 = new HashMap();
-                                map2.put("customerId", customerId);
+                                map2.put(customerId, customerId);
                                 addCustomerToHospital.updateChildren(map2);
                                 addedCustomerToHospital = true;
                             }

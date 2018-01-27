@@ -19,7 +19,7 @@ import java.util.Map;
 
 public class CustomerSettingsActivity extends AppCompatActivity {
 
-    private EditText mNameField, mPhoneField;
+    private EditText mNameField, mPhoneField, mePhoneField,mMedicompanyField,mMedinoField;
     private Button mBack, mConfirm;
 
     private FirebaseAuth mAuth;
@@ -28,6 +28,9 @@ public class CustomerSettingsActivity extends AppCompatActivity {
     private String userID;
     private String mName;
     private String mPhone;
+    private String mePhone;
+    private String mMedicompany;
+    private String mMedino;
 
 
     @Override
@@ -37,6 +40,9 @@ public class CustomerSettingsActivity extends AppCompatActivity {
 
         mNameField = (EditText) findViewById(R.id.name);
         mPhoneField = (EditText) findViewById(R.id.phone);
+        mePhoneField = (EditText) findViewById(R.id.ephone);
+        mMedicompanyField = findViewById(R.id.medicompany);
+        mMedinoField = findViewById(R.id.medino);
 
         mBack = (Button) findViewById(R.id.back);
         mConfirm = (Button) findViewById(R.id.confirm);
@@ -77,6 +83,20 @@ public class CustomerSettingsActivity extends AppCompatActivity {
                         mPhone = map.get("phone").toString();
                         mPhoneField.setText(mPhone);
                     }
+
+                    if(map.get("ephone") != null){
+                        mePhone = map.get("ephone").toString();
+                        mePhoneField.setText(mePhone);
+                    }
+                    if(map.get("Medicompany") != null){
+                        mMedicompany = map.get("Medicompany").toString();
+                        mMedicompanyField.setText(mMedicompany);
+                    }
+
+                    if(map.get("Medino") != null){
+                        mMedino = map.get("Medino").toString();
+                        mMedinoField.setText(mMedino);
+                    }
                 }
             }
 
@@ -89,10 +109,16 @@ public class CustomerSettingsActivity extends AppCompatActivity {
     private void saveUserInformation() {
         mName = mNameField.getText().toString();
         mPhone = mPhoneField.getText().toString();
+        mePhone = mePhoneField.getText().toString();
+        mMedicompany = mMedicompanyField.getText().toString();
+        mMedino = mMedinoField.getText().toString();
 
         Map userInfo = new HashMap();
         userInfo.put("name", mName);
         userInfo.put("phone", mPhone);
+        userInfo.put("ephone",mePhone);
+        userInfo.put("Medicompany",mMedicompany);
+        userInfo.put("Medino",mMedino);
         mCustomerDatabase.updateChildren(userInfo);
 
         finish();

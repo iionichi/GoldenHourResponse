@@ -26,6 +26,33 @@
         android:layout_marginBottom="20sp"
         android:inputType="number" />
 
+    <EditText
+        android:id="@+id/ephone"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@null"
+        android:hint="Emergency Phone No."
+        android:layout_marginBottom="20sp"
+        android:inputType="text" />
+
+    <EditText
+        android:id="@+id/medicompany"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@null"
+        android:hint="Mediclaim Company Name"
+        android:layout_marginBottom="20sp"
+        android:inputType="text" />
+
+    <EditText
+        android:id="@+id/medino"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@null"
+        android:hint="Mediclaim Policy No."
+        android:layout_marginBottom="20sp"
+        android:inputType="text" />
+
     <Button
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

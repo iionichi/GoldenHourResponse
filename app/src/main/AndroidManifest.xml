@@ -54,7 +54,6 @@
         <activity android:name=".HospitalLoginActivity" />
         <activity android:name=".HospitalRegisterActivity" />
         <activity android:name=".HospitalMapActivity" />
-        <activity android:name=".SosActivity"></activity>
     </application>
 
 </manifest>

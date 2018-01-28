@@ -503,6 +503,7 @@ public class CustomerMapActivity extends FragmentActivity implements OnMapReadyC
         }
         buildGoogleApiClient();
         mMap.setMyLocationEnabled(true);
+        googleMap.setTrafficEnabled(true);
     }
 
     protected synchronized void buildGoogleApiClient(){

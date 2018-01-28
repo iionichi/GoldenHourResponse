@@ -314,6 +314,7 @@ public class DriverMapActivity extends FragmentActivity implements OnMapReadyCal
         }
         buildGoogleApiClient();
         mMap.setMyLocationEnabled(true);
+        googleMap.setTrafficEnabled(true);
     }
 
     protected synchronized void buildGoogleApiClient() {

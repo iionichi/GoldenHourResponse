@@ -5,6 +5,8 @@ import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
+import android.net.Uri;
+import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
@@ -66,7 +68,7 @@ public class CustomerMapActivity extends FragmentActivity implements OnMapReadyC
     private FirebaseAuth mAuth1;
     private String userID1;
 
-    private Button mLogout, mRequest, mSettings,mHospi,mSos;
+    private Button mLogout, mRequest, mSettings,mHospi,mSos,mpolice;
     private LatLng pickupLocation;
 
 
@@ -115,6 +117,7 @@ public class CustomerMapActivity extends FragmentActivity implements OnMapReadyC
         mSettings = findViewById(R.id.settings);
         mHospi = findViewById(R.id.hospi);
         mSos = findViewById(R.id.sos);
+        mpolice = findViewById(R.id.police);
 
         mAuth1 = FirebaseAuth.getInstance();
         userID1 = mAuth1.getCurrentUser().getUid();
@@ -173,6 +176,26 @@ public class CustomerMapActivity extends FragmentActivity implements OnMapReadyC
                 return;
             }
         });
+
+
+        mpolice.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                final int REQUEST_PHONE_CALL = 1;
+                Intent callIntent = new Intent(Intent.ACTION_CALL);
+                callIntent.setData(Uri.parse("tel:100"));
+
+                if(android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M){
+                    if(ContextCompat.checkSelfPermission(CustomerMapActivity.this,Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED){
+                        ActivityCompat.requestPermissions(CustomerMapActivity.this, new String[]{Manifest.permission.CALL_PHONE}, REQUEST_PHONE_CALL);
+                    }
+                    else {
+                        startActivity(callIntent);
+                    }
+                }
+            }
+        });
+
         mHospi.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

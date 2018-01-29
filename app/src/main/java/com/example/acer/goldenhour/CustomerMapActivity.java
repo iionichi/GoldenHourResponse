@@ -1,14 +1,20 @@
 package com.example.acer.goldenhour;
 
+import android.*;
+import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
+import android.net.Uri;
+import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.telephony.SmsManager;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -16,6 +22,7 @@ import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.firebase.geofire.GeoFire;
 import com.firebase.geofire.GeoLocation;
@@ -34,6 +41,7 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -46,6 +54,8 @@ import java.util.Map;
 
 public class CustomerMapActivity extends FragmentActivity implements OnMapReadyCallback, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, com.google.android.gms.location.LocationListener {
 
+    private static final int SEND_SMS_PERMISSION_REQUEST_CODE = 111;
+
     private GoogleMap mMap;
     GoogleApiClient mGoogleApiClient;
     Location mLastLocation;
@@ -53,13 +63,18 @@ public class CustomerMapActivity extends FragmentActivity implements OnMapReadyC
 
     SupportMapFragment mapFragment;
 
-    private Button mLogout, mRequest, mSettings,mHospi;
+    private DatabaseReference mCustomerDatabase1;
+
+    private FirebaseAuth mAuth1;
+    private String userID1;
+
+    private Button mLogout, mRequest, mSettings,mHospi,mSos,mpolice;
     private LatLng pickupLocation;
 
     private Boolean requestBol = false, addedCustomerToHospital = false;
     private Marker pickupMarker;
 
-    private String requestService;
+    private String requestService, mePhone, msg, userId;
 
     private LinearLayout mDriverInfo;
     private ImageView mDriverProfileImage;
@@ -96,10 +111,16 @@ public class CustomerMapActivity extends FragmentActivity implements OnMapReadyC
         mRadioGroup = (RadioGroup) findViewById(R.id.radioGroup);
         mRadioGroup.check(R.id.normalAmbulance);
 
-        mLogout = (Button) findViewById(R.id.logout);
-        mRequest = (Button) findViewById(R.id.request);
-        mSettings = (Button) findViewById(R.id.settings);
-        mHospi = (Button) findViewById(R.id.hospi);
+        mLogout = findViewById(R.id.logout);
+        mRequest = findViewById(R.id.request);
+        mSettings = findViewById(R.id.settings);
+        mHospi = findViewById(R.id.hospi);
+        mSos = findViewById(R.id.sos);
+        mpolice = findViewById(R.id.police);
+
+        mAuth1 = FirebaseAuth.getInstance();
+        userID1 = mAuth1.getCurrentUser().getUid();
+        mCustomerDatabase1 = FirebaseDatabase.getInstance().getReference().child("Users").child("Customers").child(userID1);
 
         mLogout.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -130,7 +151,7 @@ public class CustomerMapActivity extends FragmentActivity implements OnMapReadyC
 
                     requestBol = true;
 
-                    String userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
+                    userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
 
                     DatabaseReference ref = FirebaseDatabase.getInstance().getReference("customerRequest");
                     GeoFire geoFire = new GeoFire(ref);
@@ -154,12 +175,79 @@ public class CustomerMapActivity extends FragmentActivity implements OnMapReadyC
                 return;
             }
         });
+
+
+        mpolice.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                final int REQUEST_PHONE_CALL = 1;
+                Intent callIntent = new Intent(Intent.ACTION_CALL);
+                callIntent.setData(Uri.parse("tel:100"));
+
+                if(android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M){
+                    if(ContextCompat.checkSelfPermission(CustomerMapActivity.this,Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED){
+                        ActivityCompat.requestPermissions(CustomerMapActivity.this, new String[]{Manifest.permission.CALL_PHONE}, REQUEST_PHONE_CALL);
+                    }
+                    else {
+                        startActivity(callIntent);
+                    }
+                }
+            }
+        });
+
         mHospi.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 getHospital();
             }
         });
+
+        mSos.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mCustomerDatabase1.addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        if (dataSnapshot.exists() && dataSnapshot.getChildrenCount()>0) {
+                            Map<String, Object> map = (Map<String, Object>) dataSnapshot.getValue();
+                            if (map.get("ephone") != null) {
+                                mePhone = map.get("ephone").toString();
+                            }
+                        }
+
+                        msg = "Sender is in critical emergancy.";
+
+                        if (checkPermission(Manifest.permission.SEND_SMS)) {
+                            SmsManager smsManager = SmsManager.getDefault();
+                            smsManager.sendTextMessage(mePhone, null, msg, null, null);
+                        } else {
+                            Toast.makeText(CustomerMapActivity.this, "Permission denied", Toast.LENGTH_SHORT).show();
+                        }                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+
+                    }
+                });
+
+            }
+        });
+    }
+
+    private Boolean checkPermission(String permission) {
+        int checkPermission = ContextCompat.checkSelfPermission(this, permission);
+        return checkPermission == PackageManager.PERMISSION_GRANTED;
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        switch (requestCode) {
+            case SEND_SMS_PERMISSION_REQUEST_CODE:
+                if(grantResults.length > 0 && (grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
+                    mSos.setEnabled(true);
+                }
+                break;
+        }
     }
 
     private int radius = 1;
@@ -421,6 +509,7 @@ public class CustomerMapActivity extends FragmentActivity implements OnMapReadyC
         }
         buildGoogleApiClient();
         mMap.setMyLocationEnabled(true);
+        googleMap.setTrafficEnabled(true);
     }
 
     protected synchronized void buildGoogleApiClient(){

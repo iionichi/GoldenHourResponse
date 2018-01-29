@@ -71,8 +71,7 @@ public class CustomerMapActivity extends FragmentActivity implements OnMapReadyC
     private Button mLogout, mRequest, mSettings,mHospi,mSos,mpolice;
     private LatLng pickupLocation;
 
-
-    private Boolean requestBol = false;
+    private Boolean requestBol = false, addedCustomerToHospital = false;
     private Marker pickupMarker;
 
     private String requestService, mePhone, msg, userId;
@@ -458,6 +457,13 @@ public class CustomerMapActivity extends FragmentActivity implements OnMapReadyC
             driverRef.removeValue();
             driverFoundId = null;
         }
+        //Remove the customer child from the Hospital
+        if(addedCustomerToHospital){
+            addedCustomerToHospital = false;
+            DatabaseReference addCustomerToHospital = FirebaseDatabase.getInstance().getReference().child("Hospital").child(hospitalFoundId).child("customerRequestId");
+            addCustomerToHospital.removeValue();
+            driverFoundId = null;
+        }
         driverFound = false;
         radius = 1;
 
@@ -593,6 +599,14 @@ public class CustomerMapActivity extends FragmentActivity implements OnMapReadyC
                                 HashMap map1 = new HashMap();
                                 map1.put("hospitalFoundId", hospitalFoundId);
                                 driverRef.updateChildren(map1);
+
+                                //Adding customer information to the hospital found
+                                DatabaseReference addCustomerToHospital = FirebaseDatabase.getInstance().getReference().child("Hospital").child(hospitalFoundId).child("customerRequestId");
+                                String customerId = FirebaseAuth.getInstance().getCurrentUser().getUid();
+                                HashMap map2 = new HashMap();
+                                map2.put(customerId, customerId);
+                                addCustomerToHospital.updateChildren(map2);
+                                addedCustomerToHospital = true;
                             }
                         }
 

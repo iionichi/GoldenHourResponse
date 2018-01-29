@@ -7,7 +7,6 @@ import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationManager;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -19,10 +18,7 @@ import android.widget.Toast;
 
 import com.firebase.geofire.GeoFire;
 import com.firebase.geofire.GeoLocation;
-import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.location.LocationRequest;
-import com.google.android.gms.maps.CameraUpdateFactory;
-import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
@@ -30,8 +26,6 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import java.util.HashMap;
-import java.util.Map;
 
 
 public class HospitalRegisterActivity extends AppCompatActivity {
@@ -69,7 +63,7 @@ public class HospitalRegisterActivity extends AppCompatActivity {
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
                 FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
                 if (user != null) {
-                    Intent intent = new Intent(HospitalRegisterActivity.this, HospitalMapActivity.class);
+                    Intent intent = new Intent(HospitalRegisterActivity.this, HospitalActivity.class);
                     startActivity(intent);
                     finish();
                     return;
@@ -108,7 +102,7 @@ public class HospitalRegisterActivity extends AppCompatActivity {
                                 DatabaseReference refHospital = FirebaseDatabase.getInstance().getReference().child("Hospital");
                                 GeoFire geoFireHospital = new GeoFire(refHospital);
                                 geoFireHospital.setLocation(userId, new GeoLocation(latitude, longitude));
-                                Intent intent = new Intent(HospitalRegisterActivity.this, HospitalMapActivity.class);
+                                Intent intent = new Intent(HospitalRegisterActivity.this, HospitalActivity.class);
                                 startActivity(intent);
                                 finish();
                                 return;

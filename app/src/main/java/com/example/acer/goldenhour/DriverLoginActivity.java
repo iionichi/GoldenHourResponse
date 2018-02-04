@@ -59,25 +59,31 @@ public class DriverLoginActivity extends AppCompatActivity {
         mRegistration.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                final String email = mEmail.getText().toString();
-                final String password = mPassword.getText().toString();
-                if (TextUtils.isEmpty(email) || TextUtils.isEmpty(password)) {
-                    Toast.makeText(DriverLoginActivity.this, "Please Fill All The Fields", Toast.LENGTH_SHORT).show();
-                } else {
-                    mAuth.createUserWithEmailAndPassword(email, password).addOnCompleteListener(DriverLoginActivity.this, new OnCompleteListener<AuthResult>() {
-                        @Override
-                        public void onComplete(@NonNull Task<AuthResult> task) {
-                            if (!task.isSuccessful()) {
-                                Toast.makeText(DriverLoginActivity.this, "Sign Up Error", Toast.LENGTH_SHORT).show();
-                            } else {
-                                String userId = mAuth.getCurrentUser().getUid();
-                                DatabaseReference currentUserDB = FirebaseDatabase.getInstance().getReference().child("Users").child("Drivers").child(userId).child("name");
-                                currentUserDB.setValue(email);
-                                addAmbulanceLogin(userId);//Adding Ambulance Login
-                            }
-                        }
-                    });
-                }
+
+
+                Intent intent = new Intent(DriverLoginActivity.this, DriverRegisterActivity.class);
+                startActivity(intent);
+                finish();
+                return;
+//                final String email = mEmail.getText().toString();
+//                final String password = mPassword.getText().toString();
+//                if (TextUtils.isEmpty(email) || TextUtils.isEmpty(password)) {
+//                    Toast.makeText(DriverLoginActivity.this, "Please Fill All The Fields", Toast.LENGTH_SHORT).show();
+//                } else {
+//                    mAuth.createUserWithEmailAndPassword(email, password).addOnCompleteListener(DriverLoginActivity.this, new OnCompleteListener<AuthResult>() {
+//                        @Override
+//                        public void onComplete(@NonNull Task<AuthResult> task) {
+//                            if (!task.isSuccessful()) {
+//                                Toast.makeText(DriverLoginActivity.this, "Sign Up Error", Toast.LENGTH_SHORT).show();
+//                            } else {
+//                                String userId = mAuth.getCurrentUser().getUid();
+//                                DatabaseReference currentUserDB = FirebaseDatabase.getInstance().getReference().child("Users").child("Drivers").child(userId).child("name");
+//                                currentUserDB.setValue(email);
+//                                addAmbulanceLogin(userId);//Adding Ambulance Login
+//                            }
+//                        }
+//                    });
+//                }
             }
         });
 

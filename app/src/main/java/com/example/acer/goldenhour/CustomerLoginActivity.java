@@ -100,8 +100,10 @@ public class CustomerLoginActivity extends AppCompatActivity {
                             if (!task.isSuccessful()) {
                                 Toast.makeText(CustomerLoginActivity.this, "Sign In Error", Toast.LENGTH_SHORT).show();
                             }
-                            String userId = mAuth.getCurrentUser().getUid();
-                            addCustomerLogin(userId);//For adding the customer logged in.
+                            else {
+                                String userId = mAuth.getCurrentUser().getUid();
+                                addCustomerLogin(userId);//For adding the customer logged in.
+                            }
                         }
                     });
 

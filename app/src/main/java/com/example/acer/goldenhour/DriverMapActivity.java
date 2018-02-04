@@ -6,6 +6,7 @@ import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationListener;
 import android.provider.ContactsContract;
+import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
@@ -146,6 +147,9 @@ public class DriverMapActivity extends FragmentActivity implements OnMapReadyCal
         mLogout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                String deviceId = Settings.Secure.getString(getApplicationContext().getContentResolver(), Settings.Secure.ANDROID_ID);
+                DatabaseReference diverLogout = FirebaseDatabase.getInstance().getReference().child("LoggedIn").child(deviceId);
+                diverLogout.removeValue();
                 isLoggingOut = true;
                 disconnectDriver();
                 FirebaseAuth.getInstance().signOut();
@@ -292,6 +296,9 @@ public class DriverMapActivity extends FragmentActivity implements OnMapReadyCal
 //        customerId = "";
         if (pickupMarker != null) {
             pickupMarker.remove();
+        }
+        if (hospitalMarker != null){
+            hospitalMarker.remove();
         }
         if (assignedCustomerPickupLocationRefListener != null) {
             assignedCustomerPickupLocationRef.removeEventListener(assignedCustomerPickupLocationRefListener);
@@ -502,8 +509,7 @@ public class DriverMapActivity extends FragmentActivity implements OnMapReadyCal
     private ValueEventListener assignedHospitalLocationRefListener;
 
     private void getHospitalLocation() {
-//        assignedHospitalLocationRef = FirebaseDatabase.getInstance().getReference().child("Users").child("Drivers").child(driverId).child("customerRequest").child(hospitalFoundId).child("l");
-        assignedHospitalLocationRef = FirebaseDatabase.getInstance().getReference().child("Hospital").child(hospitalFoundId).child("l");
+        assignedHospitalLocationRef = FirebaseDatabase.getInstance().getReference().child("Users").child("Hospital").child(hospitalFoundId).child("l");
         assignedHospitalLocationRefListener = assignedHospitalLocationRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {

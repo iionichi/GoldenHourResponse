@@ -99,7 +99,7 @@ public class HospitalRegisterActivity extends AppCompatActivity {
 //                            locationInfo.put("Latitude", latitude);
 //                            currentUserDB.updateChildren(locationInfo);
 
-                                DatabaseReference refHospital = FirebaseDatabase.getInstance().getReference().child("Hospital");
+                                DatabaseReference refHospital = FirebaseDatabase.getInstance().getReference().child("Users").child("Hospital");
                                 GeoFire geoFireHospital = new GeoFire(refHospital);
                                 geoFireHospital.setLocation(userId, new GeoLocation(latitude, longitude));
                                 Intent intent = new Intent(HospitalRegisterActivity.this, HospitalActivity.class);

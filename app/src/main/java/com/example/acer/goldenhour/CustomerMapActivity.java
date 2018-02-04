@@ -447,7 +447,6 @@ public class CustomerMapActivity extends FragmentActivity implements OnMapReadyC
 
     private void endRide(){
         requestBol = false;
-        hospitalFound = false;
         geoQuery.removeAllListeners();
         geoQueryH.removeAllListeners();
         driverLocationRef.removeEventListener(driverLocationRefListener);
@@ -576,7 +575,7 @@ public class CustomerMapActivity extends FragmentActivity implements OnMapReadyC
 
     GeoQuery geoQueryH;
     private void getHospital(){
-        DatabaseReference hospitalLocation = FirebaseDatabase.getInstance().getReference().child("Users").child("Hospital");
+        DatabaseReference hospitalLocation = FirebaseDatabase.getInstance().getReference().child("Hospital");
         GeoFire geoFireH = new GeoFire(hospitalLocation);
         geoQueryH  = geoFireH.queryAtLocation(new GeoLocation(pickupLocation.latitude, pickupLocation.longitude),radiusH);
         geoQueryH.removeAllListeners();
@@ -585,7 +584,7 @@ public class CustomerMapActivity extends FragmentActivity implements OnMapReadyC
             @Override
             public void onKeyEntered(String key, GeoLocation location) {
                 if (!hospitalFound && requestBol){
-                    DatabaseReference mCustomerDatabase = FirebaseDatabase.getInstance().getReference().child("Users").child("Hospital").child(key);
+                    DatabaseReference mCustomerDatabase = FirebaseDatabase.getInstance().getReference().child("Hospital").child(key);
                     mCustomerDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
                         @Override
                         public void onDataChange(DataSnapshot dataSnapshot) {
@@ -602,7 +601,7 @@ public class CustomerMapActivity extends FragmentActivity implements OnMapReadyC
                                 driverRef.updateChildren(map1);
 
                                 //Adding customer information to the hospital found
-                                DatabaseReference addCustomerToHospital = FirebaseDatabase.getInstance().getReference().child("Users").child("Hospital").child(hospitalFoundId).child("customerRequestId");
+                                DatabaseReference addCustomerToHospital = FirebaseDatabase.getInstance().getReference().child("Hospital").child(hospitalFoundId).child("customerRequestId");
                                 String customerId = FirebaseAuth.getInstance().getCurrentUser().getUid();
                                 HashMap map2 = new HashMap();
                                 map2.put(customerId, customerId);

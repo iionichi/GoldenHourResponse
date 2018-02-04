@@ -1,7 +1,6 @@
 package com.example.acer.goldenhour;
 
 import android.content.Intent;
-import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -18,9 +17,6 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-
-import java.util.HashMap;
-import java.util.Map;
 
 public class DriverLoginActivity extends AppCompatActivity {
 
@@ -73,7 +69,6 @@ public class DriverLoginActivity extends AppCompatActivity {
                                 String userId = mAuth.getCurrentUser().getUid();
                                 DatabaseReference currentUserDB = FirebaseDatabase.getInstance().getReference().child("Users").child("Drivers").child(userId).child("name");
                                 currentUserDB.setValue(email);
-                                addAmbulanceLogin(userId);//For adding the Ambulance logged in.
                             }
                         }
                     });
@@ -97,8 +92,6 @@ public class DriverLoginActivity extends AppCompatActivity {
                             if (!task.isSuccessful()) {
                                 Toast.makeText(DriverLoginActivity.this, "Sign In Error", Toast.LENGTH_SHORT).show();
                             }
-                            String userId = mAuth.getCurrentUser().getUid();
-                            addAmbulanceLogin(userId);//For adding the Ambulance logged in.
                         }
                     });
                 }
@@ -116,14 +109,5 @@ public class DriverLoginActivity extends AppCompatActivity {
     protected void onStop() {
         super.onStop();
         mAuth.removeAuthStateListener(firebaseAuthListener);
-    }
-
-    private void addAmbulanceLogin(String userId){
-        String DeviceID = Settings.Secure.getString(getApplicationContext().getContentResolver(), Settings.Secure.ANDROID_ID);
-        DatabaseReference device = FirebaseDatabase.getInstance().getReference().child("LoggedIn").child(DeviceID);
-        Map userInfo = new HashMap();
-        userInfo.put("Type","Drivers");
-        userInfo.put("Id", userId);
-        device.updateChildren(userInfo);
     }
 }

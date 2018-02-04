@@ -22,7 +22,7 @@ public class MainActivity extends AppCompatActivity {
 
     private Button mDriver, mCustomer,mHospital,mButton;
 
-    private String userType,user;
+    private String userType;
 
     private FirebaseAuth mAuth;
     private FirebaseAuth.AuthStateListener firebaseAuthListener;

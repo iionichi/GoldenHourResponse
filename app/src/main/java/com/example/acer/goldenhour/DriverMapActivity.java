@@ -293,9 +293,6 @@ public class DriverMapActivity extends FragmentActivity implements OnMapReadyCal
         if (pickupMarker != null) {
             pickupMarker.remove();
         }
-        if (hospitalMarker != null){
-            hospitalMarker.remove();
-        }
         if (assignedCustomerPickupLocationRefListener != null) {
             assignedCustomerPickupLocationRef.removeEventListener(assignedCustomerPickupLocationRefListener);
         }
@@ -505,7 +502,8 @@ public class DriverMapActivity extends FragmentActivity implements OnMapReadyCal
     private ValueEventListener assignedHospitalLocationRefListener;
 
     private void getHospitalLocation() {
-        assignedHospitalLocationRef = FirebaseDatabase.getInstance().getReference().child("Users").child("Hospital").child(hospitalFoundId).child("l");
+//        assignedHospitalLocationRef = FirebaseDatabase.getInstance().getReference().child("Users").child("Drivers").child(driverId).child("customerRequest").child(hospitalFoundId).child("l");
+        assignedHospitalLocationRef = FirebaseDatabase.getInstance().getReference().child("Hospital").child(hospitalFoundId).child("l");
         assignedHospitalLocationRefListener = assignedHospitalLocationRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -531,3 +529,4 @@ public class DriverMapActivity extends FragmentActivity implements OnMapReadyCal
         });
     }
 }
+

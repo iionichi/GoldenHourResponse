@@ -579,6 +579,7 @@ public class CustomerMapActivity extends FragmentActivity implements OnMapReadyC
         GeoFire geoFireH = new GeoFire(hospitalLocation);
         geoQueryH  = geoFireH.queryAtLocation(new GeoLocation(pickupLocation.latitude, pickupLocation.longitude),radiusH);
         geoQueryH.removeAllListeners();
+        String wq;
 
         geoQueryH.addGeoQueryEventListener(new GeoQueryEventListener() {
             @Override

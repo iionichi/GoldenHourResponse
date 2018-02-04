@@ -92,7 +92,14 @@ public class MainActivity extends AppCompatActivity {
                                 }
                                 else if (userType.equals("Drivers")){
                                     mButton.setText(userType);
-                                    Intent intentC = new Intent(MainActivity.this,CustomerMapActivity.class);
+                                    Intent intentC = new Intent(MainActivity.this,DriverMapActivity.class);
+                                    startActivity(intentC);
+                                    finish();
+                                    return;
+                                }
+                                else if (userType.equals("Hospital")){
+                                    mButton.setText(userType);
+                                    Intent intentC = new Intent(MainActivity.this,HospitalActivity.class);
                                     startActivity(intentC);
                                     finish();
                                     return;

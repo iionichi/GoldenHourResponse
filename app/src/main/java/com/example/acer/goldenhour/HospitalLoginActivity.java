@@ -1,6 +1,7 @@
 package com.example.acer.goldenhour;
 
 import android.content.Intent;
+import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -15,6 +16,11 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class HospitalLoginActivity extends AppCompatActivity {
 
@@ -91,6 +97,10 @@ public class HospitalLoginActivity extends AppCompatActivity {
                             if (!task.isSuccessful()) {
                                 Toast.makeText(HospitalLoginActivity.this, "Sign In Error", Toast.LENGTH_SHORT).show();
                             }
+                            else {
+                                String userId = mAuth.getCurrentUser().getUid();
+                                addHospitalrLogin(userId);//For adding the customer logged in.
+                            }
                         }
                     });
                 }
@@ -108,5 +118,13 @@ public class HospitalLoginActivity extends AppCompatActivity {
     protected void onStop() {
         super.onStop();
         mAuth.removeAuthStateListener(firebaseAuthListener);
+    }
+    private void addHospitalrLogin(String userId){
+        String DeviceID = Settings.Secure.getString(getApplicationContext().getContentResolver(), Settings.Secure.ANDROID_ID);
+        DatabaseReference device = FirebaseDatabase.getInstance().getReference().child("LoggedIn").child(DeviceID);
+        Map userInfo = new HashMap();
+        userInfo.put("Type","Hospital");
+        userInfo.put("Id", userId);
+        device.updateChildren(userInfo);
     }
 }

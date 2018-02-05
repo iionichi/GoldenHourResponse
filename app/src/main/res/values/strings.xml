@@ -3,4 +3,12 @@
     <string name="title_activity_driver_login">DriverLoginActivity</string>
     <string name="title_activity_driver_map">Map</string>
     <string name="settings">Settings</string>
+
+
+    <string-array name="role">
+        <item>Please Tell Us Who You Are</item>
+        <item>Customer</item>
+        <item>Driver</item>
+        <item>Hospital</item>
+    </string-array>
 </resources>

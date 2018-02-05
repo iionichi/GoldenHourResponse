@@ -6,7 +6,10 @@ import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.Spinner;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -20,7 +23,7 @@ import java.util.Map;
 
 public class MainActivity extends AppCompatActivity {
 
-    private Button mDriver, mCustomer,mHospital,mButton;
+    private Button mButton;
 
     private String userType;
 
@@ -32,41 +35,51 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        mDriver = (Button) findViewById(R.id.driver);
-        mCustomer = (Button) findViewById(R.id.customer);
-        mHospital = (Button) findViewById(R.id.hospital);
-        mButton = findViewById(R.id.button2);
+        Spinner Role = (Spinner) findViewById(R.id.role);
+
+        ArrayAdapter<String> myAdapter = new ArrayAdapter<String>(MainActivity.this, android.R.layout.simple_list_item_1, getResources().getStringArray(R.array.role));
+        myAdapter.setDropDownViewResource(android.R.layout.simple_dropdown_item_1line);
+        Role.setAdapter(myAdapter);
+
+
+
+        mButton = findViewById(R.id.button3);
         startService(new Intent(MainActivity.this, onAppKilled.class));
 
-        mDriver.setOnClickListener(new View.OnClickListener() {
+        Role.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(MainActivity.this, DriverLoginActivity.class);
-                startActivity(intent);
-                finish();
-                return;
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                if (position == 1){
+                    Intent intent = new Intent(MainActivity.this, CustomerLoginActivity.class);
+                    startActivity(intent);
+                    finish();
+                    return;
+                }
+
+                else if (position==2){
+                    Intent intent = new Intent(MainActivity.this, DriverLoginActivity.class);
+                    startActivity(intent);
+                    finish();
+                    return;
+                }
+
+                else if (position==3){
+                    Intent intent = new Intent(MainActivity.this, HospitalLoginActivity.class);
+                    startActivity(intent);
+                    finish();
+                    return;
+                }
+            }
+
+
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
             }
         });
 
-        mCustomer.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(MainActivity.this, CustomerLoginActivity.class);
-                startActivity(intent);
-                finish();
-                return;
-            }
-        });
-        mHospital.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(MainActivity.this, HospitalLoginActivity.class);
-                startActivity(intent);
-                finish();
-                return;
 
-            }
-        });
 
         mAuth = FirebaseAuth.getInstance();
         firebaseAuthListener = new FirebaseAuth.AuthStateListener() {

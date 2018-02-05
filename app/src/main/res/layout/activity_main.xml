@@ -7,29 +7,18 @@
     tools:context="com.example.acer.goldenhour.MainActivity"
     android:orientation="vertical">
 
-    <Button
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="I am a Driver"
-        android:id="@+id/driver"/>
 
-    <Button
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="I am a Customer"
-        android:id="@+id/customer"/>
 
 
     <Button
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Hospital"
-        android:id="@+id/hospital"/>
-
-    <Button
-        android:id="@+id/button2"
+        android:id="@+id/button3"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Button" />
+
+    <Spinner
+        android:id="@+id/role"
+        android:layout_width="184dp"
+        android:layout_height="37dp" />
 
 </LinearLayout>

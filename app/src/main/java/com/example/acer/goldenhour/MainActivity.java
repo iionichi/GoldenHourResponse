@@ -23,7 +23,7 @@ import java.util.Map;
 
 public class MainActivity extends AppCompatActivity {
 
-    private Button mButton;
+
 
     private String userType;
 
@@ -43,7 +43,7 @@ public class MainActivity extends AppCompatActivity {
 
 
 
-        mButton = findViewById(R.id.button3);
+
         startService(new Intent(MainActivity.this, onAppKilled.class));
 
         Role.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -95,23 +95,20 @@ public class MainActivity extends AppCompatActivity {
                             if (dataSnapshot.exists()){
                                 Map<String, Object> map =  (Map<String, Object>) dataSnapshot.getValue();
                                 userType = map.get("Type").toString();
-                                mButton.setText(userType);
+
                                 if (userType.equals("Customers")){
-                                    mButton.setText(userType);
                                     Intent intentC = new Intent(MainActivity.this,CustomerMapActivity.class);
                                     startActivity(intentC);
                                     finish();
                                     return;
                                 }
                                 else if (userType.equals("Drivers")){
-                                    mButton.setText(userType);
                                     Intent intentC = new Intent(MainActivity.this,DriverMapActivity.class);
                                     startActivity(intentC);
                                     finish();
                                     return;
                                 }
                                 else if (userType.equals("Hospital")){
-                                    mButton.setText(userType);
                                     Intent intentC = new Intent(MainActivity.this,HospitalActivity.class);
                                     startActivity(intentC);
                                     finish();

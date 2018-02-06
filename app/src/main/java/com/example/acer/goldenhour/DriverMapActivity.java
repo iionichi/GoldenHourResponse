@@ -64,7 +64,7 @@ public class DriverMapActivity extends FragmentActivity implements OnMapReadyCal
 
     private LatLng destination, destinationLatLng;
 
-    private Button mLogout, mSettings, mRideStatus;
+    private Button mLogout, mSettings, mRideStatus, mCheckHospital;
 
     private int status = 0;
 
@@ -72,7 +72,7 @@ public class DriverMapActivity extends FragmentActivity implements OnMapReadyCal
 
     private String customerId = "", driverId, hospitalFoundId = "";
 
-    private Boolean isLoggingOut = false;
+    private Boolean hospitalLatLng = false;
 
     private LinearLayout mCustomerInfo;
     private ImageView mCustomerProfileImage;
@@ -96,6 +96,8 @@ public class DriverMapActivity extends FragmentActivity implements OnMapReadyCal
         destination = new LatLng(0.0, 0.0);
 
         mCustomerInfo = (LinearLayout) findViewById(R.id.customerInfo);
+
+        mCheckHospital = (Button) findViewById(R.id.checkHospital);
 
         mCustomerProfileImage = (ImageView) findViewById(R.id.customerProfileImage);
 
@@ -128,12 +130,17 @@ public class DriverMapActivity extends FragmentActivity implements OnMapReadyCal
             public void onClick(View view) {
                 switch (status){
                     case 1:
+//                        getHospital();
+                        mCheckHospital.setText(hospitalFoundId);
                         status = 2;
                         erasePolylines();
                         if (destinationLatLng.latitude != 0.0 && destinationLatLng.longitude != 0.0){
                             getRouteToMarker(destinationLatLng);
                         }
-                        mRideStatus.setText("Drive Completed");
+//                        if (destinationLatLng != null){
+//                            getRouteToMarker(destinationLatLng);
+//                        }
+//                        mRideStatus.setText("Drive Completed");
                         break;
 
                     case 2:
@@ -150,7 +157,6 @@ public class DriverMapActivity extends FragmentActivity implements OnMapReadyCal
                 String deviceId = Settings.Secure.getString(getApplicationContext().getContentResolver(), Settings.Secure.ANDROID_ID);
                 DatabaseReference diverLogout = FirebaseDatabase.getInstance().getReference().child("LoggedIn").child(deviceId);
                 diverLogout.removeValue();
-                isLoggingOut = true;
                 disconnectDriver();
                 FirebaseAuth.getInstance().signOut();
                 Intent intent = new Intent(DriverMapActivity.this, MainActivity.class);
@@ -490,6 +496,7 @@ public class DriverMapActivity extends FragmentActivity implements OnMapReadyCal
 
     private void getHospital() {
         DatabaseReference mCustomerDatabase = FirebaseDatabase.getInstance().getReference().child("Users").child("Drivers").child(driverId).child("customerRequest").child("hospitalFoundId");
+//        DatabaseReference mCustomerDatabase = FirebaseDatabase.getInstance().getReference().child("customerRequest").child(customerId).child("hospitalFoundId");
         mCustomerDatabase.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -522,9 +529,13 @@ public class DriverMapActivity extends FragmentActivity implements OnMapReadyCal
                     }
                     if (map.get(1) != null) {
                         locationLng = Double.parseDouble(map.get(1).toString());
+                        hospitalLatLng = true;
                     }
                     destinationLatLng = new LatLng(locationLat, locationLng);
                     hospitalMarker = mMap.addMarker(new MarkerOptions().position(destinationLatLng).title("Hospital Location").icon(BitmapDescriptorFactory.fromResource(R.mipmap.ghr_pickup)));
+//                    if (hospitalLatLng){
+//                        getRouteToMarker(destinationLatLng);
+//                    }
                 }
             }
 

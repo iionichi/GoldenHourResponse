@@ -2,7 +2,9 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/GoldenHour.iml" filepath="$PROJECT_DIR$/GoldenHour.iml" />
+      <module fileurl="file://$PROJECT_DIR$/GHR11PDBS3.iml" filepath="$PROJECT_DIR$/GHR11PDBS3.iml" />
+      <module fileurl="file://E:\Deep\GoldenHour\GHR11PDBS3.iml" filepath="E:\Deep\GoldenHour\GHR11PDBS3.iml" />
+      <module fileurl="file://E:\Deep2018\GHR11PDBS3\GoldenHour.iml" filepath="E:\Deep2018\GHR11PDBS3\GoldenHour.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
     </modules>
   </component>

@@ -24,12 +24,18 @@ import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.directions.route.AbstractRouting;
+import com.directions.route.Route;
+import com.directions.route.RouteException;
+import com.directions.route.Routing;
+import com.directions.route.RoutingListener;
 import com.firebase.geofire.GeoFire;
 import com.firebase.geofire.GeoLocation;
 import com.firebase.geofire.GeoQuery;
 import com.firebase.geofire.GeoQueryEventListener;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -40,6 +46,8 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.Polyline;
+import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
@@ -48,11 +56,12 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class CustomerMapActivity extends FragmentActivity implements OnMapReadyCallback, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, com.google.android.gms.location.LocationListener {
+public class CustomerMapActivity extends FragmentActivity implements OnMapReadyCallback, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, LocationListener, RoutingListener {
 
     private static final int SEND_SMS_PERMISSION_REQUEST_CODE = 111;
 
@@ -68,11 +77,13 @@ public class CustomerMapActivity extends FragmentActivity implements OnMapReadyC
     private FirebaseAuth mAuth1;
     private String userID1;
 
-    private Button mLogout, mRequest, mSettings,mHospi,mSos,mpolice;
-    private LatLng pickupLocation;
+    private int hospitalToggle = 1;
 
-    private Boolean requestBol = false, addedCustomerToHospital = false;
-    private Marker pickupMarker;
+    private Button mLogout, mRequest, mSettings,mHospi,mSos,mpolice;
+    private LatLng pickupLocation, pickupLocation2, destinationLatLng;
+
+    private Boolean requestBol = false, addedCustomerToHospital = false, onlyHospital = false;
+    private Marker pickupMarker, destinationMarker;
 
     private String requestService, mePhone, msg, userId;
 
@@ -84,10 +95,18 @@ public class CustomerMapActivity extends FragmentActivity implements OnMapReadyC
 
     final int LOCATION_REQUEST_CODE = 1;
 
+    //For adding polylines which marks in the map
+    private List<Polyline> polylines;
+    private static final int[] COLORS = new int[]{R.color.primary_dark_material_light};
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_customer_map);
+
+        polylines = new ArrayList<>();
+
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
@@ -142,7 +161,6 @@ public class CustomerMapActivity extends FragmentActivity implements OnMapReadyC
                     int selectId = mRadioGroup.getCheckedRadioButtonId();
 
                     final RadioButton radioButton = (RadioButton)  findViewById(selectId);
-
                     if(radioButton.getText() == null){
                         return;
                     }
@@ -163,7 +181,6 @@ public class CustomerMapActivity extends FragmentActivity implements OnMapReadyC
                     mRequest.setText("Getting Your Driver");
 
                     getClosestDriver();
-
                 }
             }
         });
@@ -198,7 +215,33 @@ public class CustomerMapActivity extends FragmentActivity implements OnMapReadyC
         mHospi.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                getHospital();
+                switch (hospitalToggle){
+                    case 1:
+                        onlyHospital = true;
+                        mHospi.setText("Finding Hospital");
+                        getHospital();
+                        break;
+                    case 2:
+                        geoQueryH.removeAllListeners();
+                        hospitalFound = false;
+                        erasePolyLines();
+                        if (destinationMarker != null){
+                            destinationMarker.remove();
+                        }
+                        final DatabaseReference hospiRef = FirebaseDatabase.getInstance().getReference().child("customerRequestH").child(userID1);
+                        hospiRef.removeValue();
+                        //Removing the customer Id from hospital table
+                        if (hospitalFoundId != null){
+                            String customerId = FirebaseAuth.getInstance().getCurrentUser().getUid();
+                            DatabaseReference removeCustomerRef = FirebaseDatabase.getInstance().getReference().child("Users").child("Hospital").child(hospitalFoundId).child("customerRequestId").child(customerId);
+                            removeCustomerRef.removeValue();
+                            hospitalFoundId = null;
+                        }
+                        mHospi.setText("Get Hospital");
+                        hospitalToggle = 1;
+                        onlyHospital = false;
+                        break;
+                }
             }
         });
 
@@ -288,6 +331,7 @@ public class CustomerMapActivity extends FragmentActivity implements OnMapReadyC
                                     getDriverLocation();
                                     getDriverInfo();
                                     getHasRideEnded();
+                                    getHospital();
                                     mRequest.setText("Looking For Ambulance Location");
                                 }
                             }
@@ -463,10 +507,12 @@ public class CustomerMapActivity extends FragmentActivity implements OnMapReadyC
             addedCustomerToHospital = false;
             DatabaseReference addCustomerToHospital = FirebaseDatabase.getInstance().getReference().child("Hospital").child(hospitalFoundId).child("customerRequestId");
             addCustomerToHospital.removeValue();
-            driverFoundId = null;
+            hospitalFoundId = null;
         }
+
         driverFound = false;
         radius = 1;
+        radiusH = 1;
 
         String userId = FirebaseAuth.getInstance().getUid();
         DatabaseReference ref = FirebaseDatabase.getInstance().getReference("customerRequest");
@@ -527,7 +573,7 @@ public class CustomerMapActivity extends FragmentActivity implements OnMapReadyC
         mLastLocation = location;
 
         LatLng latLng = new LatLng(location.getLatitude(),location.getLongitude());
-
+        pickupLocation2 = new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude());
         mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
         mMap.animateCamera(CameraUpdateFactory.zoomTo(18)); //value goes from 1 - 21
 
@@ -573,18 +619,17 @@ public class CustomerMapActivity extends FragmentActivity implements OnMapReadyC
     private int radiusH = 1;
     private Boolean hospitalFound = false;
     private String hospitalFoundId;
-
     GeoQuery geoQueryH;
     private void getHospital(){
         DatabaseReference hospitalLocation = FirebaseDatabase.getInstance().getReference().child("Users").child("Hospital");
         GeoFire geoFireH = new GeoFire(hospitalLocation);
-        geoQueryH  = geoFireH.queryAtLocation(new GeoLocation(pickupLocation.latitude, pickupLocation.longitude),radiusH);
+        geoQueryH  = geoFireH.queryAtLocation(new GeoLocation(pickupLocation2.latitude, pickupLocation2.longitude),radiusH);
         geoQueryH.removeAllListeners();
 
         geoQueryH.addGeoQueryEventListener(new GeoQueryEventListener() {
             @Override
             public void onKeyEntered(String key, GeoLocation location) {
-                if (!hospitalFound && requestBol){
+                if (!hospitalFound){
                     DatabaseReference mCustomerDatabase = FirebaseDatabase.getInstance().getReference().child("Users").child("Hospital").child(key);
                     mCustomerDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
                         @Override
@@ -596,17 +641,28 @@ public class CustomerMapActivity extends FragmentActivity implements OnMapReadyC
                                 }
                                 hospitalFound = true;
                                 hospitalFoundId = dataSnapshot.getKey();
-                                DatabaseReference driverRef = FirebaseDatabase.getInstance().getReference().child("Users").child("Drivers").child(driverFoundId).child("customerRequest");
-                                HashMap map1 = new HashMap();
-                                map1.put("hospitalFoundId", hospitalFoundId);
-                                driverRef.updateChildren(map1);
+
+                                if (onlyHospital) {
+                                    DatabaseReference driverRef2 = FirebaseDatabase.getInstance().getReference().child("customerRequestH").child(userID1);
+                                    HashMap map2 = new HashMap();
+                                    map2.put("hospitalFoundId", hospitalFoundId);
+                                    driverRef2.updateChildren(map2);
+                                    getHospitalLocation();
+                                }
+
+                                else {
+                                    DatabaseReference driverRef1 = FirebaseDatabase.getInstance().getReference().child("Users").child("Drivers").child(driverFoundId).child("customerRequest");
+                                    HashMap map1 = new HashMap();
+                                    map1.put("hospitalFoundId", hospitalFoundId);
+                                    driverRef1.updateChildren(map1);
+                                }
 
                                 //Adding customer information to the hospital found
                                 DatabaseReference addCustomerToHospital = FirebaseDatabase.getInstance().getReference().child("Users").child("Hospital").child(hospitalFoundId).child("customerRequestId");
                                 String customerId = FirebaseAuth.getInstance().getCurrentUser().getUid();
-                                HashMap map2 = new HashMap();
-                                map2.put(customerId, customerId);
-                                addCustomerToHospital.updateChildren(map2);
+                                HashMap map3 = new HashMap();
+                                map3.put(customerId, customerId);
+                                addCustomerToHospital.updateChildren(map3);
                                 addedCustomerToHospital = true;
                             }
                         }
@@ -638,5 +694,113 @@ public class CustomerMapActivity extends FragmentActivity implements OnMapReadyC
             public void onGeoQueryError(DatabaseError error) {
             }
         });
+    }
+
+    private void getHospitalLocation(){
+        DatabaseReference findHospital = FirebaseDatabase.getInstance().getReference().child("customerRequestH").child(userID1);
+        findHospital.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists()){
+                    Map<String, Object> newMap = (Map<String, Object>) dataSnapshot.getValue();
+                    if (newMap.get("hospitalFoundId") != null){
+                        final String hosId = newMap.get("hospitalFoundId").toString();
+                        DatabaseReference hospitalLocation = FirebaseDatabase.getInstance().getReference().child("Users").child("Hospital").child(hosId).child("l");
+                        hospitalLocation.addValueEventListener(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(DataSnapshot dataSnapshot) {
+                                if (dataSnapshot.exists()){
+                                    if (dataSnapshot.exists() && !hosId.equals("")) {
+                                        List<Object> map = (List<Object>) dataSnapshot.getValue();
+                                        double locationLat = 0;
+                                        double locationLng = 0;
+                                        if (map.get(0) != null) {
+                                            locationLat = Double.parseDouble(map.get(0).toString());
+                                        }
+                                        if (map.get(1) != null) {
+                                            locationLng = Double.parseDouble(map.get(1).toString());
+                                        }
+                                        destinationLatLng = new LatLng(locationLat, locationLng);
+                                        destinationMarker = mMap.addMarker(new MarkerOptions().position(destinationLatLng).title("Hospital Location").icon(BitmapDescriptorFactory.fromResource(R.mipmap.ghr_pickup)));
+                                        getRouteToHospital(destinationLatLng);
+                                        hospitalToggle = 2;
+                                    }
+                                }
+                            }
+
+                            @Override
+                            public void onCancelled(DatabaseError databaseError) {
+
+                            }
+                        });
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+    }
+
+    private void getRouteToHospital(LatLng destinationLatLng) {
+        Routing routing = new Routing.Builder()
+                .travelMode(AbstractRouting.TravelMode.DRIVING)
+                .withListener(this)
+                .alternativeRoutes(false)
+                .waypoints(new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude()), destinationLatLng)
+                .build();
+        routing.execute();
+    }
+
+    @Override
+    public void onRoutingFailure(RouteException e) {
+        if(e != null) {
+            Toast.makeText(this, "Error: " + e.getMessage(), Toast.LENGTH_LONG).show();
+        }else {
+            Toast.makeText(this, "Something went wrong, Try again", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    @Override
+    public void onRoutingStart() {
+    }
+
+    @Override
+    public void onRoutingSuccess(ArrayList<Route> route, int shortestRouteIndex) {
+        if(polylines.size()>0) {
+            for (Polyline poly : polylines) {
+                poly.remove();
+            }
+        }
+
+        polylines = new ArrayList<>();
+        //add route(s) to the map.
+        for (int i = 0; i <route.size(); i++) {
+
+            //In case of more than 5 alternative routes
+            int colorIndex = i % COLORS.length;
+
+            PolylineOptions polyOptions = new PolylineOptions();
+            polyOptions.color(getResources().getColor(COLORS[colorIndex]));
+            polyOptions.width(10 + i * 3);
+            polyOptions.addAll(route.get(i).getPoints());
+            Polyline polyline = mMap.addPolyline(polyOptions);
+            polylines.add(polyline);
+
+            Toast.makeText(getApplicationContext(),"Route "+ (i+1) +": distance - "+ route.get(i).getDistanceValue()+": duration - "+ route.get(i).getDurationValue(),Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    @Override
+    public void onRoutingCancelled() {
+    }
+
+    private void erasePolyLines(){
+        for (Polyline line : polylines){
+            line.remove();
+        }
+        polylines.clear();
     }
 }

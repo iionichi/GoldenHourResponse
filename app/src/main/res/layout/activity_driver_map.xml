@@ -32,7 +32,7 @@
                 android:text="Settings"/>
 
             <Button
-                android:id="@+id/hospitalid"
+                android:id="@+id/checkHospital"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"

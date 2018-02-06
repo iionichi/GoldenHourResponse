@@ -99,7 +99,7 @@ public class HospitalLoginActivity extends AppCompatActivity {
                             }
                             else {
                                 String userId = mAuth.getCurrentUser().getUid();
-                                addHospitalrLogin(userId);//For adding the customer logged in.
+                                addHospitalLogin(userId);
                             }
                         }
                     });
@@ -119,12 +119,12 @@ public class HospitalLoginActivity extends AppCompatActivity {
         super.onStop();
         mAuth.removeAuthStateListener(firebaseAuthListener);
     }
-    private void addHospitalrLogin(String userId){
-        String DeviceID = Settings.Secure.getString(getApplicationContext().getContentResolver(), Settings.Secure.ANDROID_ID);
-        DatabaseReference device = FirebaseDatabase.getInstance().getReference().child("LoggedIn").child(DeviceID);
+    private void addHospitalLogin(String userId){
+        String deviceId = Settings.Secure.getString(getApplicationContext().getContentResolver(), Settings.Secure.ANDROID_ID);
+        DatabaseReference addHospital = FirebaseDatabase.getInstance().getReference().child("LoggedIn").child(deviceId);
         Map userInfo = new HashMap();
         userInfo.put("Type","Hospital");
-        userInfo.put("Id", userId);
-        device.updateChildren(userInfo);
+        userInfo.put("Id",userId);
+        addHospital.updateChildren(userInfo);
     }
 }

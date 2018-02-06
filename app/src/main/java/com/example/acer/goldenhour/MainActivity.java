@@ -25,7 +25,8 @@ public class MainActivity extends AppCompatActivity {
 
 
 
-    private String userType;
+    private String userType,type;
+    private Button mNext;
 
     private FirebaseAuth mAuth;
     private FirebaseAuth.AuthStateListener firebaseAuthListener;
@@ -34,7 +35,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
+        mNext = (Button) findViewById(R.id.next);
         Spinner Role = (Spinner) findViewById(R.id.role);
 
         ArrayAdapter<String> myAdapter = new ArrayAdapter<String>(MainActivity.this, android.R.layout.simple_list_item_1, getResources().getStringArray(R.array.role));
@@ -49,25 +50,23 @@ public class MainActivity extends AppCompatActivity {
         Role.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                if (position == 1){
-                    Intent intent = new Intent(MainActivity.this, CustomerLoginActivity.class);
-                    startActivity(intent);
-                    finish();
-                    return;
+                if (position == 0){
+
+                    type="customer";
+
+
+                }
+
+                else if (position==1){
+
+                    type="driver";
+
                 }
 
                 else if (position==2){
-                    Intent intent = new Intent(MainActivity.this, DriverLoginActivity.class);
-                    startActivity(intent);
-                    finish();
-                    return;
-                }
 
-                else if (position==3){
-                    Intent intent = new Intent(MainActivity.this, HospitalLoginActivity.class);
-                    startActivity(intent);
-                    finish();
-                    return;
+                    type="hospital";
+
                 }
             }
 
@@ -79,6 +78,33 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+
+        mNext.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (type == "customer"){
+                    Intent intent = new Intent(MainActivity.this, CustomerLoginActivity.class);
+                    startActivity(intent);
+                    finish();
+                    return;
+
+                }
+
+                else if(type == "driver") {
+                    Intent intent = new Intent(MainActivity.this, DriverLoginActivity.class);
+                    startActivity(intent);
+                    finish();
+                    return;
+                }
+
+                else if (type == "hospital"){
+                    Intent intent = new Intent(MainActivity.this, HospitalLoginActivity.class);
+                    startActivity(intent);
+                    finish();
+                    return;
+                }
+            }
+        });
 
 
         mAuth = FirebaseAuth.getInstance();

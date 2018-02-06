@@ -6,7 +6,7 @@
 
 
     <string-array name="role">
-        <item>Please Tell Us Who You Are</item>
+
         <item>Customer</item>
         <item>Driver</item>
         <item>Hospital</item>

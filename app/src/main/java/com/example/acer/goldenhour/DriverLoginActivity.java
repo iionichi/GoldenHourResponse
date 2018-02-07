@@ -63,7 +63,7 @@ public class DriverLoginActivity extends AppCompatActivity {
 
                 Intent intent = new Intent(DriverLoginActivity.this, DriverRegisterActivity.class);
                 startActivity(intent);
-                finish();
+
                 return;
 //                final String email = mEmail.getText().toString();
 //                final String password = mPassword.getText().toString();

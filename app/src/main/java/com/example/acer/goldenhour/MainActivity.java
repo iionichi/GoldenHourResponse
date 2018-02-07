@@ -85,7 +85,7 @@ public class MainActivity extends AppCompatActivity {
                 if (type == "customer"){
                     Intent intent = new Intent(MainActivity.this, CustomerLoginActivity.class);
                     startActivity(intent);
-                    finish();
+
                     return;
 
                 }
@@ -93,14 +93,14 @@ public class MainActivity extends AppCompatActivity {
                 else if(type == "driver") {
                     Intent intent = new Intent(MainActivity.this, DriverLoginActivity.class);
                     startActivity(intent);
-                    finish();
+
                     return;
                 }
 
                 else if (type == "hospital"){
                     Intent intent = new Intent(MainActivity.this, HospitalLoginActivity.class);
                     startActivity(intent);
-                    finish();
+
                     return;
                 }
             }

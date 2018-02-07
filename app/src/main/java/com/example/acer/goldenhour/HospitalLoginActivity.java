@@ -62,7 +62,7 @@ public class HospitalLoginActivity extends AppCompatActivity {
 
                 Intent intent = new Intent(HospitalLoginActivity.this, HospitalRegisterActivity.class);
                 startActivity(intent);
-                finish();
+
                 return;
 //                final String email = mEmail.getText().toString();
 //                final String password = mPassword.getText().toString();

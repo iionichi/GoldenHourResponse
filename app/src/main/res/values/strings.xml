@@ -10,5 +10,6 @@
         <item>Customer</item>
         <item>Driver</item>
         <item>Hospital</item>
+        <item>Unregistered</item>
     </string-array>
 </resources>

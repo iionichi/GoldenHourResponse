@@ -11,6 +11,9 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.Spinner;
 
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -42,9 +45,6 @@ public class MainActivity extends AppCompatActivity {
         myAdapter.setDropDownViewResource(android.R.layout.simple_dropdown_item_1line);
         Role.setAdapter(myAdapter);
 
-
-
-
         startService(new Intent(MainActivity.this, onAppKilled.class));
 
         Role.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -68,9 +68,13 @@ public class MainActivity extends AppCompatActivity {
                     type="hospital";
 
                 }
+
+                else if (position==3){
+
+                    type="unregistered";
+
+                }
             }
-
-
 
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
@@ -85,7 +89,6 @@ public class MainActivity extends AppCompatActivity {
                 if (type == "customer"){
                     Intent intent = new Intent(MainActivity.this, CustomerLoginActivity.class);
                     startActivity(intent);
-                    finish();
                     return;
 
                 }
@@ -93,15 +96,26 @@ public class MainActivity extends AppCompatActivity {
                 else if(type == "driver") {
                     Intent intent = new Intent(MainActivity.this, DriverLoginActivity.class);
                     startActivity(intent);
-                    finish();
                     return;
                 }
 
                 else if (type == "hospital"){
                     Intent intent = new Intent(MainActivity.this, HospitalLoginActivity.class);
                     startActivity(intent);
-                    finish();
                     return;
+                }
+
+                else if (type == "unregistered"){
+                    Task<AuthResult> resultTask = mAuth.signInAnonymously();
+                    resultTask.addOnSuccessListener(new OnSuccessListener<AuthResult>() {
+                        @Override
+                        public void onSuccess(AuthResult authResult) {
+                            Intent intent = new Intent(MainActivity.this, StrangerActivity.class);
+                            startActivity(intent);
+                            finish();
+                            return;
+                        }
+                    });
                 }
             }
         });
@@ -112,7 +126,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
                 final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-                if (user != null){
+                if (user != null && type != "unregistered"){
                     String deviceId = Settings.Secure.getString(getApplicationContext().getContentResolver(), Settings.Secure.ANDROID_ID);
                     DatabaseReference checkLoggedIn =  FirebaseDatabase.getInstance().getReference().child("LoggedIn").child(deviceId);
                     checkLoggedIn.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -148,6 +162,9 @@ public class MainActivity extends AppCompatActivity {
 
                         }
                     });
+                }
+                else {
+
                 }
             }
         };

@@ -24,7 +24,7 @@
             android:name=".onAppKilled"
             android:stopWithTask="false" />
 
-        <activity android:name=".MainActivity"></activity>
+        <activity android:name=".MainActivity" />
         <activity android:name=".DriverLoginActivity" />
         <activity android:name=".CustomerLoginActivity" />
         <!--
@@ -55,7 +55,8 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".DriverRegisterActivity"></activity>
+        <activity android:name=".DriverRegisterActivity" />
+        <activity android:name=".StrangerActivity"></activity>
     </application>
 
 </manifest>

@@ -110,7 +110,8 @@ public class MainActivity extends AppCompatActivity {
                     resultTask.addOnSuccessListener(new OnSuccessListener<AuthResult>() {
                         @Override
                         public void onSuccess(AuthResult authResult) {
-                            Intent intent = new Intent(MainActivity.this, StrangerActivity.class);
+
+                            Intent intent = new Intent(MainActivity.this, StrangerMapActivity.class);
                             startActivity(intent);
                             finish();
                             return;

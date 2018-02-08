@@ -56,7 +56,9 @@
             </intent-filter>
         </activity>
         <activity android:name=".DriverRegisterActivity" />
-        <activity android:name=".StrangerActivity"></activity>
+        <activity
+            android:name=".StrangerMapActivity"
+            android:label="@string/title_activity_stranger_map"></activity>
     </application>
 
 </manifest>

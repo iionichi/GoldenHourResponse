@@ -13,7 +13,7 @@
         android:id="@+id/name"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_above="@+id/phone"
+        android:layout_above="@+id/phoneEditText"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
         android:layout_marginBottom="22dp"
@@ -22,7 +22,7 @@
         android:inputType="text" />
 
     <EditText
-        android:id="@+id/phone"
+        android:id="@+id/phoneEditText"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_above="@+id/ephone"

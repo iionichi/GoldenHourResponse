@@ -21,8 +21,6 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
-import org.w3c.dom.Text;
-
 import java.util.HashMap;
 import java.util.Map;
 
@@ -64,7 +62,7 @@ public class DriverRegisterActivity extends AppCompatActivity {
         mEmail = (EditText) findViewById(R.id.email);
         mPassword = (EditText) findViewById(R.id.password);
         mNameField = (EditText) findViewById(R.id.name);
-        mPhoneField = (EditText) findViewById(R.id.phone);
+        mPhoneField = (EditText) findViewById(R.id.phoneEditText);
         mAmbulanceField = (EditText) findViewById(R.id.ambulance);
         mAmbulanceNumberField = (EditText) findViewById(R.id.ambulance_number);
 

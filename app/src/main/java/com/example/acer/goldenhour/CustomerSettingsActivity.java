@@ -6,7 +6,6 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 
-import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -39,7 +38,7 @@ public class CustomerSettingsActivity extends AppCompatActivity {
         setContentView(R.layout.activity_customer_settings);
 
         mNameField = (EditText) findViewById(R.id.name);
-        mPhoneField = (EditText) findViewById(R.id.phone);
+        mPhoneField = (EditText) findViewById(R.id.phoneEditText);
         mePhoneField = (EditText) findViewById(R.id.ephone);
         mMedicompanyField = findViewById(R.id.medicompany);
         mMedinoField = findViewById(R.id.medino);

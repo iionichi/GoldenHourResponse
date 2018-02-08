@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:id="@+id/db"
+    android:title="Dashboard"
+    android:icon="@drawable/ic_dashboard_black_24dp" />
+    <item android:id="@+id/get_ambulance"
+        android:title="Get Ambulance"
+        android:icon="@drawable/ambulance"/>
+    <item android:id="@+id/get_hospital"
+        android:title="Get Hospital"
+        android:icon="@drawable/ic_get_hospital_black_24dp"/>
+    <item android:id="@+id/call_police"
+        android:title="Call Police"
+        android:icon="@drawable/download"/>
+    <item android:id="@+id/sos"
+        android:title="SOS"
+        android:icon="@drawable/sos_circle"/>
+    <item android:id="@+id/profile_settings"
+        android:title="Settings"
+        android:icon="@drawable/ic_settings_black_24dp"/>
+    <item android:id="@+id/Log_out"
+        android:title="Logout"
+        android:icon="@drawable/logout_clipart"/>
+</menu>
+

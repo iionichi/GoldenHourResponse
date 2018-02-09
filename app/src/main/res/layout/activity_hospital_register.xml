@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="@drawable/three"
+    android:background="@drawable/wallpaper_five"
     tools:context="com.example.acer.goldenhour.DriverLoginActivity">
 
     <EditText
@@ -15,7 +15,9 @@
         android:layout_above="@+id/password"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
-        android:layout_marginBottom="39dp"
+        android:textColor="@color/colorBlack"
+        android:textColorHint="@color/colorBlack"
+        android:layout_marginBottom="40dp"
         android:hint="E - mail" />
 
     <EditText
@@ -25,7 +27,9 @@
         android:layout_above="@+id/etLocationLat"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
-        android:layout_marginBottom="52dp"
+        android:layout_marginBottom="40dp"
+        android:textColorHint="@color/colorBlack"
+        android:textColor="@color/colorBlack"
         android:hint="Password" />
 
     <EditText
@@ -35,6 +39,8 @@
         android:layout_above="@+id/etLocationLong"
         android:layout_centerHorizontal="true"
         android:layout_marginBottom="25dp"
+        android:textColor="@color/colorBlack"
+        android:textColorHint="@color/colorBlack"
         android:ems="10"
         android:hint="Latitude"
         android:inputType="textPersonName" />
@@ -46,7 +52,9 @@
         android:layout_above="@+id/registration"
         android:layout_alignLeft="@+id/etLocationLat"
         android:layout_alignStart="@+id/etLocationLat"
-        android:layout_marginBottom="37dp"
+        android:layout_marginBottom="25dp"
+        android:textColorHint="@color/colorBlack"
+        android:textColor="@color/colorBlack"
         android:ems="10"
         android:hint="Longitude"
         android:inputType="textPersonName" />

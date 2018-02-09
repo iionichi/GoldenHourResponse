@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="@drawable/three"
+    android:background="@drawable/wallpaper_five"
     android:id="@+id/addTextView"
     tools:context="com.example.acer.goldenhour.DriverLoginActivity">
 

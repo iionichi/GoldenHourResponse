@@ -76,7 +76,7 @@ public class StrangerMapActivity extends FragmentActivity implements OnMapReadyC
     private LatLng pickupLocation, destinationLatLng, pickupLocation2;
 
 
-    private String requestService, userId,user;
+    private String requestService, userId;
 
     private int hospitalToggle = 1;
 

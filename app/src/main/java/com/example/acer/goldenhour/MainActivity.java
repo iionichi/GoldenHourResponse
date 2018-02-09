@@ -81,18 +81,21 @@ public class MainActivity extends AppCompatActivity {
                 if (type == "customer"){
                     Intent intent = new Intent(MainActivity.this, CustomerLoginActivity.class);
                     startActivity(intent);
+
                     return;
                 }
 
                 else if(type == "driver") {
                     Intent intent = new Intent(MainActivity.this, DriverLoginActivity.class);
                     startActivity(intent);
+
                     return;
                 }
 
                 else if (type == "hospital"){
                     Intent intent = new Intent(MainActivity.this, HospitalLoginActivity.class);
                     startActivity(intent);
+
                     return;
                 }
 
@@ -149,7 +152,7 @@ public class MainActivity extends AppCompatActivity {
                                 userType = map.get("Type").toString();
 
                                 if (userType.equals("Customers")){
-                                    Intent intentC = new Intent(MainActivity.this,CustomerMapActivity.class);
+                                    Intent intentC = new Intent(MainActivity.this,CustomerMainActivity.class);
                                     startActivity(intentC);
                                     finish();
                                     return;

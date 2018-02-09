@@ -26,7 +26,6 @@ public class DriverLoginActivity extends AppCompatActivity {
 
     private EditText mEmail,mPassword;
     private Button mLogin,mRegistration;
-
     private FirebaseAuth mAuth;
     private FirebaseAuth.AuthStateListener firebaseAuthListener;
 
@@ -63,7 +62,7 @@ public class DriverLoginActivity extends AppCompatActivity {
 
                 Intent intent = new Intent(DriverLoginActivity.this, DriverRegisterActivity.class);
                 startActivity(intent);
-                finish();
+
                 return;
 //                final String email = mEmail.getText().toString();
 //                final String password = mPassword.getText().toString();

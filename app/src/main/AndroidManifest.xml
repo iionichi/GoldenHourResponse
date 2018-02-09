@@ -57,7 +57,6 @@
         </activity>
         <activity android:name=".DriverRegisterActivity" />
         <activity android:name=".CustomerMainActivity" />
-        <activity android:name=".DriverMainActivity"></activity>
     </application>
 
 </manifest>

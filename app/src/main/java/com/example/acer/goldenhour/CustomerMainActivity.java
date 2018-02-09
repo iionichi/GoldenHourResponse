@@ -89,8 +89,8 @@ public class CustomerMainActivity extends AppCompatActivity implements Navigatio
                 break;
 
             case R.id.db:
-                Intent intent2 = new Intent(CustomerMainActivity.this, CustomerMainActivity.class);
-                startActivity(intent2);
+//                Intent intent2 = new Intent(CustomerMainActivity.this, CustomerMainActivity.class);
+//                startActivity(intent2);
                 break;
 
 

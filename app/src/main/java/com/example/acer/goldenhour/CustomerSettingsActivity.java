@@ -126,8 +126,8 @@ public class CustomerSettingsActivity extends AppCompatActivity implements Navig
 
         switch (id){
             case R.id.profile_settings:
-                Intent intent = new Intent(CustomerSettingsActivity.this, CustomerSettingsActivity.class);
-                startActivity(intent);
+//                Intent intent = new Intent(CustomerSettingsActivity.this, CustomerSettingsActivity.class);
+//                startActivity(intent);
                 break;
 
             case R.id.get_ambulance:

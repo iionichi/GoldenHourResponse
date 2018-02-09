@@ -2,6 +2,7 @@ package com.example.acer.goldenhour;
 
 import android.*;
 import android.Manifest;
+import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
@@ -9,12 +10,16 @@ import android.net.Uri;
 import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.NavigationView;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.telephony.SmsManager;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -61,7 +66,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class CustomerMapActivity extends FragmentActivity implements OnMapReadyCallback, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, LocationListener, RoutingListener {
+public class CustomerMapActivity extends AppCompatActivity implements OnMapReadyCallback, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, LocationListener, RoutingListener, NavigationView.OnNavigationItemSelectedListener{
 
     private static final int SEND_SMS_PERMISSION_REQUEST_CODE = 111;
 
@@ -72,20 +77,20 @@ public class CustomerMapActivity extends FragmentActivity implements OnMapReadyC
 
     SupportMapFragment mapFragment;
 
-    private DatabaseReference mCustomerDatabase1;
+
 
     private FirebaseAuth mAuth1;
     private String userID1;
 
     private int hospitalToggle = 1;
 
-    private Button mLogout, mRequest, mSettings,mHospi,mSos,mpolice;
+    private Button mRequest,mHospi;
     private LatLng pickupLocation, pickupLocation2, destinationLatLng;
 
     private Boolean requestBol = false, addedCustomerToHospital = false, onlyHospital = false;
     private Marker pickupMarker, destinationMarker;
 
-    private String requestService, mePhone, msg, userId;
+    private String requestService, userId, mePhone, msg;
 
     private LinearLayout mDriverInfo;
     private ImageView mDriverProfileImage;
@@ -94,6 +99,11 @@ public class CustomerMapActivity extends FragmentActivity implements OnMapReadyC
     private RadioGroup mRadioGroup;
 
     final int LOCATION_REQUEST_CODE = 1;
+
+    private DrawerLayout mDrawerLayout;
+    private ActionBarDrawerToggle mToggle;
+    private NavigationView mNavigationView;
+    private DatabaseReference mCustomerDatabase1;
 
     //For adding polylines which marks in the map
     private List<Polyline> polylines;
@@ -104,6 +114,12 @@ public class CustomerMapActivity extends FragmentActivity implements OnMapReadyC
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_customer_map);
+
+        mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer);
+        mToggle = new ActionBarDrawerToggle(this,mDrawerLayout,R.string.open,R.string.close);
+        mDrawerLayout.addDrawerListener(mToggle);
+        mToggle.syncState();
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         polylines = new ArrayList<>();
 
@@ -130,27 +146,21 @@ public class CustomerMapActivity extends FragmentActivity implements OnMapReadyC
         mRadioGroup = (RadioGroup) findViewById(R.id.radioGroup);
         mRadioGroup.check(R.id.normalAmbulance);
 
-        mLogout = findViewById(R.id.logout);
+
         mRequest = findViewById(R.id.request);
-        mSettings = findViewById(R.id.settings);
+
         mHospi = findViewById(R.id.hospi);
-        mSos = findViewById(R.id.sos);
-        mpolice = findViewById(R.id.police);
+
 
         mAuth1 = FirebaseAuth.getInstance();
         userID1 = mAuth1.getCurrentUser().getUid();
-        mCustomerDatabase1 = FirebaseDatabase.getInstance().getReference().child("Users").child("Customers").child(userID1);
+        mNavigationView = findViewById(R.id.nv);
 
-        mLogout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                FirebaseAuth.getInstance().signOut();
-                Intent intent = new Intent(CustomerMapActivity.this, MainActivity.class);
-                startActivity(intent);
-                finish();
-                return;
-            }
-        });
+        if (mNavigationView != null){
+            mNavigationView.setNavigationItemSelectedListener(this);
+        }
+
+
         mRequest.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -184,33 +194,10 @@ public class CustomerMapActivity extends FragmentActivity implements OnMapReadyC
                 }
             }
         });
-        mSettings.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(CustomerMapActivity.this, CustomerSettingsActivity.class);
-                startActivity(intent);
-                return;
-            }
-        });
 
 
-        mpolice.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                final int REQUEST_PHONE_CALL = 1;
-                Intent callIntent = new Intent(Intent.ACTION_CALL);
-                callIntent.setData(Uri.parse("tel:100"));
 
-                if(android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M){
-                    if(ContextCompat.checkSelfPermission(CustomerMapActivity.this,Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED){
-                        ActivityCompat.requestPermissions(CustomerMapActivity.this, new String[]{Manifest.permission.CALL_PHONE}, REQUEST_PHONE_CALL);
-                    }
-                    else {
-                        startActivity(callIntent);
-                    }
-                }
-            }
-        });
+
 
         mHospi.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -245,9 +232,57 @@ public class CustomerMapActivity extends FragmentActivity implements OnMapReadyC
             }
         });
 
-        mSos.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (mToggle.onOptionsItemSelected(item)) {
+
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+
+    @Override
+    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+        int id = item.getItemId();
+
+        switch (id){
+            case R.id.profile_settings:
+                Intent intent = new Intent(CustomerMapActivity.this, CustomerSettingsActivity.class);
+                startActivity(intent);
+                break;
+
+            case R.id.get_ambulance:
+                Intent intent1 = new Intent(CustomerMapActivity.this, CustomerMapActivity.class);
+                startActivity(intent1);
+                break;
+
+            case R.id.db:
+                Intent intent2 = new Intent(CustomerMapActivity.this, CustomerMainActivity.class);
+                startActivity(intent2);
+                break;
+
+
+            case R.id.call_police:
+                final int REQUEST_PHONE_CALL = 1;
+                Intent callIntent = new Intent(Intent.ACTION_CALL);
+                callIntent.setData(Uri.parse("tel:100"));
+
+                if(android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M){
+                    if(ContextCompat.checkSelfPermission(CustomerMapActivity.this, android.Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED){
+                        ActivityCompat.requestPermissions(CustomerMapActivity.this, new String[]{Manifest.permission.CALL_PHONE}, REQUEST_PHONE_CALL);
+                    }
+                    else {
+                        startActivity(callIntent);
+                    }
+                }
+                break;
+
+
+            case R.id.sos:
                 mCustomerDatabase1.addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
@@ -265,16 +300,32 @@ public class CustomerMapActivity extends FragmentActivity implements OnMapReadyC
                             smsManager.sendTextMessage(mePhone, null, msg, null, null);
                         } else {
                             Toast.makeText(CustomerMapActivity.this, "Permission denied", Toast.LENGTH_SHORT).show();
-                        }                    }
+                        }
+
+
+                    }
 
                     @Override
                     public void onCancelled(DatabaseError databaseError) {
 
                     }
                 });
+                break;
 
-            }
-        });
+
+
+            case R.id.Log_out:
+                FirebaseAuth.getInstance().signOut();
+                Intent intent6 = new Intent(CustomerMapActivity.this, MainActivity.class);
+                startActivity(intent6);
+                finish();
+                break;
+
+
+
+
+        }
+        return true;
     }
 
     private Boolean checkPermission(String permission) {
@@ -287,11 +338,15 @@ public class CustomerMapActivity extends FragmentActivity implements OnMapReadyC
         switch (requestCode) {
             case SEND_SMS_PERMISSION_REQUEST_CODE:
                 if(grantResults.length > 0 && (grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
-                    mSos.setEnabled(true);
+
                 }
                 break;
         }
     }
+
+
+
+
 
     private int radius = 1;
     private Boolean driverFound = false;

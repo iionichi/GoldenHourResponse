@@ -59,6 +59,7 @@
         <activity
             android:name=".StrangerMapActivity"
             android:label="@string/title_activity_stranger_map"></activity>
+        <activity android:name=".CustomerMainActivity" />
     </application>
 
 </manifest>

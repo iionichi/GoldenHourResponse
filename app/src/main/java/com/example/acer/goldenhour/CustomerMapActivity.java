@@ -256,8 +256,8 @@ public class CustomerMapActivity extends AppCompatActivity implements OnMapReady
                 break;
 
             case R.id.get_ambulance:
-                Intent intent1 = new Intent(CustomerMapActivity.this, CustomerMapActivity.class);
-                startActivity(intent1);
+//                Intent intent1 = new Intent(CustomerMapActivity.this, CustomerMapActivity.class);
+//                startActivity(intent1);
                 break;
 
             case R.id.db:

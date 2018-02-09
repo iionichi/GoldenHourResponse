@@ -1,6 +1,5 @@
 package com.example.acer.goldenhour;
 
-import android.*;
 import android.Manifest;
 import android.app.Activity;
 import android.content.Intent;
@@ -54,7 +53,6 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;

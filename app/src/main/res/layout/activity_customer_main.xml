@@ -8,7 +8,7 @@
     tools:context="com.example.acer.goldenhour.CustomerMainActivity">
 
     <LinearLayout
-        android:background="@drawable/wallpaper_five"
+        android:background="@drawable/three"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 

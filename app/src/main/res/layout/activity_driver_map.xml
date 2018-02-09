@@ -22,8 +22,6 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:id="@+id/logout"
-                android:background="@color/LightBlack"
-                android:textColor="@color/colorWhite"
                 android:text="Logout"/>
             <Button
                 android:layout_weight="1"
@@ -31,8 +29,6 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:id="@+id/settings"
-                android:background="@color/LightBlack"
-                android:textColor="@color/colorWhite"
                 android:text="Settings"/>
 
             <Button
@@ -40,17 +36,13 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:textColor="@color/colorWhite"
-                android:background="@color/LightBlack"
                 android:text="Button" />
 
         </LinearLayout>
         <Switch
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textStyle="bold"
             android:text="Working"
-            android:textColor="@color/LightBlack"
             android:layout_margin="10dp"
             android:id="@+id/workingSwitch"/>
 
@@ -98,8 +90,6 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:text="Picked Customer"
-            android:background="@color/LightBlack"
-            android:textColor="@color/colorWhite"
             android:id="@+id/rideStatus"/>
     </LinearLayout>
 

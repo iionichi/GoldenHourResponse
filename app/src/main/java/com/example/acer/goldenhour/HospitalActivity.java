@@ -1,8 +1,15 @@
 package com.example.acer.goldenhour;
 
+import android.content.Intent;
+import android.provider.Settings;
+import android.support.annotation.NonNull;
+import android.support.design.widget.NavigationView;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.Gravity;
+import android.view.MenuItem;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.LinearLayout;
@@ -20,7 +27,13 @@ import com.google.firebase.database.ValueEventListener;
 import java.util.ArrayList;
 import java.util.Map;
 
-public class HospitalActivity extends AppCompatActivity {
+public class HospitalActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
+
+
+
+    private DrawerLayout mDrawerLayoutHospital;
+    private ActionBarDrawerToggle mToggleHospital;
+    private NavigationView mNavigationView;
 
     private String hospitalId, userId;
 
@@ -33,6 +46,18 @@ public class HospitalActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_hospital);
+
+        mDrawerLayoutHospital = (DrawerLayout) findViewById(R.id.drawerSaur);
+        mToggleHospital = new ActionBarDrawerToggle(this,mDrawerLayoutHospital,R.string.open,R.string.close);
+        mDrawerLayoutHospital.addDrawerListener(mToggleHospital);
+        mToggleHospital.syncState();
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+        mNavigationView = findViewById(R.id.nv2);
+
+        if (mNavigationView != null){
+            mNavigationView.setNavigationItemSelectedListener(this);
+        }
 
         //mtext = findViewById(R.id.hospitalText);
         mUserList = findViewById(R.id.customerNameList);
@@ -115,5 +140,46 @@ public class HospitalActivity extends AppCompatActivity {
 //            textView.setText("Textview: "+userId);                                    //adding text
 //            linearLayout.addView(textView);                                     //inflating :)
 //        }
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item_driver) {
+        if (mToggleHospital.onOptionsItemSelected(item_driver)) {
+            return true;
+        }
+        return super.onOptionsItemSelected(item_driver);
+    }
+
+
+    @Override
+    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+        int id = item.getItemId();
+
+        switch (id){
+            case R.id.dashboard:
+//                Intent intent = new Intent(HospitalActivity.this, HospitalActivity.class);
+//                startActivity(intent);
+                break;
+
+            case R.id.profile_settings_hospital:
+                Intent intent = new Intent(HospitalActivity.this, HospitalSettingsActivity.class);
+                startActivity(intent);
+
+                break;
+
+            case R.id.Log_out_H:
+
+                String deviceId = Settings.Secure.getString(getApplicationContext().getContentResolver(), Settings.Secure.ANDROID_ID);
+                DatabaseReference HospiLogout = FirebaseDatabase.getInstance().getReference().child("LoggedIn").child(deviceId);
+                HospiLogout.removeValue();
+                FirebaseAuth.getInstance().signOut();
+                Intent intent6 = new Intent(HospitalActivity.this, MainActivity.class);
+                startActivity(intent6);
+                finish();
+                break;
+
+
+        }
+        return true;
     }
 }

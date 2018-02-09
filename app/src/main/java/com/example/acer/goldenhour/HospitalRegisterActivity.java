@@ -39,7 +39,7 @@ public class HospitalRegisterActivity extends AppCompatActivity {
     Location mLastLocation;
     LocationRequest mLocationRequest;
 
-    private EditText mEmail, mPassword;
+    private EditText mEmail, mPassword,mName,mPhone,mAddress;
     private Button mRegistration;
 
     private FirebaseAuth mAuth;
@@ -78,6 +78,9 @@ public class HospitalRegisterActivity extends AppCompatActivity {
         };
         mEmail = (EditText) findViewById(R.id.email);
         mPassword = (EditText) findViewById(R.id.password);
+        mName = (EditText) findViewById(R.id.name);
+        mAddress = (EditText) findViewById(R.id.address);
+        mPhone = (EditText) findViewById(R.id.phone);
 
         mRegistration = (Button) findViewById(R.id.registration);
 
@@ -86,7 +89,10 @@ public class HospitalRegisterActivity extends AppCompatActivity {
             public void onClick(View view) {
                 final String email = mEmail.getText().toString();
                 final String password = mPassword.getText().toString();
-                if (TextUtils.isEmpty(email) || TextUtils.isEmpty(password)) {
+                final String name = mName.getText().toString();
+                final String address = mAddress.getText().toString();
+                final String phone = mPhone.getText().toString();
+                if (TextUtils.isEmpty(email) || TextUtils.isEmpty(password) || TextUtils.isEmpty(name) || TextUtils.isEmpty(address) || TextUtils.isEmpty(phone) ) {
                     Toast.makeText(HospitalRegisterActivity.this, "Please Fill All The Fields", Toast.LENGTH_SHORT).show();
                 } else {
                     mAuth.createUserWithEmailAndPassword(email, password).addOnCompleteListener(HospitalRegisterActivity.this, new OnCompleteListener<AuthResult>() {
@@ -97,20 +103,26 @@ public class HospitalRegisterActivity extends AppCompatActivity {
                             } else {
                                 String userId = mAuth.getCurrentUser().getUid();
                                 addHospitalLogin(userId);
-//                            DatabaseReference currentUserDB = FirebaseDatabase.getInstance().getReference().child("Users").child("Hospital").child(userId);
-//                            currentUserDB.setValue(true);
-//                            Map locationInfo = new HashMap();
-//                            locationInfo.put("Longitude", longitude);
-//                            locationInfo.put("Latitude", latitude);
-//                            currentUserDB.updateChildren(locationInfo);
+//
+
+
 
                                 DatabaseReference refHospital = FirebaseDatabase.getInstance().getReference().child("Users").child("Hospital");
+
                                 GeoFire geoFireHospital = new GeoFire(refHospital);
                                 geoFireHospital.setLocation(userId, new GeoLocation(latitude, longitude));
+
+
+
+
                                 Intent intent = new Intent(HospitalRegisterActivity.this, HospitalActivity.class);
                                 startActivity(intent);
                                 finish();
-                                return;
+
+                                saveUserInfo();
+
+
+
 
                             }
                         }
@@ -159,6 +171,22 @@ public class HospitalRegisterActivity extends AppCompatActivity {
                 break;
         }
     }
+    private void saveUserInfo(){
+        final String name = mName.getText().toString();
+        final String address = mAddress.getText().toString();
+        final String phone = mPhone.getText().toString();
+        String userId1 = mAuth.getCurrentUser().getUid();
+        addHospitalLogin(userId1);
+        DatabaseReference currentUserDB = FirebaseDatabase.getInstance().getReference().child("Users").child("Hospital").child(userId1);
+        Map userData = new HashMap();
+
+        userData.put("Address",address);
+        userData.put("Phone",phone);
+        userData.put("Name",name);
+        currentUserDB.updateChildren(userData);
+
+    }
+
     private void addHospitalLogin(String userId){
         String deviceId = Settings.Secure.getString(getApplicationContext().getContentResolver(), Settings.Secure.ANDROID_ID);
         DatabaseReference addHospital = FirebaseDatabase.getInstance().getReference().child("LoggedIn").child(deviceId);

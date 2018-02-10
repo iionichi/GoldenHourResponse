@@ -38,6 +38,7 @@
         android:layout_below="@+id/email"
         android:textColor="@color/colorBlack"
         android:textColorHint="@color/colorBlack"
+        android:inputType="textPassword"
         android:hint="Password" />
 
     <Button

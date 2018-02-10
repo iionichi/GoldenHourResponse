@@ -37,6 +37,7 @@
         android:layout_marginBottom="40dp"
         android:layout_above="@+id/next"
         android:layout_centerHorizontal="true"
+
         android:outlineProvider="bounds" />
 
     <Button

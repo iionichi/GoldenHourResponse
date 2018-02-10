@@ -12,6 +12,9 @@ import android.support.design.widget.NavigationView;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -59,7 +62,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class StrangerMapActivity extends FragmentActivity implements OnMapReadyCallback,GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, LocationListener, RoutingListener, NavigationView.OnNavigationItemSelectedListener{
+public class StrangerMapActivity extends AppCompatActivity implements OnMapReadyCallback,GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, LocationListener, RoutingListener, NavigationView.OnNavigationItemSelectedListener{
 
     final int LOCATION_REQUEST_CODE = 1;
 
@@ -71,6 +74,8 @@ public class StrangerMapActivity extends FragmentActivity implements OnMapReadyC
 
     private MenuItem mItem;
 
+    private DrawerLayout mDrawerLayoutStranger;
+    private ActionBarDrawerToggle mToggleStranger;
     NavigationView mNavigationView;
 
     private LatLng pickupLocation, destinationLatLng, pickupLocation2;
@@ -90,6 +95,12 @@ public class StrangerMapActivity extends FragmentActivity implements OnMapReadyC
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_stranger_map);
+
+        mDrawerLayoutStranger = (DrawerLayout) findViewById(R.id.drawerSt);
+        mToggleStranger = new ActionBarDrawerToggle(this,mDrawerLayoutStranger,R.string.open,R.string.close);
+        mDrawerLayoutStranger.addDrawerListener(mToggleStranger);
+        mToggleStranger.syncState();
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         polylines = new ArrayList<>();
 
         buildGoogleApiClient();
@@ -109,6 +120,14 @@ public class StrangerMapActivity extends FragmentActivity implements OnMapReadyC
         } else {
             mapFragment.getMapAsync(this);
         }
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item_driver) {
+        if (mToggleStranger.onOptionsItemSelected(item_driver)) {
+            return true;
+        }
+        return super.onOptionsItemSelected(item_driver);
     }
 
 

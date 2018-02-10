@@ -34,6 +34,17 @@
             android:layout_marginTop="5dp"
             android:text="Get Hospital"
             android:textColor="@color/colorWhite" />
+
+        <Button
+            android:id="@+id/history"
+            android:layout_width="100dp"
+            android:layout_height="wrap_content"
+            android:background="@color/LightGrey"
+            android:layout_marginLeft="5dp"
+            android:layout_marginTop="5dp"
+            android:text="History"
+            android:textColor="@color/colorWhite" />
+
     </LinearLayout>
 
     <LinearLayout

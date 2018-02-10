@@ -62,6 +62,8 @@
         <activity android:name=".CustomerMainActivity" />
         <activity android:name=".HospitalSettingsActivity" />
         <activity android:name=".HospitalSettingActivity" />
+        <activity android:name=".HistoryActivty" />
+        <activity android:name=".HistorySingleActivity"></activity>
     </application>
 
 </manifest>

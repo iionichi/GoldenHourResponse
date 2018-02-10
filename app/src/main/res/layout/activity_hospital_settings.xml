@@ -15,7 +15,7 @@
         xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@drawable/three"
+        android:background="@drawable/wallpaper_five"
         tools:context="com.example.acer.goldenhour.HospitalSettingsActivity"
         android:orientation="vertical"
         android:padding="20sp">
@@ -26,6 +26,8 @@
             android:layout_height="wrap_content"
             android:background="@null"
             android:hint="Name"
+            android:textColorHint="@color/colorBlack"
+            android:textColor="@color/colorBlack"
             android:layout_marginTop="50dp"
             android:inputType="text" />
 
@@ -34,6 +36,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@null"
+            android:textColor="@color/colorBlack"
+            android:textColorHint="@color/colorBlack"
             android:hint="Phone"
             android:layout_marginTop="100dp"
             android:inputType="number" />
@@ -43,20 +47,19 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@null"
+            android:textColorHint="@color/colorBlack"
+            android:textColor="@color/colorBlack"
             android:hint="Address"
             android:layout_marginTop="150dp"
             android:inputType="text" />
 
 
-
         <Button
             android:id="@+id/confirm"
-            android:layout_width="250dp"
+            android:layout_width="200dp"
             android:layout_height="wrap_content"
-            android:layout_above="@+id/textView4"
-            android:layout_alignLeft="@+id/back"
-            android:layout_alignStart="@+id/back"
-            android:layout_marginBottom="20dp"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
             android:background="@drawable/rounded_shape"
             android:text="Confirm"
             android:textColor="#FFFFFF" />
@@ -65,12 +68,12 @@
             android:id="@+id/textView4"
             android:layout_width="50dp"
             android:layout_height="50dp"
-            android:layout_alignBottom="@+id/back"
             android:layout_alignEnd="@+id/back"
             android:layout_alignRight="@+id/back"
-            android:layout_marginBottom="31dp"
-            android:layout_marginEnd="92dp"
-            android:layout_marginRight="92dp"
+            android:layout_below="@+id/confirm"
+            android:layout_marginEnd="65dp"
+            android:layout_marginRight="65dp"
+            android:layout_marginTop="13dp"
             android:text="Or"
             android:textColor="@color/colorBlack"
             android:textSize="20sp"
@@ -78,14 +81,12 @@
 
         <Button
             android:id="@+id/back"
-            android:layout_width="250dp"
+            android:layout_width="200dp"
             android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
-            android:layout_alignParentEnd="true"
-            android:layout_alignParentRight="true"
-            android:layout_marginBottom="30dp"
-            android:layout_marginEnd="33dp"
-            android:layout_marginRight="33dp"
+            android:layout_alignLeft="@+id/confirm"
+            android:layout_alignStart="@+id/confirm"
+            android:layout_alignTop="@+id/textView4"
+            android:layout_marginTop="44dp"
             android:background="@drawable/rounded_shape"
             android:text="Back"
             android:textColor="#FFFFFF" />

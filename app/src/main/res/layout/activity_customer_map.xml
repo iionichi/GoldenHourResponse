@@ -25,22 +25,16 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-
         <Button
             android:id="@+id/hospi"
-            android:layout_width="match_parent"
+            android:layout_width="250dp"
             android:layout_height="wrap_content"
-            android:layout_gravity="left"
-            android:text="Get Hospital" />
-
-
-
-
-
-
-
+            android:background="@color/LightGrey"
+            android:layout_marginLeft="5dp"
+            android:layout_marginTop="5dp"
+            android:text="Get Hospital"
+            android:textColor="@color/colorWhite" />
     </LinearLayout>
-
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -109,12 +103,14 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Normal"
+                    android:textStyle="bold"
                     android:id="@+id/normalAmbulance"/>
 
                 <RadioButton
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Cardiac"
+                    android:textStyle="bold"
                     android:id="@+id/cardiacAmbulance"/>
 
             </RadioGroup>
@@ -123,6 +119,8 @@
                 android:layout_height="wrap_content"
                 android:text="Call Ambulance"
                 android:id="@+id/request"
+                android:background="@color/LightGrey"
+                android:textColor="@color/colorWhite"
                 android:layout_gravity="bottom"/>
 
         </LinearLayout>

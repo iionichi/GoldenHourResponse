@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="@drawable/three"
+    android:background="@drawable/wallpaper_five"
     tools:context="com.example.acer.goldenhour.DriverLoginActivity">
 
     <ImageView
@@ -14,7 +14,8 @@
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="12dp"
-        android:src="@drawable/purple_logo" />
+        android:src="@drawable/temporary_logo"
+        android:id="@+id/imageView3" />
 
     <EditText
         android:id="@+id/email"
@@ -23,6 +24,8 @@
         android:layout_above="@+id/password"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
+        android:textColorHint="@color/colorBlack"
+        android:textColor="@color/colorBlack"
         android:layout_marginBottom="13dp"
         android:hint="E - mail" />
 
@@ -33,12 +36,14 @@
         android:layout_above="@+id/login"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
+        android:textColorHint="@color/colorBlack"
+        android:textColor="@color/colorBlack"
         android:layout_marginBottom="13dp"
         android:hint="Password" />
 
     <Button
         android:id="@+id/login"
-        android:layout_width="250dp"
+        android:layout_width="200dp"
         android:layout_height="wrap_content"
         android:layout_above="@+id/textView"
         android:layout_centerHorizontal="true"
@@ -48,23 +53,23 @@
         android:textColor="#FFFFFF" />
 
     <TextView
+        android:id="@+id/textView"
         android:layout_width="50dp"
         android:layout_height="50dp"
         android:layout_alignBottom="@+id/registration"
-        android:layout_alignEnd="@+id/login"
-        android:layout_alignRight="@+id/login"
-        android:layout_marginBottom="31dp"
-        android:layout_marginEnd="89dp"
-        android:layout_marginRight="89dp"
+        android:layout_alignEnd="@+id/imageView3"
+        android:layout_alignRight="@+id/imageView3"
+        android:layout_marginBottom="33dp"
+        android:layout_marginEnd="40dp"
+        android:layout_marginRight="40dp"
         android:text="Or"
         android:textColor="@color/colorBlack"
         android:textSize="20sp"
-        android:textStyle="bold"
-        android:id="@+id/textView" />
+        android:textStyle="bold" />
 
     <Button
         android:id="@+id/registration"
-        android:layout_width="250dp"
+        android:layout_width="200dp"
         android:layout_height="wrap_content"
         android:layout_alignLeft="@+id/login"
         android:layout_alignParentBottom="true"

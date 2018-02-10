@@ -31,9 +31,12 @@
 
             <Button
                 android:id="@+id/logout"
-                android:layout_width="324dp"
+                android:layout_width="250dp"
+                android:layout_marginLeft="6dp"
+                android:layout_marginTop="5dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
+                android:background="@color/LightGrey"
+                android:textColor="@color/colorWhite"
                 android:text="Logout" />
 
 
@@ -42,6 +45,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Working"
+            android:textStyle="bold"
             android:layout_margin="10dp"
             android:id="@+id/workingSwitch"/>
 
@@ -89,6 +93,8 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:text="Picked Customer"
+            android:textColor="@color/colorWhite"
+            android:background="@color/LightGrey"
             android:id="@+id/rideStatus"/>
     </LinearLayout>
 

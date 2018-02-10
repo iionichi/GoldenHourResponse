@@ -16,7 +16,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="@drawable/three"
+    android:background="@drawable/wallpaper_five"
     android:id="@+id/addTextView"
     tools:context="com.example.acer.goldenhour.HospitalActivity">
 
@@ -27,7 +27,7 @@
 </LinearLayout>
 
     <android.support.design.widget.NavigationView
-        app:headerLayout="@layout/header_driver"
+        app:headerLayout="@layout/header_hospital"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:background="@color/colorWhite"

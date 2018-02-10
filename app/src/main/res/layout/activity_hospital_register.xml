@@ -5,13 +5,15 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="@drawable/three"
+    android:background="@drawable/wallpaper_five"
     tools:context="com.example.acer.goldenhour.DriverLoginActivity">
 
     <EditText
         android:id="@+id/email"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:textColor="@color/colorBlack"
+        android:textColorHint="@color/colorBlack"
         android:hint="E - mail" />
 
     <EditText
@@ -20,6 +22,8 @@
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
+        android:textColorHint="@color/colorBlack"
+        android:textColor="@color/colorBlack"
         android:layout_below="@+id/email"
         android:hint="Password" />
 
@@ -30,6 +34,8 @@
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
         android:layout_below="@+id/password"
+        android:textColor="@color/colorBlack"
+        android:textColorHint="@color/colorBlack"
         android:hint="Hospital Name"
         android:inputType="textPersonName" />
 
@@ -39,6 +45,8 @@
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
+        android:textColorHint="@color/colorBlack"
+        android:textColor="@color/colorBlack"
         android:layout_below="@+id/phone"
         android:hint="Latitude"
         android:inputType="textPersonName" />
@@ -49,6 +57,8 @@
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
+        android:textColor="@color/colorBlack"
+        android:textColorHint="@color/colorBlack"
         android:layout_below="@+id/etLocationLat"
         android:hint="Longitude"
         android:inputType="textPersonName" />
@@ -59,6 +69,8 @@
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
+        android:textColorHint="@color/colorBlack"
+        android:textColor="@color/colorBlack"
         android:layout_below="@+id/address"
         android:hint="Hospital Phone No."
         android:inputType="textPersonName" />
@@ -71,6 +83,8 @@
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
         android:layout_below="@+id/name"
+        android:textColor="@color/colorBlack"
+        android:textColorHint="@color/colorBlack"
         android:hint="Address"
         android:inputType="textPersonName" />
 

@@ -14,7 +14,6 @@ import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 
-import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -69,7 +68,7 @@ public class DriverSettingsActivity extends AppCompatActivity implements Navigat
         }
 
         mNameField = (EditText) findViewById(R.id.name);
-        mPhoneField = (EditText) findViewById(R.id.phone);
+        mPhoneField = (EditText) findViewById(R.id.phoneEditText);
         mAmbulanceField = (EditText) findViewById(R.id.ambulance);
         mAmbulanceNumberField = (EditText) findViewById(R.id.ambulance_number);
 

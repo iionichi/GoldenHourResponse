@@ -52,6 +52,18 @@
         android:text="Login"
         android:textColor="#FFFFFF" />
 
+    <Button
+        android:id="@+id/phone_login"
+        android:layout_width="250dp"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/registration"
+        android:layout_alignParentBottom="true"
+        android:layout_alignStart="@+id/registration"
+        android:layout_marginBottom="11dp"
+        android:background="@drawable/rounded_shape"
+        android:text="Login With Phone"
+        android:textColor="#FFFFFF" />
+
     <TextView
         android:id="@+id/textView"
         android:layout_width="50dp"

@@ -25,7 +25,7 @@ import java.util.Map;
 public class CustomerLoginActivity extends AppCompatActivity {
 
     private EditText mEmail,mPassword;
-    private Button mLogin,mRegistration;
+    private Button mLogin,mRegistration,mLoginPhone;
 
     private FirebaseAuth mAuth;
     private FirebaseAuth.AuthStateListener firebaseAuthListener;
@@ -55,6 +55,7 @@ public class CustomerLoginActivity extends AppCompatActivity {
 
         mLogin = (Button) findViewById(R.id.login);
         mRegistration = (Button) findViewById(R.id.registration);
+        mLoginPhone = (Button) findViewById(R.id.phone_login);
 
         mRegistration.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -108,6 +109,15 @@ public class CustomerLoginActivity extends AppCompatActivity {
                     });
 
                  }
+            }
+        });
+
+        mLoginPhone.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(CustomerLoginActivity.this, AuthActivity.class);
+                startActivity(intent);
+                return;
             }
         });
     }

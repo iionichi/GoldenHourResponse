@@ -1,7 +1,10 @@
 package com.example.acer.goldenhour;
 
+import android.app.Dialog;
 import android.content.Intent;
 import android.provider.Settings;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.v4.widget.DrawerLayout;
@@ -10,11 +13,16 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.Gravity;
 import android.view.MenuItem;
+import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.ChildEventListener;
@@ -25,27 +33,34 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Map;
 
 public class HospitalActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
+    private String hospitalId, userId, bloodGroup, rhFactor;
 
+    private Boolean requestDonor = false;
 
     private DrawerLayout mDrawerLayoutHospital;
     private ActionBarDrawerToggle mToggleHospital;
     private NavigationView mNavigationView;
-
-    private String hospitalId, userId;
 
     private TextView mtext;
 
     private ListView mUserList;
     private ArrayList<String> mCustomerNames = new ArrayList<>();
 
+    Spinner mBloodGroup, mRHFactor;
+    Dialog mGetDonorDialog;
+    NavigationView mHospitalNavigation;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_hospital);
+
+        hospitalId = FirebaseAuth.getInstance().getCurrentUser().getUid();
 
         mDrawerLayoutHospital = (DrawerLayout) findViewById(R.id.drawerSaur);
         mToggleHospital = new ActionBarDrawerToggle(this,mDrawerLayoutHospital,R.string.open,R.string.close);
@@ -61,11 +76,16 @@ public class HospitalActivity extends AppCompatActivity implements NavigationVie
 
         //mtext = findViewById(R.id.hospitalText);
         mUserList = findViewById(R.id.customerNameList);
-
-        hospitalId = FirebaseAuth.getInstance().getCurrentUser().getUid();
-
         final ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(this,android.R.layout.simple_list_item_1, mCustomerNames);
         mUserList.setAdapter(arrayAdapter);
+
+        mHospitalNavigation = findViewById(R.id.hospitalNavigation);
+        mHospitalNavigation.setNavigationItemSelectedListener(this);
+        if (mHospitalNavigation != null) {
+            mHospitalNavigation.setNavigationItemSelectedListener(this);
+        }
+
+        mGetDonorDialog = new Dialog(this);
 
         DatabaseReference customersId = FirebaseDatabase.getInstance().getReference().child("Hospital").child(hospitalId).child("customerRequestId");
         customersId.addChildEventListener(new ChildEventListener() {
@@ -112,34 +132,18 @@ public class HospitalActivity extends AppCompatActivity implements NavigationVie
 
                     @Override
                     public void onCancelled(DatabaseError databaseError) {
-
                     }
                 });
             }
 
             @Override
             public void onChildMoved(DataSnapshot dataSnapshot, String s) {
-
             }
 
             @Override
             public void onCancelled(DatabaseError databaseError) {
-
             }
         });
-
-
-//        LinearLayout linearLayout= findViewById(R.id.addTextView);      //find the linear layout
-//        linearLayout.removeAllViews();                              //add this too
-//
-//        for(int i=0; i<5;i++){          //looping to create 5 textviews
-//
-//            TextView textView= new TextView(this);              //dynamically create textview
-//            textView.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 48)); //select linearlayoutparam- set the width & height
-//            textView.setGravity(Gravity.CENTER_VERTICAL);                       //set the gravity too
-//            textView.setText("Textview: "+userId);                                    //adding text
-//            linearLayout.addView(textView);                                     //inflating :)
-//        }
     }
 
     @Override
@@ -161,14 +165,12 @@ public class HospitalActivity extends AppCompatActivity implements NavigationVie
 //                startActivity(intent);
                 break;
 
-            case R.id.profile_settings_hospital:
+            case R.id.settingH:
                 Intent intent = new Intent(HospitalActivity.this, HospitalSettingsActivity.class);
                 startActivity(intent);
-
                 break;
 
-            case R.id.Log_out_H:
-
+            case R.id.logoutH:
                 String deviceId = Settings.Secure.getString(getApplicationContext().getContentResolver(), Settings.Secure.ANDROID_ID);
                 DatabaseReference HospiLogout = FirebaseDatabase.getInstance().getReference().child("LoggedIn").child(deviceId);
                 HospiLogout.removeValue();
@@ -178,8 +180,141 @@ public class HospitalActivity extends AppCompatActivity implements NavigationVie
                 finish();
                 break;
 
-
+            case R.id.getDonors:
+                requestDonor = true;
+                Toast.makeText(this, "Requesting Donors", Toast.LENGTH_SHORT).show();
+                getBloodGroup();
+                break;
         }
         return true;
     }
+
+    private void getBloodGroup(){
+        mGetDonorDialog.setContentView(R.layout.select_donor);//Set the layout file to the dialog
+
+        mBloodGroup = (Spinner) mGetDonorDialog.findViewById(R.id.bloodGroup);
+        ArrayAdapter<String> bloodGroupAdapter = new ArrayAdapter<String>(HospitalActivity.this,
+                android.R.layout.simple_list_item_1, getResources().getStringArray(R.array.bloodG));
+        bloodGroupAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);//Setting the spinner to dropdown
+        mBloodGroup.setAdapter(bloodGroupAdapter);//This allows the spinner to show the data of the adapter
+
+        mRHFactor = (Spinner) mGetDonorDialog.findViewById(R.id.rhFactor);
+        ArrayAdapter<String> rhGroupAdapter = new ArrayAdapter<String>(HospitalActivity.this,
+                android.R.layout.simple_list_item_1, getResources().getStringArray(R.array.bloodRH));
+        rhGroupAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        mRHFactor.setAdapter(rhGroupAdapter);
+
+        mBloodGroup.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                switch (i){
+                    case 0:
+                        bloodGroup = "A";
+                        break;
+                    case 1:
+                        bloodGroup = "B";
+                        break;
+                    case 2:
+                        bloodGroup = "AB";
+                        break;
+                    case 3:
+                        bloodGroup = "O";
+                        break;
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+            }
+        });
+
+        mRHFactor.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                switch (i){
+                    case 0:
+                        rhFactor = "positive";
+                        break;
+                    case 1:
+                        rhFactor = "negative";
+                        break;
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+            }
+        });
+
+        Button mFindDonor = (Button) mGetDonorDialog.findViewById(R.id.getDonorsDialog);//Button inside dialog
+        mFindDonor.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                makeDonorRequest();
+                mGetDonorDialog.dismiss();//To close the dialog
+            }
+        });
+        mGetDonorDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.WHITE));//Background color for dialog
+        mGetDonorDialog.show();//Show the dialog
+    }
+
+    private void makeDonorRequest(){
+        DatabaseReference donorRequest = FirebaseDatabase.getInstance().getReference().child("donorRequest");
+        String requestKey = donorRequest.push().getKey();
+        HashMap requestMap = new HashMap();
+        requestMap.put("bloodGroup", bloodGroup);
+        requestMap.put("rhFactor", rhFactor);
+        requestMap.put("hospitalId", hospitalId);
+        donorRequest.child(requestKey).updateChildren(requestMap);
+    }
+
+//    private void getDonor(){
+//        DatabaseReference donorReference = FirebaseDatabase.getInstance().getReference().child("Users").child("Customers");
+//        donorReference.addChildEventListener(new ChildEventListener() {
+//            @Override
+//            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+//                if (requestDonor){
+//                    String donorId = dataSnapshot.getKey();
+////                    Toast.makeText(HospitalActivity.this, donorId, Toast.LENGTH_SHORT).show();
+//                    getDonorInfo(donorId);
+//                }
+//            }
+//
+//            @Override
+//            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+//
+//            }
+//
+//            @Override
+//            public void onChildRemoved(DataSnapshot dataSnapshot) {
+//
+//            }
+//
+//            @Override
+//            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+//
+//            }
+//
+//            @Override
+//            public void onCancelled(DatabaseError databaseError) {
+//
+//            }
+//        });
+//    }
+//
+//    private void getDonorInfo(String donorId){
+//        DatabaseReference donorInfo = FirebaseDatabase.getInstance().getReference().child("Users").child("Customers").child(donorId);
+//        donorInfo.addListenerForSingleValueEvent(new ValueEventListener() {
+//            @Override
+//            public void onDataChange(DataSnapshot dataSnapshot) {
+//                if (dataSnapshot.exists()){
+//                }
+//            }
+//
+//            @Override
+//            public void onCancelled(DatabaseError databaseError) {
+//
+//            }
+//        });
+//    }
 }

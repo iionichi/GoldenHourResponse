@@ -18,18 +18,22 @@
         android:layout_height="wrap_content"
         android:layout_margin="20sp"
         android:orientation="vertical">
+
         <TextView
+            android:id="@+id/rideLocation"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginBottom="20sp"
             android:text="From - To"
-            android:layout_marginBottom="20sp"
-            android:id="@+id/rideLocation"/>
+            android:visibility="invisible" />
+
         <TextView
+            android:id="@+id/rideDistance"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Distance"
             android:layout_marginBottom="20sp"
-            android:id="@+id/rideDistance"/>
+            android:text="Distance"
+            android:visibility="invisible" />
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

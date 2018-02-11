@@ -61,7 +61,7 @@ import java.util.Map;
 
 public class DriverMapActivity extends AppCompatActivity implements OnMapReadyCallback, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, com.google.android.gms.location.LocationListener, RoutingListener, NavigationView.OnNavigationItemSelectedListener {
 
-    LatLng pickupLatLng;
+    LatLng pickupLatLng,pick;
     private DrawerLayout mDrawerLayoutDriver;
     private ActionBarDrawerToggle mToggleDriver;
     private NavigationView mNavigationView;
@@ -162,7 +162,7 @@ public class DriverMapActivity extends AppCompatActivity implements OnMapReadyCa
 //                        if (destinationLatLng != null){
 //                            getRouteToMarker(destinationLatLng);
 //                        }
-//                        mRideStatus.setText("Drive Completed");
+                        mRideStatus.setText("Drive Completed");
                         break;
 
                     case 2:
@@ -282,6 +282,7 @@ public class DriverMapActivity extends AppCompatActivity implements OnMapReadyCa
                         locationLng = Double.parseDouble(map.get(1).toString());
                     }
                     LatLng pickupLatLng = new LatLng(locationLat, locationLng);
+                    pick = pickupLatLng;
                     pickupMarker = mMap.addMarker(new MarkerOptions().position(pickupLatLng).title("Pickup Location").icon(BitmapDescriptorFactory.fromResource(R.mipmap.ghr_pickup)));
                     getRouteToMarker(pickupLatLng);
                 }
@@ -373,16 +374,18 @@ public class DriverMapActivity extends AppCompatActivity implements OnMapReadyCa
         driverRef.child(requestId).setValue(true);
         customerRef.child(requestId).setValue(true);
 
+        LatLng pck = pick;
+
         HashMap map = new HashMap();
         map.put("driver", userId);
         map.put("customer", customerId);
         map.put("rating", 0);
         map.put("timestamp", getCurrentTimeStamp());
         map.put("destination", destination);
-        map.put("location/from/lat", pickupLatLng.latitude);
-        map.put("location/from/lng", pickupLatLng.longitude);
+        map.put("location/from/lat", pick.latitude);
+        map.put("location/from/lng", pick.longitude);
         map.put("location/to/lat", destinationLatLng.latitude);
-        map.put("location/to/lng", destinationLatLng.latitude);
+        map.put("location/to/lng", destinationLatLng.longitude);
         historyRef.child(requestId).updateChildren(map);
     }
 

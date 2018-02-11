@@ -537,8 +537,6 @@ public class CustomerMapActivity extends AppCompatActivity implements OnMapReady
                 else {
                     endRide();
                 }
-
-
             }
 
             @Override

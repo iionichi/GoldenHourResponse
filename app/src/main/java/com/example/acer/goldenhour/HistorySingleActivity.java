@@ -86,14 +86,14 @@ public class HistorySingleActivity extends AppCompatActivity implements OnMapRea
             public void onDataChange(DataSnapshot dataSnapshot) {
                 if (dataSnapshot.exists()) {
                     for (DataSnapshot child : dataSnapshot.getChildren()) {
-                        if (child.getKey().equals("customers")) {
+                        if (child.getKey().equals("customer")) {
                             customerId = child.getValue().toString();
                             if (!customerId.equals(currentUserId)) {
                                 userDriverOrCustomer = "Drivers";
                                 getUserInformation("Customers", customerId);
                             }
                         }
-                        if (child.getKey().equals("drivers")) {
+                        if (child.getKey().equals("driver")) {
                             driverId = child.getValue().toString();
                             if (!driverId.equals(currentUserId)) {
                                 userDriverOrCustomer = "Customers";

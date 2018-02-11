@@ -9,9 +9,14 @@ import android.provider.ContactsContract;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.NavigationView;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.app.AppCompatActivity;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CompoundButton;
@@ -50,10 +55,16 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class DriverMapActivity extends FragmentActivity implements OnMapReadyCallback, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, com.google.android.gms.location.LocationListener, RoutingListener {
+public class DriverMapActivity extends AppCompatActivity implements OnMapReadyCallback, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, com.google.android.gms.location.LocationListener, RoutingListener, NavigationView.OnNavigationItemSelectedListener {
+
+    LatLng pickupLatLng,pick;
+    private DrawerLayout mDrawerLayoutDriver;
+    private ActionBarDrawerToggle mToggleDriver;
+    private NavigationView mNavigationView;
 
     private GoogleMap mMap;
     GoogleApiClient mGoogleApiClient;
@@ -64,7 +75,7 @@ public class DriverMapActivity extends FragmentActivity implements OnMapReadyCal
 
     private LatLng destination, destinationLatLng;
 
-    private Button mLogout, mSettings, mRideStatus, mCheckHospital;
+    private Button mLogout,  mRideStatus;
 
     private int status = 0;
 
@@ -83,6 +94,19 @@ public class DriverMapActivity extends FragmentActivity implements OnMapReadyCal
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_driver_map);
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
+
+        mDrawerLayoutDriver = (DrawerLayout) findViewById(R.id.drawerD);
+        mToggleDriver = new ActionBarDrawerToggle(this,mDrawerLayoutDriver,R.string.open,R.string.close);
+        mDrawerLayoutDriver.addDrawerListener(mToggleDriver);
+        mToggleDriver.syncState();
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+        mNavigationView = findViewById(R.id.nv1);
+
+        if (mNavigationView != null){
+            mNavigationView.setNavigationItemSelectedListener(this);
+        }
+
         polylines = new ArrayList<>();
         mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
@@ -96,8 +120,6 @@ public class DriverMapActivity extends FragmentActivity implements OnMapReadyCal
         destination = new LatLng(0.0, 0.0);
 
         mCustomerInfo = (LinearLayout) findViewById(R.id.customerInfo);
-
-        mCheckHospital = (Button) findViewById(R.id.checkHospital);
 
         mCustomerProfileImage = (ImageView) findViewById(R.id.customerProfileImage);
 
@@ -117,7 +139,7 @@ public class DriverMapActivity extends FragmentActivity implements OnMapReadyCal
                 }
             }
         });
-        mSettings = (Button) findViewById(R.id.settings);
+
 
         /*
         Ride Status checks where the ambulance is heading to.
@@ -131,7 +153,7 @@ public class DriverMapActivity extends FragmentActivity implements OnMapReadyCal
                 switch (status){
                     case 1:
 //                        getHospital();
-                        mCheckHospital.setText(hospitalFoundId);
+
                         status = 2;
                         erasePolylines();
                         if (destinationLatLng.latitude != 0.0 && destinationLatLng.longitude != 0.0){
@@ -140,10 +162,11 @@ public class DriverMapActivity extends FragmentActivity implements OnMapReadyCal
 //                        if (destinationLatLng != null){
 //                            getRouteToMarker(destinationLatLng);
 //                        }
-//                        mRideStatus.setText("Drive Completed");
+                        mRideStatus.setText("Drive Completed");
                         break;
 
                     case 2:
+                        recordRide();
                         endRide();
                         break;
                 }
@@ -166,17 +189,40 @@ public class DriverMapActivity extends FragmentActivity implements OnMapReadyCal
             }
         });
 
-        mSettings.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(DriverMapActivity.this, DriverSettingsActivity.class);
-                startActivity(intent);
-                return;
-            }
-        });
+
 
         getAssignedCustomer();
         getHospital();
+    }
+
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item_driver) {
+        if (mToggleDriver.onOptionsItemSelected(item_driver)) {
+            return true;
+        }
+        return super.onOptionsItemSelected(item_driver);
+    }
+
+
+    @Override
+    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+        int id = item.getItemId();
+
+        switch (id){
+            case R.id.Patient_Service:
+//                Intent intent = new Intent(DriverMapActivity.this, DriverMapActivity.class);
+//                startActivity(intent);
+                break;
+
+            case R.id.profile_settings_driver:
+                Intent intent1 = new Intent(DriverMapActivity.this, DriverSettingsActivity.class);
+                startActivity(intent1);
+                break;
+
+
+        }
+        return true;
     }
 
     private void getAssignedCustomer() {
@@ -236,6 +282,7 @@ public class DriverMapActivity extends FragmentActivity implements OnMapReadyCal
                         locationLng = Double.parseDouble(map.get(1).toString());
                     }
                     LatLng pickupLatLng = new LatLng(locationLat, locationLng);
+                    pick = pickupLatLng;
                     pickupMarker = mMap.addMarker(new MarkerOptions().position(pickupLatLng).title("Pickup Location").icon(BitmapDescriptorFactory.fromResource(R.mipmap.ghr_pickup)));
                     getRouteToMarker(pickupLatLng);
                 }
@@ -316,6 +363,35 @@ public class DriverMapActivity extends FragmentActivity implements OnMapReadyCal
         mCustomerName.setText("");
         mCustomerPhone.setText("");
         mCustomerProfileImage.setImageResource(R.mipmap.ic_launcher);
+    }
+
+    private void recordRide() {
+        String userId = FirebaseAuth.getInstance().getUid();
+        DatabaseReference driverRef = FirebaseDatabase.getInstance().getReference().child("Users").child("Drivers").child(userId).child("History");
+        DatabaseReference customerRef = FirebaseDatabase.getInstance().getReference().child("Users").child("Customers").child(customerId).child("History");
+        DatabaseReference historyRef = FirebaseDatabase.getInstance().getReference().child("History");
+        String requestId = historyRef.push().getKey();
+        driverRef.child(requestId).setValue(true);
+        customerRef.child(requestId).setValue(true);
+
+        LatLng pck = pick;
+
+        HashMap map = new HashMap();
+        map.put("driver", userId);
+        map.put("customer", customerId);
+        map.put("rating", 0);
+        map.put("timestamp", getCurrentTimeStamp());
+        map.put("destination", destination);
+        map.put("location/from/lat", pick.latitude);
+        map.put("location/from/lng", pick.longitude);
+        map.put("location/to/lat", destinationLatLng.latitude);
+        map.put("location/to/lng", destinationLatLng.longitude);
+        historyRef.child(requestId).updateChildren(map);
+    }
+
+    private Long getCurrentTimeStamp() {
+        Long timestamp = System.currentTimeMillis()/1000;
+        return timestamp;
     }
 
     @Override

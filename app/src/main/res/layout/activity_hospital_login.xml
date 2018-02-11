@@ -5,17 +5,17 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="@drawable/three"
+    android:background="@drawable/wallpaper_five"
     tools:context="com.example.acer.goldenhour.DriverLoginActivity">
 
     <ImageView
+        android:id="@+id/imageView2"
         android:layout_width="150dp"
         android:layout_height="150dp"
-        android:layout_alignParentTop="true"
+        android:layout_above="@+id/email"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="12dp"
-        android:src="@drawable/purple_logo"
-        android:id="@+id/imageView2" />
+        android:layout_marginBottom="12dp"
+        android:src="@drawable/temporary_logo" />
 
     <EditText
         android:id="@+id/email"
@@ -24,7 +24,9 @@
         android:layout_above="@+id/password"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
-        android:layout_marginBottom="13dp"
+        android:textColorHint="@color/colorBlack"
+        android:textColor="@color/colorBlack"
+        android:layout_marginBottom="18dp"
         android:hint="E - mail" />
 
     <EditText
@@ -34,12 +36,14 @@
         android:layout_above="@+id/login"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
-        android:layout_marginBottom="16dp"
+        android:textColorHint="@color/colorBlack"
+        android:textColor="@color/colorBlack"
+        android:inputType="textPassword"
         android:hint="Password" />
 
     <Button
         android:id="@+id/login"
-        android:layout_width="250dp"
+        android:layout_width="200dp"
         android:layout_height="wrap_content"
         android:layout_above="@+id/textView3"
         android:layout_alignLeft="@+id/registration"
@@ -67,7 +71,7 @@
 
     <Button
         android:id="@+id/registration"
-        android:layout_width="250dp"
+        android:layout_width="200dp"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"

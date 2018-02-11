@@ -11,6 +11,9 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.Spinner;
 
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -19,6 +22,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.util.HashMap;
 import java.util.Map;
 
 public class MainActivity extends AppCompatActivity {
@@ -42,35 +46,27 @@ public class MainActivity extends AppCompatActivity {
         myAdapter.setDropDownViewResource(android.R.layout.simple_dropdown_item_1line);
         Role.setAdapter(myAdapter);
 
-
-
-
         startService(new Intent(MainActivity.this, onAppKilled.class));
 
         Role.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 if (position == 0){
-
                     type="customer";
-
-
                 }
 
                 else if (position==1){
-
                     type="driver";
-
                 }
 
                 else if (position==2){
-
                     type="hospital";
+                }
 
+                else if (position==3){
+                    type="unregistered";
                 }
             }
-
-
 
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
@@ -87,7 +83,6 @@ public class MainActivity extends AppCompatActivity {
                     startActivity(intent);
 
                     return;
-
                 }
 
                 else if(type == "driver") {
@@ -103,6 +98,40 @@ public class MainActivity extends AppCompatActivity {
 
                     return;
                 }
+
+                else if (type == "unregistered"){
+                    Task<AuthResult> resultTask = mAuth.signInAnonymously();
+                    resultTask.addOnSuccessListener(new OnSuccessListener<AuthResult>() {
+                        @Override
+                        public void onSuccess(AuthResult authResult) {
+                            final String key = FirebaseAuth.getInstance().getCurrentUser().getUid();
+                            final DatabaseReference anonymousReference = FirebaseDatabase.getInstance().getReference().child("Users").child("Customers");
+                            anonymousReference.addListenerForSingleValueEvent(new ValueEventListener() {
+                                @Override
+                                public void onDataChange(DataSnapshot dataSnapshot) {
+                                    if (dataSnapshot.exists()){
+                                        HashMap strangerMap = new HashMap();
+                                        strangerMap.put(key,"true");
+                                        anonymousReference.updateChildren(strangerMap);
+                                        DatabaseReference addAnon = FirebaseDatabase.getInstance().getReference().child("Users").child("Customers").child(key);
+                                        HashMap strangerMap2 = new HashMap();
+                                        strangerMap2.put("type","Anonymous");
+                                        addAnon.updateChildren(strangerMap2);
+                                    }
+                                }
+
+                                @Override
+                                public void onCancelled(DatabaseError databaseError) {
+
+                                }
+                            });
+                            Intent intent = new Intent(MainActivity.this, StrangerMapActivity.class);
+                            startActivity(intent);
+                            finish();
+                            return;
+                        }
+                    });
+                }
             }
         });
 
@@ -112,7 +141,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
                 final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-                if (user != null){
+                if (user != null && type != "unregistered"){
                     String deviceId = Settings.Secure.getString(getApplicationContext().getContentResolver(), Settings.Secure.ANDROID_ID);
                     DatabaseReference checkLoggedIn =  FirebaseDatabase.getInstance().getReference().child("LoggedIn").child(deviceId);
                     checkLoggedIn.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -123,7 +152,7 @@ public class MainActivity extends AppCompatActivity {
                                 userType = map.get("Type").toString();
 
                                 if (userType.equals("Customers")){
-                                    Intent intentC = new Intent(MainActivity.this,CustomerMapActivity.class);
+                                    Intent intentC = new Intent(MainActivity.this,CustomerMainActivity.class);
                                     startActivity(intentC);
                                     finish();
                                     return;
@@ -140,6 +169,29 @@ public class MainActivity extends AppCompatActivity {
                                     finish();
                                     return;
                                 }
+                                else {
+                                    String userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
+                                    DatabaseReference anonymousUser = FirebaseDatabase.getInstance().getReference().child("Users").child("Customers").child(userId);
+                                    anonymousUser.addValueEventListener(new ValueEventListener() {
+                                        @Override
+                                        public void onDataChange(DataSnapshot dataSnapshot) {
+                                            if (dataSnapshot.exists()){
+                                                Map<String, Object> mMap = (Map<String,Object>) dataSnapshot.getValue();
+                                                if (mMap.get("type").equals("Anonymous")){
+                                                    Intent intentC = new Intent(MainActivity.this,StrangerMapActivity.class);
+                                                    startActivity(intentC);
+                                                    finish();
+                                                    return;
+                                                }
+                                            }
+                                        }
+
+                                        @Override
+                                        public void onCancelled(DatabaseError databaseError) {
+
+                                        }
+                                    });
+                                }
                             }
                         }
 
@@ -148,6 +200,9 @@ public class MainActivity extends AppCompatActivity {
 
                         }
                     });
+                }
+                else {
+
                 }
             }
         };

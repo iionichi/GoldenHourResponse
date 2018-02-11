@@ -4,11 +4,9 @@
     android:title="Dashboard"
     android:icon="@drawable/ic_dashboard_black_24dp" />
     <item android:id="@+id/get_ambulance"
-        android:title="Get Ambulance"
+        android:title="Get Ambulance And Hospital Services"
         android:icon="@drawable/ambulance"/>
-    <item android:id="@+id/get_hospital"
-        android:title="Get Hospital"
-        android:icon="@drawable/ic_get_hospital_black_24dp"/>
+
     <item android:id="@+id/call_police"
         android:title="Call Police"
         android:icon="@drawable/download"/>

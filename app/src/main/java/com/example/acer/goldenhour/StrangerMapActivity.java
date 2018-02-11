@@ -1,31 +1,25 @@
 package com.example.acer.goldenhour;
 
-import android.Manifest;
-import android.app.Activity;
+import android.content.ClipData;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
-import android.net.Uri;
-import android.os.Build;
+import android.media.MediaPlayer;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.internal.NavigationMenuItemView;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
-import android.support.v4.content.ContextCompat;
+import android.os.Bundle;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
-import android.telephony.SmsManager;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.RadioButton;
-import android.widget.RadioGroup;
-import android.widget.TextView;
+import android.widget.Switch;
 import android.widget.Toast;
 
 import com.directions.route.AbstractRouting;
@@ -52,7 +46,11 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -64,116 +62,91 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class CustomerMapActivity extends AppCompatActivity implements OnMapReadyCallback, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, LocationListener, RoutingListener, NavigationView.OnNavigationItemSelectedListener{
+public class StrangerMapActivity extends AppCompatActivity implements OnMapReadyCallback,GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, LocationListener, RoutingListener, NavigationView.OnNavigationItemSelectedListener{
 
-    private static final int SEND_SMS_PERMISSION_REQUEST_CODE = 111;
+    final int LOCATION_REQUEST_CODE = 1;
 
     private GoogleMap mMap;
     GoogleApiClient mGoogleApiClient;
     Location mLastLocation;
     LocationRequest mLocationRequest;
+    Marker destinationMarker, pickupMarker;
 
-    SupportMapFragment mapFragment;
+    private MenuItem mItem;
+
+    private DrawerLayout mDrawerLayoutStranger;
+    private ActionBarDrawerToggle mToggleStranger;
+    NavigationView mNavigationView;
+
+    private LatLng pickupLocation, destinationLatLng, pickupLocation2;
 
 
-
-    private FirebaseAuth mAuth1;
-    private String userID1;
+    private String requestService, userId;
 
     private int hospitalToggle = 1;
 
-    private Button mRequest,mHospi,mHistory;
-    private LatLng pickupLocation, pickupLocation2, destinationLatLng;
-
-    private Boolean requestBol = false, addedCustomerToHospital = false, onlyHospital = false;
-    private Marker pickupMarker, destinationMarker;
-
-    private String requestService, userId, mePhone, msg;
-
-    private LinearLayout mDriverInfo;
-    private ImageView mDriverProfileImage;
-    private TextView mDriverName, mDriverPhone, mDriverAmbulance, mDriverAmbulanceNumber;
-
-    private RadioGroup mRadioGroup;
-
-    final int LOCATION_REQUEST_CODE = 1;
-
-    private DrawerLayout mDrawerLayout;
-    private ActionBarDrawerToggle mToggle;
-    private NavigationView mNavigationView;
-    private DatabaseReference mCustomerDatabase1;
+    private Boolean requestBol = false,addedCustomerToHospital = false, onlyHospital = false, removeAnonymous = false;
 
     //For adding polylines which marks in the map
     private List<Polyline> polylines;
     private static final int[] COLORS = new int[]{R.color.primary_dark_material_light};
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_customer_map);
+        setContentView(R.layout.activity_stranger_map);
 
-        mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer);
-        mToggle = new ActionBarDrawerToggle(this,mDrawerLayout,R.string.open,R.string.close);
-        mDrawerLayout.addDrawerListener(mToggle);
-        mToggle.syncState();
+        mDrawerLayoutStranger = (DrawerLayout) findViewById(R.id.drawerSt);
+        mToggleStranger = new ActionBarDrawerToggle(this,mDrawerLayoutStranger,R.string.open,R.string.close);
+        mDrawerLayoutStranger.addDrawerListener(mToggleStranger);
+        mToggleStranger.syncState();
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-
         polylines = new ArrayList<>();
 
+        buildGoogleApiClient();
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
-        mapFragment = (SupportMapFragment) getSupportFragmentManager()
+        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
+        mapFragment.getMapAsync(this);
 
-        if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(CustomerMapActivity.this, new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION}, LOCATION_REQUEST_CODE);
-        }
-        else {
-            mapFragment.getMapAsync(this);
-        }
+        mNavigationView = findViewById(R.id.strangerNavigation);
 
-        mDriverInfo = (LinearLayout) findViewById(R.id.driverInfo);
-
-        mDriverProfileImage = (ImageView) findViewById(R.id.driverProfileImage);
-
-        mDriverName = (TextView) findViewById(R.id.driverName);
-        mDriverPhone = (TextView) findViewById(R.id.driverPhone);
-        mDriverAmbulance = (TextView) findViewById(R.id.driverAmbulance);
-        mDriverAmbulanceNumber = (TextView) findViewById(R.id.driverAmbulanceNumber);
-
-        mRadioGroup = (RadioGroup) findViewById(R.id.radioGroup);
-        mRadioGroup.check(R.id.normalAmbulance);
-
-
-        mRequest = findViewById(R.id.request);
-        mHospi = findViewById(R.id.hospi);
-        mHistory = findViewById(R.id.history);
-
-
-        mAuth1 = FirebaseAuth.getInstance();
-        userID1 = mAuth1.getCurrentUser().getUid();
-        mNavigationView = findViewById(R.id.nv);
-
-        if (mNavigationView != null){
+        if (mNavigationView != null) {
             mNavigationView.setNavigationItemSelectedListener(this);
         }
 
+        if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(StrangerMapActivity.this, new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION}, LOCATION_REQUEST_CODE);
+        } else {
+            mapFragment.getMapAsync(this);
+        }
+    }
 
-        mRequest.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item_driver) {
+        if (mToggleStranger.onOptionsItemSelected(item_driver)) {
+            return true;
+        }
+        return super.onOptionsItemSelected(item_driver);
+    }
+
+
+    @Override
+    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+        int id = item.getItemId();
+        userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
+
+        switch (id){
+            case R.id.callNormalAmbulance:
                 if (requestBol){
                     endRide();
+                    mItem = null;
                 }
                 else {
-                    int selectId = mRadioGroup.getCheckedRadioButtonId();
+                    Toast.makeText(this, item.getTitle(), Toast.LENGTH_SHORT).show();
+                    requestService = "Normal";
 
-                    final RadioButton radioButton = (RadioButton)  findViewById(selectId);
-                    if(radioButton.getText() == null){
-                        return;
-                    }
-
-                    requestService = radioButton.getText().toString();
+                    mItem = item;
 
                     requestBol = true;
 
@@ -186,20 +159,23 @@ public class CustomerMapActivity extends AppCompatActivity implements OnMapReady
                     pickupLocation = new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude());
                     pickupMarker = mMap.addMarker(new MarkerOptions().position(pickupLocation).title("Pickup Here").icon(BitmapDescriptorFactory.fromResource(R.mipmap.ghr_pickup)));
 
-                    mRequest.setText("Getting Your Driver");
+                    item.setTitle("Looking for ambulance");
 
                     getClosestDriver();
                 }
-            }
-        });
+                break;
 
-        mHospi.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
+            case R.id.callCardiacAmbulance:
+                requestService = "Cardiac";
+                break;
+
+            case R.id.getHospital:
                 switch (hospitalToggle){
                     case 1:
                         onlyHospital = true;
-                        mHospi.setText("Finding Hospital");
+                        mItem = item;
+                        item.setTitle("Finding Hospital");
+                        Toast.makeText(this, "Finding Hospital", Toast.LENGTH_SHORT).show();
                         getHospital();
                         break;
                     case 2:
@@ -209,7 +185,7 @@ public class CustomerMapActivity extends AppCompatActivity implements OnMapReady
                         if (destinationMarker != null){
                             destinationMarker.remove();
                         }
-                        final DatabaseReference hospiRef = FirebaseDatabase.getInstance().getReference().child("customerRequestH").child(userID1);
+                        final DatabaseReference hospiRef = FirebaseDatabase.getInstance().getReference().child("customerRequestH").child(userId);
                         hospiRef.removeValue();
                         //Removing the customer Id from hospital table
                         if (hospitalFoundId != null){
@@ -218,138 +194,32 @@ public class CustomerMapActivity extends AppCompatActivity implements OnMapReady
                             removeCustomerRef.removeValue();
                             hospitalFoundId = null;
                         }
-                        mHospi.setText("Get Hospital");
+                        item.setTitle("Get Hospital");
                         hospitalToggle = 1;
                         onlyHospital = false;
                         break;
                 }
-            }
-        });
-
-        mHistory.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(CustomerMapActivity.this, HistoryActivty.class);
-                intent.putExtra("customerOrDriver", "Customers");
-                startActivity(intent);
-            }
-        });
-
-
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        if (mToggle.onOptionsItemSelected(item)) {
-
-            return true;
-        }
-        return super.onOptionsItemSelected(item);
-    }
-
-
-    @Override
-    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-        int id = item.getItemId();
-
-        switch (id){
-            case R.id.profile_settings:
-                Intent intent = new Intent(CustomerMapActivity.this, CustomerSettingsActivity.class);
-                startActivity(intent);
                 break;
 
-            case R.id.get_ambulance:
-//                Intent intent1 = new Intent(CustomerMapActivity.this, CustomerMapActivity.class);
-//                startActivity(intent1);
-                break;
+            case  R.id.logoutS:
+                final DatabaseReference removeId = FirebaseDatabase.getInstance().getReference().child("Users").child("Customers").child(userId);
+                removeId.removeValue();
 
-            case R.id.db:
-                Intent intent2 = new Intent(CustomerMapActivity.this, CustomerMainActivity.class);
-                startActivity(intent2);
-                break;
-
-
-            case R.id.call_police:
-                final int REQUEST_PHONE_CALL = 1;
-                Intent callIntent = new Intent(Intent.ACTION_CALL);
-                callIntent.setData(Uri.parse("tel:100"));
-
-                if(android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M){
-                    if(ContextCompat.checkSelfPermission(CustomerMapActivity.this, android.Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED){
-                        ActivityCompat.requestPermissions(CustomerMapActivity.this, new String[]{Manifest.permission.CALL_PHONE}, REQUEST_PHONE_CALL);
-                    }
-                    else {
-                        startActivity(callIntent);
-                    }
-                }
-                break;
-
-
-            case R.id.sos:
-                mCustomerDatabase1.addValueEventListener(new ValueEventListener() {
+                FirebaseUser aUser = FirebaseAuth.getInstance().getCurrentUser();
+                aUser.delete().addOnCompleteListener(new OnCompleteListener<Void>() {
                     @Override
-                    public void onDataChange(DataSnapshot dataSnapshot) {
-                        if (dataSnapshot.exists() && dataSnapshot.getChildrenCount()>0) {
-                            Map<String, Object> map = (Map<String, Object>) dataSnapshot.getValue();
-                            if (map.get("ephone") != null) {
-                                mePhone = map.get("ephone").toString();
-                            }
-                        }
-
-                        msg = "Sender is in critical emergancy.";
-
-                        if (checkPermission(Manifest.permission.SEND_SMS)) {
-                            SmsManager smsManager = SmsManager.getDefault();
-                            smsManager.sendTextMessage(mePhone, null, msg, null, null);
-                        } else {
-                            Toast.makeText(CustomerMapActivity.this, "Permission denied", Toast.LENGTH_SHORT).show();
-                        }
-
-
-                    }
-
-                    @Override
-                    public void onCancelled(DatabaseError databaseError) {
-
+                    public void onComplete(@NonNull Task<Void> task) {
+                        Toast.makeText(StrangerMapActivity.this, "User Deleted", Toast.LENGTH_SHORT).show();
+                        FirebaseAuth.getInstance().signOut();
                     }
                 });
-                break;
-
-
-
-            case R.id.Log_out:
-                FirebaseAuth.getInstance().signOut();
-                Intent intent6 = new Intent(CustomerMapActivity.this, MainActivity.class);
-                startActivity(intent6);
+                Intent intent = new Intent(StrangerMapActivity.this, MainActivity.class);
+                startActivity(intent);
                 finish();
-                break;
-
-
-
-
         }
+
         return true;
     }
-
-    private Boolean checkPermission(String permission) {
-        int checkPermission = ContextCompat.checkSelfPermission(this, permission);
-        return checkPermission == PackageManager.PERMISSION_GRANTED;
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        switch (requestCode) {
-            case SEND_SMS_PERMISSION_REQUEST_CODE:
-                if(grantResults.length > 0 && (grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
-
-                }
-                break;
-        }
-    }
-
-
-
-
 
     private int radius = 1;
     private Boolean driverFound = false;
@@ -387,10 +257,12 @@ public class CustomerMapActivity extends AppCompatActivity implements OnMapReady
                                     driverRef.updateChildren(map);
 
                                     getDriverLocation();
-                                    getDriverInfo();
+//                                    getDriverInfo();
                                     getHasRideEnded();
                                     getHospital();
-                                    mRequest.setText("Looking For Ambulance Location");
+
+                                    mItem.setTitle("Looking For Ambulance Location");
+                                    Toast.makeText(StrangerMapActivity.this, "Looking For Ambulance Location", Toast.LENGTH_SHORT).show();
                                 }
                             }
                         }
@@ -471,10 +343,10 @@ public class CustomerMapActivity extends AppCompatActivity implements OnMapReady
                     float distance = loc1.distanceTo(loc2);
 
                     if(distance<100){
-                        mRequest.setText("Driver is Here");
+                        Toast.makeText(StrangerMapActivity.this, "Driver is Here", Toast.LENGTH_SHORT).show();
                     }
                     else {
-                        mRequest.setText("Ambulance Found: " + String.valueOf(distance));
+                        mItem.setTitle("Ambulance Found" + String.valueOf(distance));
                     }
 
                     mDriverMarker = mMap.addMarker(new MarkerOptions().position(driverLatLng).title("Your Ambulance").icon(BitmapDescriptorFactory.fromResource(R.mipmap.ghr_driver)));
@@ -496,34 +368,34 @@ public class CustomerMapActivity extends AppCompatActivity implements OnMapReady
     |  Note: --
     *-------------------------------------------------------------------*/
 
-    private void getDriverInfo(){
-        mDriverInfo.setVisibility(View.VISIBLE);
-        DatabaseReference mCustomerDatabase = FirebaseDatabase.getInstance().getReference().child("Users").child("Drivers").child(driverFoundId);
-        mCustomerDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                if (dataSnapshot.exists() && dataSnapshot.getChildrenCount()>0){
-                    Map<String, Object> map = (Map<String, Object>) dataSnapshot.getValue();
-                    if(map.get("name") != null){
-                        mDriverName.setText(map.get("name").toString());
-                    }
-                    if(map.get("phone") != null){
-                        mDriverPhone.setText(map.get("phone").toString());
-                    }
-                    if(map.get("ambulance") != null){
-                        mDriverAmbulance.setText(map.get("ambulance").toString());
-                    }
-                    if(map.get("ambulanceNumber") != null){
-                        mDriverAmbulanceNumber.setText(map.get("ambulanceNumber").toString());
-                    }
-                }
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-            }
-        });
-    }
+//    private void getDriverInfo(){
+//        mDriverInfo.setVisibility(View.VISIBLE);
+//        DatabaseReference mCustomerDatabase = FirebaseDatabase.getInstance().getReference().child("Users").child("Drivers").child(driverFoundId);
+//        mCustomerDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
+//            @Override
+//            public void onDataChange(DataSnapshot dataSnapshot) {
+//                if (dataSnapshot.exists() && dataSnapshot.getChildrenCount()>0){
+//                    Map<String, Object> map = (Map<String, Object>) dataSnapshot.getValue();
+//                    if(map.get("name") != null){
+//                        mDriverName.setText(map.get("name").toString());
+//                    }
+//                    if(map.get("phone") != null){
+//                        mDriverPhone.setText(map.get("phone").toString());
+//                    }
+//                    if(map.get("ambulance") != null){
+//                        mDriverAmbulance.setText(map.get("ambulance").toString());
+//                    }
+//                    if(map.get("ambulanceNumber") != null){
+//                        mDriverAmbulanceNumber.setText(map.get("ambulanceNumber").toString());
+//                    }
+//                }
+//            }
+//
+//            @Override
+//            public void onCancelled(DatabaseError databaseError) {
+//            }
+//        });
+//    }
 
     private DatabaseReference driveHasEndedRef;
     private ValueEventListener driveHasEndedRefListener;//This event listener give us the ability to cancel the event listener
@@ -581,25 +453,16 @@ public class CustomerMapActivity extends AppCompatActivity implements OnMapReady
         if(mDriverMarker != null){
             mDriverMarker.remove();
         }
-        mRequest.setText("Call Ambulance");
+        mItem.setTitle("Call Ambulance");
 
-        mDriverInfo.setVisibility(View.GONE);
-        mDriverName.setText("");
-        mDriverPhone.setText("");
-        mDriverAmbulance.setText("");
-        mDriverAmbulanceNumber.setText("");
-        mDriverProfileImage.setImageResource(R.mipmap.ic_launcher);
+//        mDriverInfo.setVisibility(View.GONE);
+//        mDriverName.setText("");
+//        mDriverPhone.setText("");
+//        mDriverAmbulance.setText("");
+//        mDriverAmbulanceNumber.setText("");
+//        mDriverProfileImage.setImageResource(R.mipmap.ic_launcher);
     }
 
-    /*-----------Map specific functions -----
-    |  Function(s) onMapReady, buildGoogleApiClient, onLocationChanged, onConnected
-    |
-    |  Purpose:  Find and update user's location.
-    |
-    |  Note:
-    |	   The update interval is set to 1000Ms and the accuracy is set to PRIORITY_HIGH_ACCURACY,
-    |      If you're having trouble with battery draining too fast then change these to lower values
-    *-------------------------------------------------------------------*/
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
@@ -607,10 +470,10 @@ public class CustomerMapActivity extends AppCompatActivity implements OnMapReady
 
         if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                ActivityCompat.requestPermissions(CustomerMapActivity.this, new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION}, LOCATION_REQUEST_CODE);
+                ActivityCompat.requestPermissions(StrangerMapActivity.this, new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION}, LOCATION_REQUEST_CODE);
             }
         }
-        buildGoogleApiClient();
+//        buildGoogleApiClient();
         mMap.setMyLocationEnabled(true);
         googleMap.setTrafficEnabled(true);
     }
@@ -651,7 +514,7 @@ public class CustomerMapActivity extends AppCompatActivity implements OnMapReady
             // to handle the case where the user grants the permission. See the documentation
             // for ActivityCompat#requestPermissions for more details.
             if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                ActivityCompat.requestPermissions(CustomerMapActivity.this, new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION}, LOCATION_REQUEST_CODE);
+                ActivityCompat.requestPermissions(StrangerMapActivity.this, new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION}, LOCATION_REQUEST_CODE);
             }
         }
         LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, mLocationRequest, this);
@@ -671,6 +534,7 @@ public class CustomerMapActivity extends AppCompatActivity implements OnMapReady
     protected void onStop() {
         super.onStop();
     }
+
 
     private int radiusH = 1;
     private Boolean hospitalFound = false;
@@ -699,7 +563,7 @@ public class CustomerMapActivity extends AppCompatActivity implements OnMapReady
                                 hospitalFoundId = dataSnapshot.getKey();
 
                                 if (onlyHospital) {
-                                    DatabaseReference driverRef2 = FirebaseDatabase.getInstance().getReference().child("customerRequestH").child(userID1);
+                                    DatabaseReference driverRef2 = FirebaseDatabase.getInstance().getReference().child("customerRequestH").child(userId);
                                     HashMap map2 = new HashMap();
                                     map2.put("hospitalFoundId", hospitalFoundId);
                                     driverRef2.updateChildren(map2);
@@ -753,7 +617,7 @@ public class CustomerMapActivity extends AppCompatActivity implements OnMapReady
     }
 
     private void getHospitalLocation(){
-        DatabaseReference findHospital = FirebaseDatabase.getInstance().getReference().child("customerRequestH").child(userID1);
+        DatabaseReference findHospital = FirebaseDatabase.getInstance().getReference().child("customerRequestH").child(userId);
         findHospital.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -780,6 +644,7 @@ public class CustomerMapActivity extends AppCompatActivity implements OnMapReady
                                         destinationMarker = mMap.addMarker(new MarkerOptions().position(destinationLatLng).title("Hospital Location").icon(BitmapDescriptorFactory.fromResource(R.mipmap.ghr_pickup)));
                                         getRouteToHospital(destinationLatLng);
                                         hospitalToggle = 2;
+                                        mItem.setTitle("Hospital Reached");
                                     }
                                 }
                             }

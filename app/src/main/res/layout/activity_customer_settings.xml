@@ -1,10 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
+
+<android.support.v4.widget.DrawerLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/drawer"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context="com.example.acer.goldenhour.CustomerSettingsActivity">
+
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/three"
+    android:background="@drawable/wallpaper_five"
     tools:context="com.example.acer.goldenhour.CustomerSettingsActivity"
     android:orientation="vertical"
     android:padding="20sp">
@@ -16,7 +26,9 @@
         android:layout_above="@+id/phoneEditText"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
-        android:layout_marginBottom="22dp"
+        android:textColorHint="@color/colorBlack"
+        android:textColor="@color/colorBlack"
+        android:layout_marginBottom="25dp"
         android:background="@null"
         android:hint="Name"
         android:inputType="text" />
@@ -28,7 +40,9 @@
         android:layout_above="@+id/ephone"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
-        android:layout_marginBottom="22dp"
+        android:textColorHint="@color/colorBlack"
+        android:textColor="@color/colorBlack"
+        android:layout_marginBottom="25dp"
         android:background="@null"
         android:hint="Phone"
         android:inputType="number" />
@@ -40,7 +54,9 @@
         android:layout_above="@+id/medicompany"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
-        android:layout_marginBottom="18dp"
+        android:layout_marginBottom="25dp"
+        android:textColor="@color/colorBlack"
+        android:textColorHint="@color/colorBlack"
         android:background="@null"
         android:hint="Emergency Phone No."
         android:inputType="text" />
@@ -52,7 +68,9 @@
         android:layout_above="@+id/medino"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
-        android:layout_marginBottom="18dp"
+        android:textColorHint="@color/colorBlack"
+        android:textColor="@color/colorBlack"
+        android:layout_marginBottom="25dp"
         android:background="@null"
         android:hint="Mediclaim Company Name"
         android:inputType="text" />
@@ -64,13 +82,16 @@
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
         android:layout_centerVertical="true"
+        android:textColor="@color/colorBlack"
+        android:textColorHint="@color/colorBlack"
+        android:layout_marginBottom="25dp"
         android:background="@null"
         android:hint="Mediclaim Policy No."
         android:inputType="text" />
 
     <Button
         android:id="@+id/confirm"
-        android:layout_width="250dp"
+        android:layout_width="200dp"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
@@ -82,23 +103,23 @@
 
 
     <TextView
+        android:id="@+id/textView5"
         android:layout_width="50dp"
         android:layout_height="50dp"
-        android:layout_alignEnd="@+id/confirm"
-        android:layout_alignRight="@+id/confirm"
+        android:layout_alignEnd="@+id/back"
+        android:layout_alignRight="@+id/back"
         android:layout_alignTop="@+id/confirm"
-        android:layout_marginEnd="84dp"
-        android:layout_marginRight="84dp"
-        android:layout_marginTop="59dp"
+        android:layout_marginEnd="63dp"
+        android:layout_marginRight="63dp"
+        android:layout_marginTop="55dp"
         android:text="Or"
         android:textColor="@color/colorBlack"
         android:textSize="20sp"
-        android:textStyle="bold"
-        android:id="@+id/textView5" />
+        android:textStyle="bold" />
 
     <Button
         android:id="@+id/back"
-        android:layout_width="250dp"
+        android:layout_width="200dp"
         android:layout_height="wrap_content"
         android:layout_alignLeft="@+id/confirm"
         android:layout_alignStart="@+id/confirm"
@@ -109,3 +130,19 @@
         android:textColor="#FFFFFF" />
 
 </RelativeLayout>
+
+
+    <android.support.design.widget.NavigationView
+        app:headerLayout="@layout/header"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:background="@color/colorWhite"
+        app:itemTextColor="@color/colorBlack"
+        app:itemIconTint="@color/colorBlack"
+        app:menu="@menu/drawermenu"
+        android:id="@+id/nv"
+        android:layout_gravity="start">
+    </android.support.design.widget.NavigationView>
+
+
+</android.support.v4.widget.DrawerLayout>

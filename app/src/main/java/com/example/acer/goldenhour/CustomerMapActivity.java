@@ -18,6 +18,7 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.telephony.SmsManager;
+import android.view.KeyEvent;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
@@ -75,8 +76,6 @@ public class CustomerMapActivity extends AppCompatActivity implements OnMapReady
 
     SupportMapFragment mapFragment;
 
-
-
     private FirebaseAuth mAuth1;
     private String userID1;
 
@@ -88,7 +87,7 @@ public class CustomerMapActivity extends AppCompatActivity implements OnMapReady
     private Boolean requestBol = false, addedCustomerToHospital = false, onlyHospital = false;
     private Marker pickupMarker, destinationMarker;
 
-    private String requestService, userId, mePhone, msg;
+    private String requestService, userId, mePhone, msg, requestHospitalId;
 
     private LinearLayout mDriverInfo;
     private ImageView mDriverProfileImage;
@@ -157,7 +156,6 @@ public class CustomerMapActivity extends AppCompatActivity implements OnMapReady
         if (mNavigationView != null){
             mNavigationView.setNavigationItemSelectedListener(this);
         }
-
 
         mRequest.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -235,7 +233,10 @@ public class CustomerMapActivity extends AppCompatActivity implements OnMapReady
             }
         });
 
-
+        if (!getIntent().getExtras().getString("hospitalId").isEmpty()){
+            requestHospitalId = getIntent().getExtras().getString("hospitalId");
+            getDonorToHospital();
+        }
     }
 
     @Override
@@ -268,7 +269,6 @@ public class CustomerMapActivity extends AppCompatActivity implements OnMapReady
                 startActivity(intent2);
                 break;
 
-
             case R.id.call_police:
                 final int REQUEST_PHONE_CALL = 1;
                 Intent callIntent = new Intent(Intent.ACTION_CALL);
@@ -283,7 +283,6 @@ public class CustomerMapActivity extends AppCompatActivity implements OnMapReady
                     }
                 }
                 break;
-
 
             case R.id.sos:
                 mCustomerDatabase1.addValueEventListener(new ValueEventListener() {
@@ -304,18 +303,13 @@ public class CustomerMapActivity extends AppCompatActivity implements OnMapReady
                         } else {
                             Toast.makeText(CustomerMapActivity.this, "Permission denied", Toast.LENGTH_SHORT).show();
                         }
-
-
                     }
 
                     @Override
                     public void onCancelled(DatabaseError databaseError) {
-
                     }
                 });
                 break;
-
-
 
             case R.id.Log_out:
                 FirebaseAuth.getInstance().signOut();
@@ -323,10 +317,6 @@ public class CustomerMapActivity extends AppCompatActivity implements OnMapReady
                 startActivity(intent6);
                 finish();
                 break;
-
-
-
-
         }
         return true;
     }
@@ -346,10 +336,6 @@ public class CustomerMapActivity extends AppCompatActivity implements OnMapReady
                 break;
         }
     }
-
-
-
-
 
     private int radius = 1;
     private Boolean driverFound = false;
@@ -783,12 +769,38 @@ public class CustomerMapActivity extends AppCompatActivity implements OnMapReady
                                     }
                                 }
                             }
-
                             @Override
                             public void onCancelled(DatabaseError databaseError) {
-
                             }
                         });
+                    }
+                }
+            }
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+            }
+        });
+    }
+
+    private void getDonorToHospital(){
+        DatabaseReference hospitalLocation = FirebaseDatabase.getInstance().getReference().child("Users").child("Hospital").child(requestHospitalId).child("l");
+        hospitalLocation.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists()) {
+                    if (dataSnapshot.exists() && !requestHospitalId.equals("")) {
+                        List<Object> map = (List<Object>) dataSnapshot.getValue();
+                        double locationLat = 0;
+                        double locationLng = 0;
+                        if (map.get(0) != null) {
+                            locationLat = Double.parseDouble(map.get(0).toString());
+                        }
+                        if (map.get(1) != null) {
+                            locationLng = Double.parseDouble(map.get(1).toString());
+                        }
+                        destinationLatLng = new LatLng(locationLat, locationLng);
+                        destinationMarker = mMap.addMarker(new MarkerOptions().position(destinationLatLng).title("Hospital Location").icon(BitmapDescriptorFactory.fromResource(R.mipmap.ghr_pickup)));
+                        getRouteToHospital(destinationLatLng);
                     }
                 }
             }
@@ -858,5 +870,16 @@ public class CustomerMapActivity extends AppCompatActivity implements OnMapReady
             line.remove();
         }
         polylines.clear();
+    }
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if (keyCode == KeyEvent.KEYCODE_BACK) {
+            erasePolyLines();
+            if (destinationMarker != null){
+                destinationMarker.remove();
+            }
+        }
+        return super.onKeyDown(keyCode, event);
     }
 }

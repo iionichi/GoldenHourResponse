@@ -259,11 +259,9 @@ public class HospitalActivity extends AppCompatActivity implements NavigationVie
     }
 
     private void makeDonorRequest(){
-        DatabaseReference donorRequest = FirebaseDatabase.getInstance().getReference().child("donorRequest");
+        DatabaseReference donorRequest = FirebaseDatabase.getInstance().getReference().child("donorRequest").child(bloodGroup).child(rhFactor);
         String requestKey = donorRequest.push().getKey();
         HashMap requestMap = new HashMap();
-        requestMap.put("bloodGroup", bloodGroup);
-        requestMap.put("rhFactor", rhFactor);
         requestMap.put("hospitalId", hospitalId);
         donorRequest.child(requestKey).updateChildren(requestMap);
     }

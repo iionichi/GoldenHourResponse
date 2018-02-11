@@ -115,8 +115,7 @@ public class HospitalSettingsActivity extends AppCompatActivity implements Navig
                 startActivity(intent);
                 break;
 
-            case R.id.profile_settings_hospital:
-
+            case R.id.settingH:
                 break;
 
 

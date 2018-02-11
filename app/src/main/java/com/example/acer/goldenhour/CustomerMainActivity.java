@@ -1,6 +1,5 @@
 package com.example.acer.goldenhour;
 
-import android.*;
 import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -16,29 +15,38 @@ import android.os.Bundle;
 import android.telephony.SmsManager;
 import android.view.MenuItem;
 import android.support.annotation.NonNull;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
 import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.util.ArrayList;
 import java.util.Map;
-
+import java.util.Vector;
 
 public class CustomerMainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
     private static final int SEND_SMS_PERMISSION_REQUEST_CODE = 111;
     private DrawerLayout mDrawerLayout;
     private ActionBarDrawerToggle mToggle;
     private NavigationView mNavigationView;
-    private String  mePhone, msg;
+    private String  mePhone, msg, userID1, bloodGroup, rhFactor;
+    private Boolean donate = false;
     private DatabaseReference mCustomerDatabase1;
-    private String userID1;
     private FirebaseAuth mAuth1;
+    private Vector hospitalNameVector, requestIdVector, hospitalIdVector;
 
-
+    private ListView mHospitalList;
+    private ArrayList<String> mHospitalNames = new ArrayList<>();
+    private ArrayAdapter<String> mHospitalNamesAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,14 +62,26 @@ public class CustomerMainActivity extends AppCompatActivity implements Navigatio
         userID1 = mAuth1.getCurrentUser().getUid();
         mCustomerDatabase1 = FirebaseDatabase.getInstance().getReference().child("Users").child("Customers").child(userID1);
 
-
         mNavigationView = findViewById(R.id.nv);
-
         if (mNavigationView != null){
             mNavigationView.setNavigationItemSelectedListener(this);
         }
 
+        //Creating an ArrayList for the listview and linking it with an array adapter
+        mHospitalList = findViewById(R.id.customerNameList);
+        mHospitalNamesAdapter = new ArrayAdapter<String>(this,android.R.layout.simple_list_item_1, mHospitalNames);
+        mHospitalList.setAdapter(mHospitalNamesAdapter);
+        mHospitalList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                String reqId = hospitalIdVector.get(i).toString();
+                Intent donorIntent = new Intent(CustomerMainActivity.this,CustomerMapActivity.class);
+                donorIntent.putExtra("hospitalId",reqId);
+                startActivity(donorIntent);
+            }
+        });
 
+        getDonor();//Get the request list for the blood donation
     }
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -72,11 +92,9 @@ public class CustomerMainActivity extends AppCompatActivity implements Navigatio
         return super.onOptionsItemSelected(item);
     }
 
-
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         int id = item.getItemId();
-
         switch (id){
             case R.id.profile_settings:
                 Intent intent = new Intent(CustomerMainActivity.this, CustomerSettingsActivity.class);
@@ -93,7 +111,6 @@ public class CustomerMainActivity extends AppCompatActivity implements Navigatio
 //                startActivity(intent2);
                 break;
 
-
             case R.id.call_police:
                 final int REQUEST_PHONE_CALL = 1;
                 Intent callIntent = new Intent(Intent.ACTION_CALL);
@@ -109,7 +126,6 @@ public class CustomerMainActivity extends AppCompatActivity implements Navigatio
                 }
                 break;
 
-
             case R.id.sos:
                 mCustomerDatabase1.addValueEventListener(new ValueEventListener() {
                     @Override
@@ -120,27 +136,20 @@ public class CustomerMainActivity extends AppCompatActivity implements Navigatio
                                 mePhone = map.get("ephone").toString();
                             }
                         }
-
                         msg = "Sender is in critical emergancy.";
-
                         if (checkPermission(Manifest.permission.SEND_SMS)) {
                             SmsManager smsManager = SmsManager.getDefault();
                             smsManager.sendTextMessage(mePhone, null, msg, null, null);
                         } else {
                             Toast.makeText(CustomerMainActivity.this, "Permission denied", Toast.LENGTH_SHORT).show();
                         }
-
-
                     }
 
                     @Override
                     public void onCancelled(DatabaseError databaseError) {
-
                     }
                 });
                 break;
-
-
 
             case R.id.Log_out:
                 FirebaseAuth.getInstance().signOut();
@@ -148,10 +157,6 @@ public class CustomerMainActivity extends AppCompatActivity implements Navigatio
                 startActivity(intent6);
                 finish();
                 break;
-
-
-
-
         }
         return true;
     }
@@ -172,6 +177,74 @@ public class CustomerMainActivity extends AppCompatActivity implements Navigatio
         }
     }
 
+    private void getDonor(){
+        DatabaseReference ifDonate = FirebaseDatabase.getInstance().getReference().child("Users").child("Customers").child(userID1);
+        ifDonate.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists()){
+                    Map<String, Object> mMap = (Map<String, Object>) dataSnapshot.getValue();
+                    if (mMap.get("bloodDonation").toString().equals("yes")){
+                        donate = true;
+                        bloodGroup = mMap.get("bloodGroup").toString();
+                        rhFactor = mMap.get("rhFactor").toString();
+                    }
+                }
+            }
 
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+            }
+        });
+        if (donate){
+            DatabaseReference donorList = FirebaseDatabase.getInstance().getReference().child("donorRequest").child(bloodGroup).child(rhFactor);
+            donorList.addChildEventListener(new ChildEventListener() {
+                @Override
+                public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+                    if (dataSnapshot.exists()){
+                        String requestKey = dataSnapshot.getKey();//Unique Key for every request
+                        Map<String, Object> newMap = (Map<String, Object>) dataSnapshot.getValue();
+                        String hospitalId = newMap.get("hospitalId").toString();//Getting the hospital Id
+                        DatabaseReference hospitalNameReference = FirebaseDatabase.getInstance().getReference()
+                                .child("Users").child("Hospital").child(hospitalId).child("Name");
+                        String hospitalName = hospitalNameReference.toString();//Getting the hospital name
+                        mHospitalNames.add(hospitalName);
+                        mHospitalNamesAdapter.notifyDataSetChanged();
+                        hospitalIdVector.add(hospitalId);
+                        hospitalNameVector.add(hospitalName);
+                        requestIdVector.add(requestKey);
+                    }
+                }
 
+                @Override
+                public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+                }
+
+                @Override
+                public void onChildRemoved(DataSnapshot dataSnapshot) {
+                    if (dataSnapshot.exists()){
+                        String requestKey = dataSnapshot.getKey();//Unique Key for every request
+                        Map<String, Object> newMap = (Map<String, Object>) dataSnapshot.getValue();
+                        String hospitalId = newMap.get("hospitalId").toString();//Getting the hospital Id
+                        DatabaseReference hospitalNameReference = FirebaseDatabase.getInstance().getReference()
+                                .child("Users").child("Hospital").child(hospitalId).child("Name");
+                        String hospitalName = hospitalNameReference.toString();//Getting the hospital name
+                        mHospitalNames.remove(hospitalName);
+                        mHospitalNamesAdapter.notifyDataSetChanged();
+                        hospitalIdVector.remove(hospitalId);
+                        hospitalNameVector.remove(hospitalName);
+                        requestIdVector.remove(requestKey);
+                    }
+                }
+
+                @Override
+                public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+                }
+            });
+        }
+    }
 }

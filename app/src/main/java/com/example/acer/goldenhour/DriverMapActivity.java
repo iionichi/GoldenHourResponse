@@ -55,12 +55,13 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 public class DriverMapActivity extends AppCompatActivity implements OnMapReadyCallback, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, com.google.android.gms.location.LocationListener, RoutingListener, NavigationView.OnNavigationItemSelectedListener {
 
-
+    LatLng pickupLatLng,pick;
     private DrawerLayout mDrawerLayoutDriver;
     private ActionBarDrawerToggle mToggleDriver;
     private NavigationView mNavigationView;
@@ -74,7 +75,7 @@ public class DriverMapActivity extends AppCompatActivity implements OnMapReadyCa
 
     private LatLng destination, destinationLatLng;
 
-    private Button mLogout,  mRideStatus ;
+    private Button mLogout,  mRideStatus;
 
     private int status = 0;
 
@@ -120,8 +121,6 @@ public class DriverMapActivity extends AppCompatActivity implements OnMapReadyCa
 
         mCustomerInfo = (LinearLayout) findViewById(R.id.customerInfo);
 
-
-
         mCustomerProfileImage = (ImageView) findViewById(R.id.customerProfileImage);
 
         mCustomerName = (TextView) findViewById(R.id.customerName);
@@ -163,10 +162,11 @@ public class DriverMapActivity extends AppCompatActivity implements OnMapReadyCa
 //                        if (destinationLatLng != null){
 //                            getRouteToMarker(destinationLatLng);
 //                        }
-//                        mRideStatus.setText("Drive Completed");
+                        mRideStatus.setText("Drive Completed");
                         break;
 
                     case 2:
+                        recordRide();
                         endRide();
                         break;
                 }
@@ -282,6 +282,7 @@ public class DriverMapActivity extends AppCompatActivity implements OnMapReadyCa
                         locationLng = Double.parseDouble(map.get(1).toString());
                     }
                     LatLng pickupLatLng = new LatLng(locationLat, locationLng);
+                    pick = pickupLatLng;
                     pickupMarker = mMap.addMarker(new MarkerOptions().position(pickupLatLng).title("Pickup Location").icon(BitmapDescriptorFactory.fromResource(R.mipmap.ghr_pickup)));
                     getRouteToMarker(pickupLatLng);
                 }
@@ -362,6 +363,35 @@ public class DriverMapActivity extends AppCompatActivity implements OnMapReadyCa
         mCustomerName.setText("");
         mCustomerPhone.setText("");
         mCustomerProfileImage.setImageResource(R.mipmap.ic_launcher);
+    }
+
+    private void recordRide() {
+        String userId = FirebaseAuth.getInstance().getUid();
+        DatabaseReference driverRef = FirebaseDatabase.getInstance().getReference().child("Users").child("Drivers").child(userId).child("History");
+        DatabaseReference customerRef = FirebaseDatabase.getInstance().getReference().child("Users").child("Customers").child(customerId).child("History");
+        DatabaseReference historyRef = FirebaseDatabase.getInstance().getReference().child("History");
+        String requestId = historyRef.push().getKey();
+        driverRef.child(requestId).setValue(true);
+        customerRef.child(requestId).setValue(true);
+
+        LatLng pck = pick;
+
+        HashMap map = new HashMap();
+        map.put("driver", userId);
+        map.put("customer", customerId);
+        map.put("rating", 0);
+        map.put("timestamp", getCurrentTimeStamp());
+        map.put("destination", destination);
+        map.put("location/from/lat", pick.latitude);
+        map.put("location/from/lng", pick.longitude);
+        map.put("location/to/lat", destinationLatLng.latitude);
+        map.put("location/to/lng", destinationLatLng.longitude);
+        historyRef.child(requestId).updateChildren(map);
+    }
+
+    private Long getCurrentTimeStamp() {
+        Long timestamp = System.currentTimeMillis()/1000;
+        return timestamp;
     }
 
     @Override

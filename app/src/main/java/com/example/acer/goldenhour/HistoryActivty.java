@@ -76,13 +76,15 @@ public class HistoryActivty extends AppCompatActivity implements NavigationView.
 
         mNavigationView = findViewById(R.id.nv);
 
-        if (mNavigationView != null){
-            mNavigationView.setNavigationItemSelectedListener(this);
-        }
+
 
         customerOrDriver = getIntent().getExtras().getString("customerOrDriver");
         userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
         getUserHistoryIds();
+
+        if (mNavigationView != null){
+            mNavigationView.setNavigationItemSelectedListener(this);
+        }
     }
 
 

@@ -37,6 +37,10 @@
         </android.support.v4.widget.NestedScrollView>
     </LinearLayout>
 
+
+
+
+</android.support.constraint.ConstraintLayout>
     <android.support.design.widget.NavigationView
         app:headerLayout="@layout/header"
         android:layout_width="wrap_content"
@@ -48,8 +52,5 @@
         android:id="@+id/nv"
         android:layout_gravity="start">
     </android.support.design.widget.NavigationView>
-
-
-</android.support.constraint.ConstraintLayout>
 
 </android.support.v4.widget.DrawerLayout>

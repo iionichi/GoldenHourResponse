@@ -6,6 +6,9 @@
     <item android:id="@+id/get_ambulance"
         android:title="Get Ambulance And Hospital Services"
         android:icon="@drawable/ambulance"/>
+    <item android:id="@+id/ambu_history"
+        android:title="Ambulance Call History"
+        android:icon="@drawable/logout_clipart"/>
 
     <item android:id="@+id/call_police"
         android:title="Call Police"

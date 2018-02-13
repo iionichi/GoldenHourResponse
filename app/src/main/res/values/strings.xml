@@ -13,6 +13,7 @@
         <item>Driver</item>
         <item>Hospital</item>
         <item>Unregistered</item>
+        <item>Admin</item>
     </string-array>
     <string name="title_activity_stranger_map">Map</string>
 </resources>

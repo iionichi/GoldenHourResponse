@@ -25,8 +25,12 @@
             android:stopWithTask="false" />
 
         <activity android:name=".MainActivity" />
-        <activity android:name=".DriverLoginActivity" />
-        <activity android:name=".CustomerLoginActivity" />
+        <activity
+            android:name=".DriverLoginActivity"
+            android:parentActivityName=".MainActivity"></activity>
+        <activity
+            android:name=".CustomerLoginActivity"
+            android:parentActivityName=".MainActivity"></activity>
         <!--
              The API key for Google Maps-based APIs is defined as a string resource.
              (See the file "res/values/google_maps_api.xml").
@@ -45,7 +49,9 @@
         <activity android:name=".CustomerMapActivity" />
         <activity android:name=".CustomerSettingsActivity" />
         <activity android:name=".DriverSettingsActivity" />
-        <activity android:name=".HospitalLoginActivity" />
+        <activity
+            android:name=".HospitalLoginActivity"
+            android:parentActivityName=".MainActivity"></activity>
         <activity android:name=".HospitalRegisterActivity" />
         <activity android:name=".HospitalActivity" />
         <activity android:name=".WelcomeScreen">
@@ -61,9 +67,12 @@
             android:label="@string/title_activity_stranger_map" />
         <activity android:name=".CustomerMainActivity" />
         <activity android:name=".HospitalSettingsActivity" />
-        <activity android:name=".HospitalSettingActivity" />
         <activity android:name=".HistoryActivty" />
-        <activity android:name=".HistorySingleActivity"></activity>
+        <activity android:name=".HistorySingleActivity" />
+        <activity
+            android:name=".AuthActivity"
+            android:parentActivityName=".MainActivity"></activity>
+        <activity android:name=".AdminActivity" android:parentActivityName=".MainActivity"></activity>
     </application>
 
 </manifest>

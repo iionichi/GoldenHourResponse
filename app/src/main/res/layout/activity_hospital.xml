@@ -34,7 +34,7 @@
         app:itemIconTint="@color/colorBlack"
         app:itemTextColor="@color/colorBlack"
         app:menu="@menu/drawermenuhospital"
-        android:id="@+id/nv2"
+        android:id="@+id/hospitalNavigation"
         android:layout_gravity="start">
 
     </android.support.design.widget.NavigationView>

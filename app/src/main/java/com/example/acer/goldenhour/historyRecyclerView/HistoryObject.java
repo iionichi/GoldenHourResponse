@@ -1,9 +1,5 @@
 package com.example.acer.goldenhour.historyRecyclerView;
 
-/**
- * Created by rbarv on 10/02/2018.
- */
-
 public class HistoryObject {
     private String rideId;
     private String time;

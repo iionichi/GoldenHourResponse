@@ -8,12 +8,44 @@
 
 
     <string-array name="role">
-
         <item>Customer</item>
         <item>Driver</item>
         <item>Hospital</item>
         <item>Unregistered</item>
         <item>Admin</item>
     </string-array>
+
+    <string-array name="bloodG">
+        <item>A</item>
+        <item>B</item>
+        <item>AB</item>
+        <item>O</item>
+    </string-array>
+
+    <string-array name="bloodRH">
+        <item>Positive(+)</item>
+        <item>Negative(-)</item>
+    </string-array>
+
+    <string-array name="bloodGForCustomer">
+        <item>Select Blood Group</item>
+        <item>A</item>
+        <item>B</item>
+        <item>AB</item>
+        <item>O</item>
+    </string-array>
+
+    <string-array name="bloodRHForCustomer">
+        <item>Select RH Factor</item>
+        <item>positive</item>
+        <item>negative</item>
+    </string-array>
+
+    <string-array name="answerCustomer">
+        <item>Would you like to donate for the noble cause?</item>
+        <item>yes</item>
+        <item>no</item>
+    </string-array>
+
     <string name="title_activity_stranger_map">Map</string>
 </resources>

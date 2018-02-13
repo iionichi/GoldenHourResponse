@@ -9,10 +9,6 @@ import android.widget.TextView;
 import com.example.acer.goldenhour.HistorySingleActivity;
 import com.example.acer.goldenhour.R;
 
-/**
- * Created by rbarv on 10/02/2018.
- */
-
 public class HistoryViewHolders extends RecyclerView.ViewHolder implements View.OnClickListener{
     public TextView rideId;
     public TextView time;

@@ -1,12 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:id="@+id/dashboard"
+    <item
+        android:id="@+id/dashboard"
         android:title="dashboard"
         android:icon="@drawable/ic_patient_service_black_24dp" />
-    <item android:id="@+id/profile_settings_hospital"
+    <item
+        android:id="@+id/getDonors"
+        android:title="Get Donors">
+    </item>
+    <item
+        android:id="@+id/settingH"
         android:title="Settings"
         android:icon="@drawable/ic_settings_black_24dp"/>
-    <item android:id="@+id/Log_out_H"
+    <item
+        android:id="@+id/historyH"
+        android:title="Ride History"/>
+    <item
+        android:id="@+id/logoutH"
         android:title="Logout"
         android:icon="@drawable/logout_clipart"/>
 

@@ -16,8 +16,11 @@ import android.os.Bundle;
 import android.telephony.SmsManager;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
@@ -32,17 +35,13 @@ import java.util.Map;
 
 public class CustomerSettingsActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener{
 
-    private EditText mNameField, mPhoneField, mePhoneField,mMedicompanyField,mMedinoField;
+    private EditText mNameField, mPhoneField, mePhoneField, mMedicompanyField, mMedinoField;
     private Button mBack, mConfirm;
 
     private FirebaseAuth mAuth;
     private DatabaseReference mCustomerDatabase;
 
-    private String userID;
-    private String mName;
-    private String mPhone;
-    private String mMedicompany;
-    private String mMedino;
+    private String userID, mName, mPhone, mMedicompany, mMedino, bloodGroup, rhFactor, answer;
 
     private static final int SEND_SMS_PERMISSION_REQUEST_CODE = 111;
     private DrawerLayout mDrawerLayout;
@@ -53,30 +52,112 @@ public class CustomerSettingsActivity extends AppCompatActivity implements Navig
     private FirebaseAuth mAuth1;
     private String  mePhone, msg;
 
+    Spinner mBloodGroup, mRHFactor, mAnswer;
+    ArrayAdapter<String> bloodGroupAdapter, rhGroupAdapter, answerAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_customer_settings);
 
-
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer);
         mToggle = new ActionBarDrawerToggle(this,mDrawerLayout,R.string.open,R.string.close);
         mDrawerLayout.addDrawerListener(mToggle);
         mToggle.syncState();
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
         mAuth1 = FirebaseAuth.getInstance();
         userID1 = mAuth1.getCurrentUser().getUid();
         mCustomerDatabase1 = FirebaseDatabase.getInstance().getReference().child("Users").child("Customers").child(userID1);
 
+        //Creating Spinner For BloodGroup
+        mBloodGroup = (Spinner) findViewById(R.id.bloodGroup);
+        bloodGroupAdapter = new ArrayAdapter<String>(CustomerSettingsActivity.this,
+                android.R.layout.simple_list_item_1, getResources().getStringArray(R.array.bloodGForCustomer));
+        bloodGroupAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);//Setting the spinner to dropdown
+        mBloodGroup.setAdapter(bloodGroupAdapter);//This allows the spinner to show the data of the adapter
+        mBloodGroup.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                switch (i){
+                    case 0:
+                        bloodGroup = null;
+                        break;
+                    case 1:
+                        bloodGroup = "A";
+                        break;
+                    case 2:
+                        bloodGroup = "B";
+                        break;
+                    case 3:
+                        bloodGroup = "AB";
+                        break;
+                    case 4:
+                        bloodGroup = "O";
+                        break;
+                }
+            }
 
-        mNavigationView = findViewById(R.id.nv);
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+            }
+        });
 
-        if (mNavigationView != null){
-            mNavigationView.setNavigationItemSelectedListener(this);
-        }
+        //Creating Spinner For Blood RH factor
+        mRHFactor = (Spinner) findViewById(R.id.rhFactor);
+        rhGroupAdapter = new ArrayAdapter<String>(CustomerSettingsActivity.this,
+                android.R.layout.simple_list_item_1, getResources().getStringArray(R.array.bloodRHForCustomer));
+        rhGroupAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        mRHFactor.setAdapter(rhGroupAdapter);
+        mRHFactor.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                switch (i){
+                    case 0:
+                        rhFactor = null;
+                        break;
+                    case 1:
+                        rhFactor = "positive";
+                        break;
+                    case 2:
+                        rhFactor = "negative";
+                        break;
+                }
+            }
 
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+            }
+        });
 
+        //Creating Spinner for answer of the customer Yes/No
+        mAnswer = (Spinner) findViewById(R.id.supportDonation);
+        answerAdapter = new ArrayAdapter<String>(this,
+                android.R.layout.simple_list_item_1,getResources().getStringArray(R.array.answerCustomer));
+        answerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        mAnswer.setAdapter(answerAdapter);
+        mAnswer.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                switch (i){
+                    case 0:
+                        answer = "no";
+                        break;
+                    case 1:
+                        answer = "yes";
+                        break;
+                    case 2:
+                        answer = "no";
+                        break;
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+            }
+        });
+
+        //Initializing the Fields
         mNameField = (EditText) findViewById(R.id.name);
         mPhoneField = (EditText) findViewById(R.id.phoneEditText);
         mePhoneField = (EditText) findViewById(R.id.ephone);
@@ -85,6 +166,12 @@ public class CustomerSettingsActivity extends AppCompatActivity implements Navig
 
         mBack = (Button) findViewById(R.id.back);
         mConfirm = (Button) findViewById(R.id.confirm);
+
+        //Initializing Navition Drawer
+        mNavigationView = findViewById(R.id.nv);
+        if (mNavigationView != null){
+            mNavigationView.setNavigationItemSelectedListener(this);
+        }
 
         mAuth = FirebaseAuth.getInstance();
         userID = mAuth.getCurrentUser().getUid();
@@ -112,17 +199,14 @@ public class CustomerSettingsActivity extends AppCompatActivity implements Navig
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (mToggle.onOptionsItemSelected(item)) {
-
             return true;
         }
         return super.onOptionsItemSelected(item);
     }
 
-
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         int id = item.getItemId();
-
         switch (id){
             case R.id.profile_settings:
 //                Intent intent = new Intent(CustomerSettingsActivity.this, CustomerSettingsActivity.class);
@@ -145,7 +229,6 @@ public class CustomerSettingsActivity extends AppCompatActivity implements Navig
                 startActivity(intent2);
                 break;
 
-
             case R.id.call_police:
                 final int REQUEST_PHONE_CALL = 1;
                 Intent callIntent = new Intent(Intent.ACTION_CALL);
@@ -161,7 +244,6 @@ public class CustomerSettingsActivity extends AppCompatActivity implements Navig
                 }
                 break;
 
-
             case R.id.sos:
                 mCustomerDatabase1.addValueEventListener(new ValueEventListener() {
                     @Override
@@ -172,27 +254,20 @@ public class CustomerSettingsActivity extends AppCompatActivity implements Navig
                                 mePhone = map.get("ephone").toString();
                             }
                         }
-
                         msg = "Sender is in critical emergancy.";
-
                         if (checkPermission(android.Manifest.permission.SEND_SMS)) {
                             SmsManager smsManager = SmsManager.getDefault();
                             smsManager.sendTextMessage(mePhone, null, msg, null, null);
                         } else {
                             Toast.makeText(CustomerSettingsActivity.this, "Permission denied", Toast.LENGTH_SHORT).show();
                         }
-
-
                     }
 
                     @Override
                     public void onCancelled(DatabaseError databaseError) {
-
                     }
                 });
                 break;
-
-
 
             case R.id.Log_out:
                 FirebaseAuth.getInstance().signOut();
@@ -200,10 +275,6 @@ public class CustomerSettingsActivity extends AppCompatActivity implements Navig
                 startActivity(intent6);
                 finish();
                 break;
-
-
-
-
         }
         return true;
     }
@@ -253,6 +324,23 @@ public class CustomerSettingsActivity extends AppCompatActivity implements Navig
                         mMedino = map.get("Medino").toString();
                         mMedinoField.setText(mMedino);
                     }
+
+                    if (map.get("donate") != null){
+                        answer = map.get("donate").toString();
+                        int answerPosition = answerAdapter.getPosition(answer);
+                        mAnswer.setSelection(answerPosition);
+                    }
+                    if(map.get("BloodGroup") != null){
+                        bloodGroup = map.get("BloodGroup").toString();
+                        int bloodGroupPosition = bloodGroupAdapter.getPosition(bloodGroup);
+                        mBloodGroup.setSelection(bloodGroupPosition);
+                    }
+
+                    if(map.get("RHFactor") != null){
+                        rhFactor = map.get("RHFactor").toString();
+                        int rhGroupPosition = rhGroupAdapter.getPosition(rhFactor);
+                        mRHFactor.setSelection(rhGroupPosition);
+                    }
                 }
             }
 
@@ -275,6 +363,9 @@ public class CustomerSettingsActivity extends AppCompatActivity implements Navig
         userInfo.put("ephone",mePhone);
         userInfo.put("Medicompany",mMedicompany);
         userInfo.put("Medino",mMedino);
+        userInfo.put("donate",answer);
+        userInfo.put("BloodGroup",bloodGroup);
+        userInfo.put("RHFactor",rhFactor);
         mCustomerDatabase.updateChildren(userInfo);
 
         finish();

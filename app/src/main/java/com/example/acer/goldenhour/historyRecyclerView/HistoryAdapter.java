@@ -10,10 +10,6 @@ import com.example.acer.goldenhour.R;
 
 import java.util.List;
 
-/**
- * Created by rbarv on 10/02/2018.
- */
-
 public class HistoryAdapter extends RecyclerView.Adapter<HistoryViewHolders> {
     private List<HistoryObject> itemList;
     private Context context;

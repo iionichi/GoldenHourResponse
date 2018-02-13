@@ -13,6 +13,9 @@
         android:title="Settings"
         android:icon="@drawable/ic_settings_black_24dp"/>
     <item
+        android:id="@+id/historyH"
+        android:title="Ride History"/>
+    <item
         android:id="@+id/logoutH"
         android:title="Logout"
         android:icon="@drawable/logout_clipart"/>

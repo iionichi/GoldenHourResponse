@@ -35,6 +35,7 @@ import com.google.firebase.database.ValueEventListener;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Vector;
 
 public class HospitalActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
@@ -50,9 +51,11 @@ public class HospitalActivity extends AppCompatActivity implements NavigationVie
 
     private ListView mUserList;
     private ArrayList<String> mCustomerNames = new ArrayList<>();
+    ArrayAdapter<String> arrayAdapter;
+    Vector customerIdVector = new Vector();
 
     Spinner mBloodGroup, mRHFactor;
-    Dialog mGetDonorDialog;
+    Dialog mGetDonorDialog, mGetUserInfoDialog;
     NavigationView mHospitalNavigation;
 
     @Override
@@ -76,8 +79,15 @@ public class HospitalActivity extends AppCompatActivity implements NavigationVie
 
         //mtext = findViewById(R.id.hospitalText);
         mUserList = findViewById(R.id.customerNameList);
-        final ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(this,android.R.layout.simple_list_item_1, mCustomerNames);
+        arrayAdapter = new ArrayAdapter<String>(this,android.R.layout.simple_list_item_1, mCustomerNames);
         mUserList.setAdapter(arrayAdapter);
+        mUserList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                String userID = customerIdVector.get(i).toString();
+                showDialogBox(userID);
+            }
+        });
 
         mHospitalNavigation = findViewById(R.id.hospitalNavigation);
         mHospitalNavigation.setNavigationItemSelectedListener(this);
@@ -86,12 +96,18 @@ public class HospitalActivity extends AppCompatActivity implements NavigationVie
         }
 
         mGetDonorDialog = new Dialog(this);
+        mGetUserInfoDialog = new Dialog(this);
 
-        DatabaseReference customersId = FirebaseDatabase.getInstance().getReference().child("Hospital").child(hospitalId).child("customerRequestId");
+        getListOfPatients();
+    }
+
+    private void getListOfPatients(){
+        DatabaseReference customersId = FirebaseDatabase.getInstance().getReference().child("Users").child("Hospital").child(hospitalId).child("customerRequestId");
         customersId.addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
                 userId = dataSnapshot.getValue(String.class);
+                customerIdVector.addElement(userId);
 
                 DatabaseReference customerName = FirebaseDatabase.getInstance().getReference().child("Users").child("Customers").child(userId).child("name");
                 customerName.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -127,6 +143,7 @@ public class HospitalActivity extends AppCompatActivity implements NavigationVie
                             //Adding Names to the ListView
                             mCustomerNames.remove(dataSnapshot.getValue(String.class));
                             arrayAdapter.notifyDataSetChanged();
+                            customerIdVector.remove(userId);
                         }
                     }
 
@@ -163,6 +180,7 @@ public class HospitalActivity extends AppCompatActivity implements NavigationVie
             case R.id.dashboard:
 //                Intent intent = new Intent(HospitalActivity.this, HospitalActivity.class);
 //                startActivity(intent);
+
                 break;
 
             case R.id.settingH:
@@ -264,6 +282,52 @@ public class HospitalActivity extends AppCompatActivity implements NavigationVie
         HashMap requestMap = new HashMap();
         requestMap.put("hospitalId", hospitalId);
         donorRequest.child(requestKey).updateChildren(requestMap);
+    }
+
+    private void showDialogBox(String userID){
+        mGetUserInfoDialog.setContentView(R.layout.watch_customer_details);
+        final TextView mName,mMediC, mMediN, mPhone, mEPhone, mBloodGroup;
+        mName = mGetUserInfoDialog.findViewById(R.id.userNameH);
+        mMediC = mGetUserInfoDialog.findViewById(R.id.userMedicalimCompany);
+        mMediN = mGetUserInfoDialog.findViewById(R.id.userMedicalimNumber);
+        mPhone = mGetUserInfoDialog.findViewById(R.id.userPhoneNumber);
+        mEPhone = mGetUserInfoDialog.findViewById(R.id.emergencyPhoneNumber);
+        mBloodGroup = mGetUserInfoDialog.findViewById(R.id.userBloodGroup);
+
+        DatabaseReference userInfoRef = FirebaseDatabase.getInstance().getReference().child("Users").child("Customers").child(userID);
+        userInfoRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists()){
+                    Map<String, Object> mMap = (Map<String, Object>) dataSnapshot.getValue();
+                    if (mMap.get("name").toString() != null){
+                        mName.setText(mMap.get("name").toString());
+                    }
+                    if (mMap.get("Medicompany").toString() != null){
+                        mMediC.setText(mMap.get("Medicompany").toString());
+                    }
+                    if (mMap.get("Medino").toString() != null){
+                        mMediN.setText(mMap.get("Medino").toString());
+                    }
+                    if (mMap.get("phone").toString() != null){
+                        mPhone.setText(mMap.get("phone").toString());
+                    }
+                    if (mMap.get("ephone").toString() != null){
+                        mEPhone.setText(mMap.get("ephone").toString());
+                    }
+//                    if (mMap.get("BloodGroup").toString() != null && mMap.get("RHFactor").toString() != null){
+//                        mBloodGroup.setText(mMap.get("BloodGroup").toString() + " " + mMap.get("RHFactor").toString());
+//                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+        mGetUserInfoDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.WHITE));//Background color for dialog
+        mGetUserInfoDialog.show();//Show the dialog
     }
 
 //    private void getDonor(){

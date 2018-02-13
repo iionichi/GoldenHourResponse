@@ -724,4 +724,6 @@ public class StrangerMapActivity extends AppCompatActivity implements OnMapReady
         }
         polylines.clear();
     }
+
+
 }

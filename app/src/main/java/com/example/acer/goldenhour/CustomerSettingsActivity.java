@@ -41,7 +41,7 @@ public class CustomerSettingsActivity extends AppCompatActivity implements Navig
     private FirebaseAuth mAuth;
     private DatabaseReference mCustomerDatabase;
 
-    private String userID, mName, mPhone, mMedicompany, mMedino, bloodGroup, rhFactor;
+    private String userID, mName, mPhone, mMedicompany, mMedino, bloodGroup, rhFactor, answer;
 
     private static final int SEND_SMS_PERMISSION_REQUEST_CODE = 111;
     private DrawerLayout mDrawerLayout;
@@ -52,8 +52,8 @@ public class CustomerSettingsActivity extends AppCompatActivity implements Navig
     private FirebaseAuth mAuth1;
     private String  mePhone, msg;
 
-    Spinner mBloodGroup, mRHFactor;
-    ArrayAdapter<String> bloodGroupAdapter, rhGroupAdapter;
+    Spinner mBloodGroup, mRHFactor, mAnswer;
+    ArrayAdapter<String> bloodGroupAdapter, rhGroupAdapter, answerAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -130,6 +130,33 @@ public class CustomerSettingsActivity extends AppCompatActivity implements Navig
             }
         });
 
+        //Creating Spinner for answer of the customer Yes/No
+        mAnswer = (Spinner) findViewById(R.id.supportDonation);
+        answerAdapter = new ArrayAdapter<String>(this,
+                android.R.layout.simple_list_item_1,getResources().getStringArray(R.array.answerCustomer));
+        answerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        mAnswer.setAdapter(answerAdapter);
+        mAnswer.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                switch (i){
+                    case 0:
+                        answer = "no";
+                        break;
+                    case 1:
+                        answer = "yes";
+                        break;
+                    case 2:
+                        answer = "no";
+                        break;
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+            }
+        });
+
         //Initializing the Fields
         mNameField = (EditText) findViewById(R.id.name);
         mPhoneField = (EditText) findViewById(R.id.phoneEditText);
@@ -172,7 +199,6 @@ public class CustomerSettingsActivity extends AppCompatActivity implements Navig
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (mToggle.onOptionsItemSelected(item)) {
-
             return true;
         }
         return super.onOptionsItemSelected(item);
@@ -293,6 +319,11 @@ public class CustomerSettingsActivity extends AppCompatActivity implements Navig
                         mMedinoField.setText(mMedino);
                     }
 
+                    if (map.get("donate") != null){
+                        answer = map.get("donate").toString();
+                        int answerPosition = answerAdapter.getPosition(answer);
+                        mAnswer.setSelection(answerPosition);
+                    }
                     if(map.get("BloodGroup") != null){
                         bloodGroup = map.get("BloodGroup").toString();
                         int bloodGroupPosition = bloodGroupAdapter.getPosition(bloodGroup);
@@ -301,8 +332,8 @@ public class CustomerSettingsActivity extends AppCompatActivity implements Navig
 
                     if(map.get("RHFactor") != null){
                         rhFactor = map.get("RHFactor").toString();
-                        int rhGroupPosition = bloodGroupAdapter.getPosition(bloodGroup);
-                        mBloodGroup.setSelection(rhGroupPosition);
+                        int rhGroupPosition = rhGroupAdapter.getPosition(rhFactor);
+                        mRHFactor.setSelection(rhGroupPosition);
                     }
                 }
             }
@@ -326,6 +357,7 @@ public class CustomerSettingsActivity extends AppCompatActivity implements Navig
         userInfo.put("ephone",mePhone);
         userInfo.put("Medicompany",mMedicompany);
         userInfo.put("Medino",mMedino);
+        userInfo.put("donate",answer);
         userInfo.put("BloodGroup",bloodGroup);
         userInfo.put("RHFactor",rhFactor);
         mCustomerDatabase.updateChildren(userInfo);

@@ -12,10 +12,6 @@ import com.google.firebase.database.FirebaseDatabase;
 
 import java.security.Provider;
 
-/**
- * Created by Saurabh Mete on 06-01-2018.
- */
-
 public class onAppKilled extends Service {
     @Nullable
     @Override
@@ -30,7 +26,6 @@ public class onAppKilled extends Service {
 
         String userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
         DatabaseReference ref = FirebaseDatabase.getInstance().getReference("driversAvailable");
-
         GeoFire geoFire = new GeoFire(ref);
         geoFire.removeLocation(userId);
     }

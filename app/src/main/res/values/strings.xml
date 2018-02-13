@@ -27,7 +27,7 @@
     </string-array>
 
     <string-array name="bloodGForCustomer">
-        <item></item>
+        <item>Select Blood Group</item>
         <item>A</item>
         <item>B</item>
         <item>AB</item>
@@ -35,9 +35,15 @@
     </string-array>
 
     <string-array name="bloodRHForCustomer">
-        <item></item>
-        <item>Positive(+)</item>
-        <item>Negative(-)</item>
+        <item>Select RH Factor</item>
+        <item>positive</item>
+        <item>negative</item>
+    </string-array>
+
+    <string-array name="answerCustomer">
+        <item>Would you like to donate for the noble cause?</item>
+        <item>yes</item>
+        <item>no</item>
     </string-array>
 
     <string name="title_activity_stranger_map">Map</string>

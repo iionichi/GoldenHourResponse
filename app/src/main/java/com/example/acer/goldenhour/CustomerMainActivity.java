@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Build;
+import android.provider.Settings;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
@@ -68,7 +69,7 @@ public class CustomerMainActivity extends AppCompatActivity implements Navigatio
         }
 
         //Creating an ArrayList for the listview and linking it with an array adapter
-        mHospitalList = findViewById(R.id.customerNameList);
+        mHospitalList = findViewById(R.id.donorsList);
         mHospitalNamesAdapter = new ArrayAdapter<String>(this,android.R.layout.simple_list_item_1, mHospitalNames);
         mHospitalList.setAdapter(mHospitalNamesAdapter);
         mHospitalList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -80,6 +81,10 @@ public class CustomerMainActivity extends AppCompatActivity implements Navigatio
                 startActivity(donorIntent);
             }
         });
+
+        hospitalIdVector = new Vector();
+        hospitalNameVector = new Vector();
+        requestIdVector = new Vector();
 
         getDonor();//Get the request list for the blood donation
     }
@@ -103,6 +108,7 @@ public class CustomerMainActivity extends AppCompatActivity implements Navigatio
 
             case R.id.get_ambulance:
                 Intent intent1 = new Intent(CustomerMainActivity.this, CustomerMapActivity.class);
+                intent1.putExtra("hospitalId","");
                 startActivity(intent1);
                 break;
 
@@ -152,7 +158,11 @@ public class CustomerMainActivity extends AppCompatActivity implements Navigatio
                 break;
 
             case R.id.Log_out:
-                FirebaseAuth.getInstance().signOut();
+                FirebaseAuth.getInstance().signOut();//Signing Out
+                //Deleting Entry in logged in node
+                String deviceId = Settings.Secure.getString(getApplicationContext().getContentResolver(), Settings.Secure.ANDROID_ID);
+                DatabaseReference checkLoggedIn =  FirebaseDatabase.getInstance().getReference().child("LoggedIn").child(deviceId);
+                checkLoggedIn.removeValue();
                 Intent intent6 = new Intent(CustomerMainActivity.this, MainActivity.class);
                 startActivity(intent6);
                 finish();
@@ -184,10 +194,11 @@ public class CustomerMainActivity extends AppCompatActivity implements Navigatio
             public void onDataChange(DataSnapshot dataSnapshot) {
                 if (dataSnapshot.exists()){
                     Map<String, Object> mMap = (Map<String, Object>) dataSnapshot.getValue();
-                    if (mMap.get("bloodDonation").toString().equals("yes")){
+                    if (mMap.get("donate").toString().equals("yes")){
                         donate = true;
-                        bloodGroup = mMap.get("bloodGroup").toString();
-                        rhFactor = mMap.get("rhFactor").toString();
+                        bloodGroup = mMap.get("BloodGroup").toString();
+                        rhFactor = mMap.get("RHFactor").toString();
+                        updateDonorList();
                     }
                 }
             }
@@ -196,6 +207,11 @@ public class CustomerMainActivity extends AppCompatActivity implements Navigatio
             public void onCancelled(DatabaseError databaseError) {
             }
         });
+    }
+
+    String hospitalName;
+    Boolean hName = false;
+    private void updateDonorList(){
         if (donate){
             DatabaseReference donorList = FirebaseDatabase.getInstance().getReference().child("donorRequest").child(bloodGroup).child(rhFactor);
             donorList.addChildEventListener(new ChildEventListener() {
@@ -204,15 +220,27 @@ public class CustomerMainActivity extends AppCompatActivity implements Navigatio
                     if (dataSnapshot.exists()){
                         String requestKey = dataSnapshot.getKey();//Unique Key for every request
                         Map<String, Object> newMap = (Map<String, Object>) dataSnapshot.getValue();
-                        String hospitalId = newMap.get("hospitalId").toString();//Getting the hospital Id
+                        final String hospitalId = newMap.get("hospitalId").toString();//Getting the hospital Id
                         DatabaseReference hospitalNameReference = FirebaseDatabase.getInstance().getReference()
                                 .child("Users").child("Hospital").child(hospitalId).child("Name");
-                        String hospitalName = hospitalNameReference.toString();//Getting the hospital name
-                        mHospitalNames.add(hospitalName);
-                        mHospitalNamesAdapter.notifyDataSetChanged();
-                        hospitalIdVector.add(hospitalId);
-                        hospitalNameVector.add(hospitalName);
-                        requestIdVector.add(requestKey);
+                        hospitalNameReference.addListenerForSingleValueEvent(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(DataSnapshot dataSnapshot) {
+                                if (dataSnapshot.exists()){
+                                    hospitalName = dataSnapshot.getValue(String.class);//Getting the hospital name
+                                    hName = true;
+                                    mHospitalNames.add(hospitalName);
+                                    mHospitalNamesAdapter.notifyDataSetChanged();
+                                    hospitalIdVector.addElement(hospitalId);
+                                }
+                            }
+
+                            @Override
+                            public void onCancelled(DatabaseError databaseError) {
+                            }
+                        });
+//                        hospitalNameVector.addElement(hospitalName);
+//                        requestIdVector.addElement(requestKey);
                     }
                 }
 
@@ -225,15 +253,27 @@ public class CustomerMainActivity extends AppCompatActivity implements Navigatio
                     if (dataSnapshot.exists()){
                         String requestKey = dataSnapshot.getKey();//Unique Key for every request
                         Map<String, Object> newMap = (Map<String, Object>) dataSnapshot.getValue();
-                        String hospitalId = newMap.get("hospitalId").toString();//Getting the hospital Id
+                        final String hospitalId = newMap.get("hospitalId").toString();//Getting the hospital Id
                         DatabaseReference hospitalNameReference = FirebaseDatabase.getInstance().getReference()
                                 .child("Users").child("Hospital").child(hospitalId).child("Name");
-                        String hospitalName = hospitalNameReference.toString();//Getting the hospital name
-                        mHospitalNames.remove(hospitalName);
-                        mHospitalNamesAdapter.notifyDataSetChanged();
-                        hospitalIdVector.remove(hospitalId);
-                        hospitalNameVector.remove(hospitalName);
-                        requestIdVector.remove(requestKey);
+                        hospitalNameReference.addListenerForSingleValueEvent(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(DataSnapshot dataSnapshot) {
+                                if (dataSnapshot.exists()){
+                                    hospitalName = dataSnapshot.getValue(String.class);//Getting the hospital name
+                                    mHospitalNames.remove(hospitalName);
+                                    mHospitalNamesAdapter.notifyDataSetChanged();
+                                    hospitalIdVector.remove(hospitalId);
+                                }
+                            }
+
+                            @Override
+                            public void onCancelled(DatabaseError databaseError) {
+
+                            }
+                        });
+//                        hospitalNameVector.remove(hospitalName);
+//                        requestIdVector.remove(requestKey);
                     }
                 }
 

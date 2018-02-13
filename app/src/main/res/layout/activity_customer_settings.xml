@@ -23,7 +23,6 @@
         android:id="@+id/name"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_above="@+id/phoneEditText"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
         android:textColorHint="@color/colorBlack"
@@ -37,7 +36,7 @@
         android:id="@+id/phoneEditText"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_above="@+id/ephone"
+        android:layout_below="@+id/name"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
         android:textColorHint="@color/colorBlack"
@@ -51,7 +50,7 @@
         android:id="@+id/ephone"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_above="@+id/medicompany"
+        android:layout_below="@+id/phoneEditText"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
         android:layout_marginBottom="25dp"
@@ -65,7 +64,7 @@
         android:id="@+id/medicompany"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_above="@+id/medino"
+        android:layout_below="@+id/ephone"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
         android:textColorHint="@color/colorBlack"
@@ -79,6 +78,7 @@
         android:id="@+id/medino"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_below="@+id/medicompany"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
         android:layout_centerVertical="true"
@@ -90,12 +90,19 @@
         android:inputType="text" />
 
     <Spinner
+        android:id="@+id/supportDonation"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="10sp"
+        android:layout_below="@+id/medino"/>
+
+    <Spinner
         android:id="@+id/bloodGroup"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="10sp"
         android:dropDownWidth="match_parent"
-        android:layout_below="@+id/medino"/>
+        android:layout_below="@+id/supportDonation" />
 
     <Spinner
         android:id="@+id/rhFactor"

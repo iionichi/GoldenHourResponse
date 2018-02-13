@@ -233,10 +233,10 @@ public class CustomerMapActivity extends AppCompatActivity implements OnMapReady
             }
         });
 
-        if (!getIntent().getExtras().getString("hospitalId").isEmpty()){
-            requestHospitalId = getIntent().getExtras().getString("hospitalId");
-            getDonorToHospital();
-        }
+//        if (!getIntent().getExtras().getString("hospitalId").isEmpty()){
+//            requestHospitalId = getIntent().getExtras().getString("hospitalId");
+//            getDonorToHospital();
+//        }
     }
 
     @Override
@@ -610,6 +610,7 @@ public class CustomerMapActivity extends AppCompatActivity implements OnMapReady
         mGoogleApiClient.connect();
     }
 
+    Boolean once = true;
     @Override
     public void onLocationChanged(Location location) {
         mLastLocation = location;
@@ -619,6 +620,13 @@ public class CustomerMapActivity extends AppCompatActivity implements OnMapReady
         mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
         mMap.animateCamera(CameraUpdateFactory.zoomTo(18)); //value goes from 1 - 21
 
+        if (once){
+            if (!getIntent().getExtras().getString("hospitalId").isEmpty()){
+                requestHospitalId = getIntent().getExtras().getString("hospitalId");
+                once = false;
+                getDonorToHospital();
+            }
+        }
     }
 
     @Override
@@ -812,12 +820,22 @@ public class CustomerMapActivity extends AppCompatActivity implements OnMapReady
         });
     }
 
+//    private void getRouteToHospital(LatLng destinationLatLng) {
+//        Routing routing = new Routing.Builder()
+//                .travelMode(AbstractRouting.TravelMode.DRIVING)
+//                .withListener(this)
+//                .alternativeRoutes(false)
+//                .waypoints(new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude()), destinationLatLng)
+//                .build();
+//        routing.execute();
+//    }
+
     private void getRouteToHospital(LatLng destinationLatLng) {
         Routing routing = new Routing.Builder()
                 .travelMode(AbstractRouting.TravelMode.DRIVING)
                 .withListener(this)
                 .alternativeRoutes(false)
-                .waypoints(new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude()), destinationLatLng)
+                .waypoints(pickupLocation2, destinationLatLng)
                 .build();
         routing.execute();
     }

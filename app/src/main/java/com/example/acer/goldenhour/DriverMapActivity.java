@@ -130,7 +130,6 @@ public class DriverMapActivity extends AppCompatActivity implements OnMapReadyCa
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
 
-
                 if (isChecked) {
                     connectDriver();
 
@@ -152,16 +151,11 @@ public class DriverMapActivity extends AppCompatActivity implements OnMapReadyCa
             public void onClick(View view) {
                 switch (status){
                     case 1:
-//                        getHospital();
-
                         status = 2;
                         erasePolylines();
                         if (destinationLatLng.latitude != 0.0 && destinationLatLng.longitude != 0.0){
                             getRouteToMarker(destinationLatLng);
                         }
-//                        if (destinationLatLng != null){
-//                            getRouteToMarker(destinationLatLng);
-//                        }
                         mRideStatus.setText("Drive Completed");
                         break;
 
@@ -188,8 +182,6 @@ public class DriverMapActivity extends AppCompatActivity implements OnMapReadyCa
                 return;
             }
         });
-
-
 
         getAssignedCustomer();
         getHospital();
@@ -220,7 +212,11 @@ public class DriverMapActivity extends AppCompatActivity implements OnMapReadyCa
                 startActivity(intent1);
                 break;
 
-
+            case R.id.historyH:
+                Intent intent = new Intent(DriverMapActivity.this, HistoryActivty.class);
+                intent.putExtra("customerOrDriver", "Drivers");
+                startActivity(intent);
+                break;
         }
         return true;
     }

@@ -35,15 +35,7 @@
             android:text="Get Hospital"
             android:textColor="@color/colorWhite" />
 
-        <Button
-            android:id="@+id/history"
-            android:layout_width="100dp"
-            android:layout_height="wrap_content"
-            android:background="@color/LightGrey"
-            android:layout_marginLeft="5dp"
-            android:layout_marginTop="5dp"
-            android:text="History"
-            android:textColor="@color/colorWhite" />
+
 
     </LinearLayout>
 
@@ -96,6 +88,13 @@
                     android:id="@+id/driverAmbulanceNumber"
                     android:paddingBottom="10sp"
                     android:paddingTop="20sp"/>
+                <RatingBar
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/ratingbar"
+                    android:layout_gravity="center"
+                    android:numStars="5"
+                    android:stepSize="0.1"/>
             </LinearLayout>
         </LinearLayout>
         <LinearLayout

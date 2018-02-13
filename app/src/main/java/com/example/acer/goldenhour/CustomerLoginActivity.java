@@ -56,6 +56,7 @@ public class CustomerLoginActivity extends AppCompatActivity {
         mLogin = (Button) findViewById(R.id.login);
         mRegistration = (Button) findViewById(R.id.registration);
         mLoginPhone = (Button) findViewById(R.id.phone_login);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         mRegistration.setOnClickListener(new View.OnClickListener() {
             @Override

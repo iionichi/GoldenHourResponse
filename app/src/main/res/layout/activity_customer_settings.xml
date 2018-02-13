@@ -14,7 +14,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/wallpaper_five"
+    android:background="@drawable/new_bg_one"
     tools:context="com.example.acer.goldenhour.CustomerSettingsActivity"
     android:orientation="vertical"
     android:padding="10sp">

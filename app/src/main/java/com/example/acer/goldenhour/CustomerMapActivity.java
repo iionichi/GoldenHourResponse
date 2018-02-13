@@ -26,6 +26,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
+import android.widget.RatingBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -94,6 +95,9 @@ public class CustomerMapActivity extends AppCompatActivity implements OnMapReady
     private TextView mDriverName, mDriverPhone, mDriverAmbulance, mDriverAmbulanceNumber;
 
     private RadioGroup mRadioGroup;
+    private RatingBar mRatingBar;
+
+
 
     final int LOCATION_REQUEST_CODE = 1;
 
@@ -139,6 +143,7 @@ public class CustomerMapActivity extends AppCompatActivity implements OnMapReady
         mDriverPhone = (TextView) findViewById(R.id.driverPhone);
         mDriverAmbulance = (TextView) findViewById(R.id.driverAmbulance);
         mDriverAmbulanceNumber = (TextView) findViewById(R.id.driverAmbulanceNumber);
+        mRatingBar = (RatingBar) findViewById(R.id.ratingbar);
 
         mRadioGroup = (RadioGroup) findViewById(R.id.radioGroup);
         mRadioGroup.check(R.id.normalAmbulance);
@@ -146,7 +151,7 @@ public class CustomerMapActivity extends AppCompatActivity implements OnMapReady
 
         mRequest = findViewById(R.id.request);
         mHospi = findViewById(R.id.hospi);
-        mHistory = findViewById(R.id.history);
+
 
 
         mAuth1 = FirebaseAuth.getInstance();
@@ -224,14 +229,7 @@ public class CustomerMapActivity extends AppCompatActivity implements OnMapReady
             }
         });
 
-        mHistory.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(CustomerMapActivity.this, HistoryActivty.class);
-                intent.putExtra("customerOrDriver", "Customers");
-                startActivity(intent);
-            }
-        });
+
 
 //        if (!getIntent().getExtras().getString("hospitalId").isEmpty()){
 //            requestHospitalId = getIntent().getExtras().getString("hospitalId");
@@ -262,6 +260,12 @@ public class CustomerMapActivity extends AppCompatActivity implements OnMapReady
             case R.id.get_ambulance:
 //                Intent intent1 = new Intent(CustomerMapActivity.this, CustomerMapActivity.class);
 //                startActivity(intent1);
+                break;
+
+            case R.id.ambu_history:
+                Intent intent5 = new Intent(CustomerMapActivity.this, HistoryActivty.class);
+                intent5.putExtra("customerOrDriver", "Customers");
+                startActivity(intent5);
                 break;
 
             case R.id.db:
@@ -502,6 +506,18 @@ public class CustomerMapActivity extends AppCompatActivity implements OnMapReady
                     if(map.get("ambulanceNumber") != null){
                         mDriverAmbulanceNumber.setText(map.get("ambulanceNumber").toString());
                     }
+
+                    int ratingSum = 0;
+                    float ratingsTotal = 0;
+                    float ratingsAvg = 0;
+                    for (DataSnapshot child : dataSnapshot.child("rating").getChildren()){
+                        ratingSum = ratingSum + Integer.valueOf(child.getValue().toString());
+                    }
+                    if(ratingsTotal!= 0){
+                        ratingsAvg = ratingSum/ratingsTotal;
+                        mRatingBar.setRating(ratingsAvg);
+                    }
+
                 }
             }
 

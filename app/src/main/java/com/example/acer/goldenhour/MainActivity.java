@@ -66,6 +66,9 @@ public class MainActivity extends AppCompatActivity {
                 else if (position==3){
                     type="unregistered";
                 }
+                else if (position==4){
+                    type = "admin";
+                }
             }
 
             @Override
@@ -98,6 +101,15 @@ public class MainActivity extends AppCompatActivity {
 
                     return;
                 }
+
+                else if (type == "admin"){
+                    Intent intent = new Intent(MainActivity.this, AdminActivity.class);
+                    startActivity(intent);
+
+                    return;
+                }
+
+
 
                 else if (type == "unregistered"){
                     Task<AuthResult> resultTask = mAuth.signInAnonymously();

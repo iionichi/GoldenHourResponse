@@ -35,6 +35,7 @@ public class DriverLoginActivity extends AppCompatActivity {
         setContentView(R.layout.activity_driver_login);
 
         mAuth = FirebaseAuth.getInstance();
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         firebaseAuthListener = new FirebaseAuth.AuthStateListener() {
             @Override

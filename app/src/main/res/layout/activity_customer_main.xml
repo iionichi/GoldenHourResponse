@@ -8,7 +8,7 @@
     tools:context="com.example.acer.goldenhour.CustomerMainActivity">
 
     <LinearLayout
-        android:background="@drawable/wallpaper_five"
+        android:background="@drawable/new_bg_one"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
@@ -29,7 +29,6 @@
         app:headerLayout="@layout/header"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
-        android:background="@drawable/iphone"
         app:itemTextColor="@color/colorBlack"
         app:itemIconTint="@color/colorBlack"
         app:menu="@menu/drawermenu"

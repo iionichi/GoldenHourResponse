@@ -2,7 +2,9 @@ package com.example.acer.goldenhour;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.ImageView;
+import android.widget.RatingBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -48,6 +50,9 @@ public class HistorySingleActivity extends AppCompatActivity implements OnMapRea
 
     private ImageView userImage;
 
+    private RatingBar mRatingBar;
+
+
     private DatabaseReference historyRideInfoDb;
 
     private LatLng destinationLatLng, pickupLatLng;
@@ -73,6 +78,8 @@ public class HistorySingleActivity extends AppCompatActivity implements OnMapRea
         userPhone = findViewById(R.id.userPhone);
 
         userImage = findViewById(R.id.userImage);
+        mRatingBar = findViewById(R.id.ratingbar);
+
 
         currentUserId = FirebaseAuth.getInstance().getCurrentUser().getUid();
 
@@ -98,10 +105,16 @@ public class HistorySingleActivity extends AppCompatActivity implements OnMapRea
                             if (!driverId.equals(currentUserId)) {
                                 userDriverOrCustomer = "Customers";
                                 getUserInformation("Drivers", driverId);
+                                displayCustomerRelatedObject();
+
                             }
                         }
                         if (child.getKey().equals("timestamp")) {
                             rideDate.setText(getDate(Long.valueOf(child.getValue().toString())));
+                        }
+                        if (child.getKey().equals("rating")) {
+                         mRatingBar.setRating(Integer.valueOf(child.getValue().toString()));
+
                         }
                         if (child.getKey().equals("location")) {
                             pickupLatLng = new LatLng(Double.valueOf(child.child("from").child("lat").getValue().toString()), Double.valueOf(child.child("from").child("lng").getValue().toString()));
@@ -114,10 +127,24 @@ public class HistorySingleActivity extends AppCompatActivity implements OnMapRea
                 }
             }
 
+
+
             @Override
             public void onCancelled(DatabaseError databaseError) {
             }
         });
+    }
+
+    private void displayCustomerRelatedObject() {
+    mRatingBar.setVisibility(View.VISIBLE);
+    mRatingBar.setOnRatingBarChangeListener(new RatingBar.OnRatingBarChangeListener() {
+        @Override
+        public void onRatingChanged(RatingBar ratingBar, float rating, boolean fromUser) {
+            historyRideInfoDb.child("rating").setValue(rating);
+            DatabaseReference mDriverRatingDb = FirebaseDatabase.getInstance().getReference().child("Users").child("Drivers").child(driverId).child("rating");
+            mDriverRatingDb.child(rideId).setValue(rating);
+        }
+    });
     }
 
     private void getUserInformation(String otherUserDriverOrCustomer, String otherUserId) {

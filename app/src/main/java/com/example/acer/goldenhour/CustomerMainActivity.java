@@ -88,6 +88,12 @@ public class CustomerMainActivity extends AppCompatActivity implements Navigatio
                 startActivity(intent1);
                 break;
 
+            case R.id.ambu_history:
+                Intent intent5 = new Intent(CustomerMainActivity.this, HistoryActivty.class);
+                intent5.putExtra("customerOrDriver", "Customers");
+                startActivity(intent5);
+                break;
+
             case R.id.db:
 //                Intent intent2 = new Intent(CustomerMainActivity.this, CustomerMainActivity.class);
 //                startActivity(intent2);

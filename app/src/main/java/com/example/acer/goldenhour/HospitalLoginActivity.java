@@ -55,6 +55,7 @@ public class HospitalLoginActivity extends AppCompatActivity {
 
         mLogin = (Button) findViewById(R.id.login);
         mRegistration = (Button) findViewById(R.id.registration);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         mRegistration.setOnClickListener(new View.OnClickListener() {
             @Override

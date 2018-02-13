@@ -6,5 +6,11 @@
     <item android:id="@+id/profile_settings_driver"
         android:title="Settings"
         android:icon="@drawable/ic_settings_black_24dp"/>
+    <item android:id="@+id/historyD"
+        android:title="History"
+        android:icon="@drawable/ic_settings_black_24dp"/>
+    <item android:id="@+id/logoutD"
+        android:title="Logout"
+        android:icon="@drawable/ic_settings_black_24dp"/>
 
 </menu>

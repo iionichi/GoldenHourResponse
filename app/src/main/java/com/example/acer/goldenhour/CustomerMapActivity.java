@@ -228,13 +228,6 @@ public class CustomerMapActivity extends AppCompatActivity implements OnMapReady
                 }
             }
         });
-
-
-
-//        if (!getIntent().getExtras().getString("hospitalId").isEmpty()){
-//            requestHospitalId = getIntent().getExtras().getString("hospitalId");
-//            getDonorToHospital();
-//        }
     }
 
     @Override

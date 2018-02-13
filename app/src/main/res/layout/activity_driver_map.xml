@@ -37,7 +37,8 @@
                 android:layout_height="wrap_content"
                 android:background="@color/LightGrey"
                 android:textColor="@color/colorWhite"
-                android:text="Logout" />
+                android:text="Logout"
+                android:visibility="gone"/>
 
 
         </LinearLayout>

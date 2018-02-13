@@ -212,10 +212,21 @@ public class DriverMapActivity extends AppCompatActivity implements OnMapReadyCa
                 startActivity(intent1);
                 break;
 
-            case R.id.historyH:
+            case R.id.historyD:
                 Intent intent = new Intent(DriverMapActivity.this, HistoryActivty.class);
                 intent.putExtra("customerOrDriver", "Drivers");
                 startActivity(intent);
+                break;
+
+            case R.id.logoutD:
+                String deviceId = Settings.Secure.getString(getApplicationContext().getContentResolver(), Settings.Secure.ANDROID_ID);
+                DatabaseReference diverLogout = FirebaseDatabase.getInstance().getReference().child("LoggedIn").child(deviceId);
+                diverLogout.removeValue();
+                disconnectDriver();
+                FirebaseAuth.getInstance().signOut();
+                Intent intent2 = new Intent(DriverMapActivity.this, MainActivity.class);
+                startActivity(intent2);
+                finish();
                 break;
         }
         return true;

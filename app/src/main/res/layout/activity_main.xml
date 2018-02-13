@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/new_bg_one"
+    android:background="@drawable/final_bg"
     tools:context="com.example.acer.goldenhour.MainActivity"
     android:orientation="vertical">
 

@@ -8,7 +8,10 @@
         android:icon="@drawable/ic_settings_black_24dp"/>
     <item android:id="@+id/historyD"
         android:title="History"
-        android:icon="@drawable/ic_settings_black_24dp"/>
+        android:icon="@drawable/history"/>
+    <item android:id="@+id/call_policeD"
+        android:title="Call Police"
+        android:icon="@drawable/police2"/>
     <item android:id="@+id/logoutD"
         android:title="Logout"
         android:icon="@drawable/ic_settings_black_24dp"/>

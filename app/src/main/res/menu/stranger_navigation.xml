@@ -3,16 +3,20 @@
     xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item android:id="@+id/callNormalAmbulance"
-        android:title="Call Normal Ambulance">
+        android:title="Call Normal Ambulance"
+        android:icon="@drawable/hospi">
     </item>
     <item android:id="@+id/callCardiacAmbulance"
-        android:title="Call Cardiac Ambulance">
+        android:title="Call Cardiac Ambulance"
+        android:icon="@drawable/hospi">
     </item>
     <item android:id="@+id/getHospital"
-        android:title="Get Hospital">
+        android:title="Get Hospital"
+        android:icon="@drawable/hospi">
     </item>
     <item android:id="@+id/logoutS"
-        android:title="Logout">
+        android:title="Logout"
+        android:icon="@drawable/logout_clipart">
     </item>
 
 </menu>

@@ -6,7 +6,8 @@
         android:icon="@drawable/ic_patient_service_black_24dp" />
     <item
         android:id="@+id/getDonors"
-        android:title="Get Donors">
+        android:title="Get Donors"
+        android:icon="@drawable/ic_dashboard_black_24dp" >
     </item>
     <item
         android:id="@+id/settingH"
@@ -14,7 +15,8 @@
         android:icon="@drawable/ic_settings_black_24dp"/>
     <item
         android:id="@+id/historyH"
-        android:title="Ride History"/>
+        android:title="Ride History"
+        android:icon="@drawable/history" />
     <item
         android:id="@+id/logoutH"
         android:title="Logout"

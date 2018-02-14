@@ -10,7 +10,9 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.Spinner;
+import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
@@ -29,7 +31,7 @@ public class MainActivity extends AppCompatActivity {
 
 
 
-    private String userType,type;
+    private String userType,type,typeC;
     private Button mNext;
 
     private FirebaseAuth mAuth;
@@ -120,9 +122,6 @@ public class MainActivity extends AppCompatActivity {
                                 @Override
                                 public void onDataChange(DataSnapshot dataSnapshot) {
                                     if (dataSnapshot.exists()){
-//                                        HashMap strangerMap = new HashMap();
-//                                        strangerMap.put(key,"true");
-//                                        anonymousReference.updateChildren(strangerMap);
                                         DatabaseReference addAnon = FirebaseDatabase.getInstance().getReference().child("Users").child("Customers").child(key);
                                         HashMap strangerMap2 = new HashMap();
                                         strangerMap2.put("type","Anonymous");
@@ -151,6 +150,41 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
                 final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+
+                if (user != null){
+                    String userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
+                    DatabaseReference anonCheck = FirebaseDatabase.getInstance().getReference().child("Users").child("Customers").child(userId).child("type");
+                    anonCheck.addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(DataSnapshot dataSnapshot) {
+                            if (dataSnapshot.exists()){
+                                if (dataSnapshot.getValue().toString().equals("Anonymous")){
+                                    try{
+                                        String userId2 = FirebaseAuth.getInstance().getCurrentUser().getUid();
+                                        DatabaseReference strangerRef = FirebaseDatabase.getInstance().getReference().child("Users").child("Customers").child(userId2).child("type");
+                                        strangerRef.removeValue();
+                                        FirebaseUser aUser = FirebaseAuth.getInstance().getCurrentUser();
+                                        aUser.delete().addOnCompleteListener(new OnCompleteListener<Void>() {
+                                            @Override
+                                            public void onComplete(@NonNull Task<Void> task) {
+                                                FirebaseAuth.getInstance().signOut();
+                                                Toast.makeText(MainActivity.this, "User Deleted", Toast.LENGTH_SHORT).show();
+                                            }
+                                        });
+                                    }catch (Exception e){
+
+                                    }
+                                }
+                            }
+                        }
+
+                        @Override
+                        public void onCancelled(DatabaseError databaseError) {
+
+                        }
+                    });
+                }
+
                 if (user != null && type != "unregistered"){
                     String deviceId = Settings.Secure.getString(getApplicationContext().getContentResolver(), Settings.Secure.ANDROID_ID);
                     DatabaseReference checkLoggedIn =  FirebaseDatabase.getInstance().getReference().child("LoggedIn").child(deviceId);

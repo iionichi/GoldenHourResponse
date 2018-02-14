@@ -38,7 +38,8 @@ public class onAppKilled extends Service {
             GeoFire geoFire = new GeoFire(ref);
             geoFire.removeLocation(userId);
 
-            DatabaseReference strangerRef = FirebaseDatabase.getInstance().getReference().child("Users").child("Customers").child(userId).child("type");
+            String userid = FirebaseAuth.getInstance().getCurrentUser().getUid();
+            DatabaseReference strangerRef = FirebaseDatabase.getInstance().getReference().child("Users").child("Customers").child(userid).child("type");
             strangerRef.removeValue();
             FirebaseUser aUser = FirebaseAuth.getInstance().getCurrentUser();
             aUser.delete().addOnCompleteListener(new OnCompleteListener<Void>() {

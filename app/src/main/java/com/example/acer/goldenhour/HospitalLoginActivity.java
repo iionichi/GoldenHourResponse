@@ -16,8 +16,11 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -99,8 +102,30 @@ public class HospitalLoginActivity extends AppCompatActivity {
                                 Toast.makeText(HospitalLoginActivity.this, "Sign In Error", Toast.LENGTH_SHORT).show();
                             }
                             else {
-                                String userId = mAuth.getCurrentUser().getUid();
-                                addHospitalLogin(userId);
+                                final String userId = mAuth.getCurrentUser().getUid();
+
+                                DatabaseReference checkCustomer = FirebaseDatabase.getInstance().getReference().child("Users").child("Customers").child(userId);
+                                checkCustomer.addListenerForSingleValueEvent(new ValueEventListener() {
+                                    @Override
+                                    public void onDataChange(DataSnapshot dataSnapshot) {
+                                        if (dataSnapshot.exists()){
+                                            addHospitalLogin(userId);
+                                        }
+                                        else {
+                                            FirebaseAuth.getInstance().signOut();
+                                            Toast.makeText(HospitalLoginActivity.this, "Error On Login", Toast.LENGTH_SHORT).show();
+                                            Intent intent1 = new Intent(HospitalLoginActivity.this,MainActivity.class);
+                                            startActivity(intent1);
+                                            finish();
+                                            return;
+                                        }
+                                    }
+
+                                    @Override
+                                    public void onCancelled(DatabaseError databaseError) {
+
+                                    }
+                                });
                             }
                         }
                     });

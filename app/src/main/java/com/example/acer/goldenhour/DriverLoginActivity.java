@@ -115,6 +115,10 @@ public class DriverLoginActivity extends AppCompatActivity {
                                     public void onDataChange(DataSnapshot dataSnapshot) {
                                         if (dataSnapshot.exists()){
                                             addAmbulanceLogin(userId);//Adding Ambulance Login
+                                            Intent intent1 = new Intent(DriverLoginActivity.this,DriverMapActivity.class);
+                                            startActivity(intent1);
+                                            finish();
+                                            return;
                                         }
                                         else {
                                             FirebaseAuth.getInstance().signOut();

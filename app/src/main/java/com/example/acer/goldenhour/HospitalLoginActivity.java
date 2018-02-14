@@ -110,6 +110,10 @@ public class HospitalLoginActivity extends AppCompatActivity {
                                     public void onDataChange(DataSnapshot dataSnapshot) {
                                         if (dataSnapshot.exists()){
                                             addHospitalLogin(userId);
+                                            Intent intent1 = new Intent(HospitalLoginActivity.this,HospitalActivity.class);
+                                            startActivity(intent1);
+                                            finish();
+                                            return;
                                         }
                                         else {
                                             FirebaseAuth.getInstance().signOut();

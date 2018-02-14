@@ -112,6 +112,10 @@ public class CustomerLoginActivity extends AppCompatActivity {
                                     public void onDataChange(DataSnapshot dataSnapshot) {
                                         if (dataSnapshot.exists()){
                                             addCustomerLogin(userId);//For adding the customer logged in.
+                                            Intent intent1 = new Intent(CustomerLoginActivity.this,CustomerMapActivity.class);
+                                            startActivity(intent1);
+                                            finish();
+                                            return;
                                         }
                                         else {
                                             FirebaseAuth.getInstance().signOut();

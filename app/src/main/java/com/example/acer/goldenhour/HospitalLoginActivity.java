@@ -33,7 +33,7 @@ public class HospitalLoginActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_customer_login);
+        setContentView(R.layout.activity_hospital_login);
 
         mAuth = FirebaseAuth.getInstance();
 

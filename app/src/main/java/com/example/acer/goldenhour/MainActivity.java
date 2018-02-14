@@ -109,8 +109,6 @@ public class MainActivity extends AppCompatActivity {
                     return;
                 }
 
-
-
                 else if (type == "unregistered"){
                     Task<AuthResult> resultTask = mAuth.signInAnonymously();
                     resultTask.addOnSuccessListener(new OnSuccessListener<AuthResult>() {
@@ -122,9 +120,9 @@ public class MainActivity extends AppCompatActivity {
                                 @Override
                                 public void onDataChange(DataSnapshot dataSnapshot) {
                                     if (dataSnapshot.exists()){
-                                        HashMap strangerMap = new HashMap();
-                                        strangerMap.put(key,"true");
-                                        anonymousReference.updateChildren(strangerMap);
+//                                        HashMap strangerMap = new HashMap();
+//                                        strangerMap.put(key,"true");
+//                                        anonymousReference.updateChildren(strangerMap);
                                         DatabaseReference addAnon = FirebaseDatabase.getInstance().getReference().child("Users").child("Customers").child(key);
                                         HashMap strangerMap2 = new HashMap();
                                         strangerMap2.put("type","Anonymous");

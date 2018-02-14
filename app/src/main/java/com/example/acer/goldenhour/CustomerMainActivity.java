@@ -200,11 +200,18 @@ public class CustomerMainActivity extends AppCompatActivity implements Navigatio
             public void onDataChange(DataSnapshot dataSnapshot) {
                 if (dataSnapshot.exists()){
                     Map<String, Object> mMap = (Map<String, Object>) dataSnapshot.getValue();
-                    if (mMap.get("donate").toString().equals("yes")){
-                        donate = true;
-                        bloodGroup = mMap.get("BloodGroup").toString();
-                        rhFactor = mMap.get("RHFactor").toString();
-                        updateDonorList();
+                    try{
+                        if (mMap.get("donate").toString().equals("yes")){
+                            donate = true;
+                            bloodGroup = mMap.get("BloodGroup").toString();
+                            rhFactor = mMap.get("RHFactor").toString();
+                            updateDonorList();
+                        }
+                    }
+                    catch (Exception e){
+                        Toast.makeText(CustomerMainActivity.this, "Please update your settings.", Toast.LENGTH_SHORT).show();
+                        Intent myintent = new Intent(CustomerMainActivity.this,CustomerSettingsActivity.class);
+                        startActivity(myintent);
                     }
                 }
             }

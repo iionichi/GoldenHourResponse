@@ -196,7 +196,7 @@ public class MainActivity extends AppCompatActivity {
                                 userType = map.get("Type").toString();
 
                                 if (userType.equals("Customers")){
-                                    Intent intentC = new Intent(MainActivity.this,CustomerMainActivity.class);
+                                    Intent intentC = new Intent(MainActivity.this,CustomerMapActivity.class);
                                     startActivity(intentC);
                                     finish();
                                     return;

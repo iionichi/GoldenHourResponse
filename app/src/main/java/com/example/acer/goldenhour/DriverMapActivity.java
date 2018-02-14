@@ -5,6 +5,8 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationListener;
+import android.net.Uri;
+import android.os.Build;
 import android.provider.ContactsContract;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
@@ -13,6 +15,7 @@ import android.support.design.widget.NavigationView;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
@@ -210,6 +213,21 @@ public class DriverMapActivity extends AppCompatActivity implements OnMapReadyCa
             case R.id.profile_settings_driver:
                 Intent intent1 = new Intent(DriverMapActivity.this, DriverSettingsActivity.class);
                 startActivity(intent1);
+                break;
+
+            case R.id.call_policeD:
+                final int REQUEST_PHONE_CALL = 1;
+                Intent callIntent = new Intent(Intent.ACTION_CALL);
+                callIntent.setData(Uri.parse("tel:100"));
+
+                if(android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M){
+                    if(ContextCompat.checkSelfPermission(DriverMapActivity.this, android.Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED){
+                        ActivityCompat.requestPermissions(DriverMapActivity.this, new String[]{Manifest.permission.CALL_PHONE}, REQUEST_PHONE_CALL);
+                    }
+                    else {
+                        startActivity(callIntent);
+                    }
+                }
                 break;
 
             case R.id.historyD:

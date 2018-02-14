@@ -161,8 +161,6 @@ public class MainActivity extends AppCompatActivity {
                                 if (dataSnapshot.getValue().toString().equals("Anonymous")){
                                     try{
                                         String userId2 = FirebaseAuth.getInstance().getCurrentUser().getUid();
-                                        DatabaseReference strangerRef = FirebaseDatabase.getInstance().getReference().child("Users").child("Customers").child(userId2).child("type");
-                                        strangerRef.removeValue();
                                         FirebaseUser aUser = FirebaseAuth.getInstance().getCurrentUser();
                                         aUser.delete().addOnCompleteListener(new OnCompleteListener<Void>() {
                                             @Override
@@ -171,6 +169,8 @@ public class MainActivity extends AppCompatActivity {
                                                 Toast.makeText(MainActivity.this, "User Deleted", Toast.LENGTH_SHORT).show();
                                             }
                                         });
+                                        DatabaseReference strangerRef = FirebaseDatabase.getInstance().getReference().child("Users").child("Customers").child(userId2).child("type");
+                                        strangerRef.removeValue();
                                     }catch (Exception e){
 
                                     }

@@ -43,13 +43,13 @@ public class HospitalLoginActivity extends AppCompatActivity {
         firebaseAuthListener = new FirebaseAuth.AuthStateListener() {
             @Override
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
-                FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-                if(user != null){
-                    Intent intent = new Intent(HospitalLoginActivity.this,HospitalActivity.class);
-                    startActivity(intent);
-                    finish();
-                    return;
-                }
+//                FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+//                if(user != null){
+//                    Intent intent = new Intent(HospitalLoginActivity.this,HospitalActivity.class);
+//                    startActivity(intent);
+//                    finish();
+//                    return;
+//                }
             }
         };
 

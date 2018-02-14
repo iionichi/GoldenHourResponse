@@ -629,12 +629,17 @@ public class CustomerMapActivity extends AppCompatActivity implements OnMapReady
         mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
         mMap.animateCamera(CameraUpdateFactory.zoomTo(18)); //value goes from 1 - 21
 
-        if (once){
-            if (!getIntent().getExtras().getString("hospitalId").isEmpty()){
-                requestHospitalId = getIntent().getExtras().getString("hospitalId");
-                once = false;
-                getDonorToHospital();
+        try{
+            if (once){
+                if (!getIntent().getExtras().getString("hospitalId").isEmpty()){
+                    requestHospitalId = getIntent().getExtras().getString("hospitalId");
+                    once = false;
+                    getDonorToHospital();
+                }
             }
+        }
+        catch (Exception e){
+
         }
     }
 

@@ -1,8 +1,14 @@
 package com.example.acer.goldenhour;
 
+import android.*;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.net.Uri;
+import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
@@ -117,6 +123,21 @@ public class DriverSettingsActivity extends AppCompatActivity implements Navigat
             case R.id.Patient_Service:
                 Intent intent = new Intent(DriverSettingsActivity.this, DriverMapActivity.class);
                 startActivity(intent);
+                break;
+
+            case R.id.call_policeD:
+                final int REQUEST_PHONE_CALL = 1;
+                Intent callIntent = new Intent(Intent.ACTION_CALL);
+                callIntent.setData(Uri.parse("tel:100"));
+
+                if(android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M){
+                    if(ContextCompat.checkSelfPermission(DriverSettingsActivity.this, android.Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED){
+                        ActivityCompat.requestPermissions(DriverSettingsActivity.this, new String[]{android.Manifest.permission.CALL_PHONE}, REQUEST_PHONE_CALL);
+                    }
+                    else {
+                        startActivity(callIntent);
+                    }
+                }
                 break;
 
             case R.id.profile_settings_driver:

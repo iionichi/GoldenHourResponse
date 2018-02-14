@@ -1,21 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:id="@+id/db"
-    android:title="Dashboard"
-    android:icon="@drawable/ic_dashboard_black_24dp" />
     <item android:id="@+id/get_ambulance"
         android:title="Get Ambulance And Hospital Services"
-        android:icon="@drawable/ambulance"/>
+        android:icon="@drawable/hospi"/>
+    <item android:id="@+id/db"
+        android:title="Donar Notifications"
+        android:icon="@drawable/ic_dashboard_black_24dp" />
     <item android:id="@+id/ambu_history"
         android:title="Ambulance Call History"
-        android:icon="@drawable/logout_clipart"/>
+        android:icon="@drawable/history"/>
 
     <item android:id="@+id/call_police"
         android:title="Call Police"
-        android:icon="@drawable/download"/>
+        android:icon="@drawable/police2"/>
     <item android:id="@+id/sos"
         android:title="SOS"
-        android:icon="@drawable/sos_circle"/>
+        android:icon="@drawable/sos2"/>
     <item android:id="@+id/profile_settings"
         android:title="Settings"
         android:icon="@drawable/ic_settings_black_24dp"/>

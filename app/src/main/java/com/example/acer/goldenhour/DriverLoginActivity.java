@@ -16,8 +16,11 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -40,13 +43,13 @@ public class DriverLoginActivity extends AppCompatActivity {
         firebaseAuthListener = new FirebaseAuth.AuthStateListener() {
             @Override
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
-                FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-                if(user != null){
-                    Intent intent = new Intent(DriverLoginActivity.this,DriverMapActivity.class);
-                    startActivity(intent);
-                    finish();
-                    return;
-                }
+//                FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+//                if(user != null){
+//                    Intent intent = new Intent(DriverLoginActivity.this,DriverMapActivity.class);
+//                    startActivity(intent);
+//                    finish();
+//                    return;
+//                }
             }
         };
 
@@ -104,8 +107,34 @@ public class DriverLoginActivity extends AppCompatActivity {
                                 Toast.makeText(DriverLoginActivity.this, "Sign In Error", Toast.LENGTH_SHORT).show();
                             }
                             else {
-                                String userId = mAuth.getCurrentUser().getUid();
-                                addAmbulanceLogin(userId);//Adding Ambulance Login
+                                final String userId = mAuth.getCurrentUser().getUid();
+
+                                DatabaseReference checkCustomer = FirebaseDatabase.getInstance().getReference().child("Users").child("Customers").child(userId);
+                                checkCustomer.addListenerForSingleValueEvent(new ValueEventListener() {
+                                    @Override
+                                    public void onDataChange(DataSnapshot dataSnapshot) {
+                                        if (dataSnapshot.exists()){
+                                            addAmbulanceLogin(userId);//Adding Ambulance Login
+                                            Intent intent1 = new Intent(DriverLoginActivity.this,DriverMapActivity.class);
+                                            startActivity(intent1);
+                                            finish();
+                                            return;
+                                        }
+                                        else {
+                                            FirebaseAuth.getInstance().signOut();
+                                            Toast.makeText(DriverLoginActivity.this, "Error On Login", Toast.LENGTH_SHORT).show();
+                                            Intent intent1 = new Intent(DriverLoginActivity.this,MainActivity.class);
+                                            startActivity(intent1);
+                                            finish();
+                                            return;
+                                        }
+                                    }
+
+                                    @Override
+                                    public void onCancelled(DatabaseError databaseError) {
+
+                                    }
+                                });
                             }
                         }
                     });

@@ -15,7 +15,8 @@
         android:layout_above="@+id/textView6"
         android:layout_centerHorizontal="true"
         android:layout_marginBottom="18dp"
-        android:src="@drawable/temporary_logo" />
+        android:src="@drawable/temporary_logo"
+        android:id="@+id/imageView4" />
 
     <TextView
         android:id="@+id/textView6"
@@ -50,6 +51,20 @@
         android:background="@drawable/rounded_shape"
         android:gravity="center"
         android:text="Continue"
+        android:textColor="#FFFFFF"
+        android:textStyle="bold" />
+
+    <Button
+        android:id="@+id/unregistered"
+        android:layout_width="250dp"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/next"
+        android:layout_alignParentBottom="true"
+        android:layout_alignStart="@+id/next"
+        android:layout_marginBottom="24dp"
+        android:background="@drawable/rounded_shape"
+        android:gravity="center"
+        android:text="Unregistered"
         android:textColor="#FFFFFF"
         android:textStyle="bold" />
 

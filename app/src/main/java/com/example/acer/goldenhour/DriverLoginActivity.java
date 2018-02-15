@@ -109,7 +109,7 @@ public class DriverLoginActivity extends AppCompatActivity {
                             else {
                                 final String userId = mAuth.getCurrentUser().getUid();
 
-                                DatabaseReference checkCustomer = FirebaseDatabase.getInstance().getReference().child("Users").child("Customers").child(userId);
+                                DatabaseReference checkCustomer = FirebaseDatabase.getInstance().getReference().child("Users").child("Drivers").child(userId);
                                 checkCustomer.addListenerForSingleValueEvent(new ValueEventListener() {
                                     @Override
                                     public void onDataChange(DataSnapshot dataSnapshot) {
@@ -122,7 +122,7 @@ public class DriverLoginActivity extends AppCompatActivity {
                                         }
                                         else {
                                             FirebaseAuth.getInstance().signOut();
-                                            Toast.makeText(DriverLoginActivity.this, "Error On Login", Toast.LENGTH_SHORT).show();
+                                            Toast.makeText(DriverLoginActivity.this, "Wrong Login", Toast.LENGTH_SHORT).show();
                                             Intent intent1 = new Intent(DriverLoginActivity.this,MainActivity.class);
                                             startActivity(intent1);
                                             finish();

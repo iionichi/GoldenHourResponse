@@ -119,7 +119,7 @@ public class CustomerLoginActivity extends AppCompatActivity {
                                         }
                                         else {
                                             FirebaseAuth.getInstance().signOut();
-                                            Toast.makeText(CustomerLoginActivity.this, "Error On Login", Toast.LENGTH_SHORT).show();
+                                            Toast.makeText(CustomerLoginActivity.this, "Wrong Login", Toast.LENGTH_SHORT).show();
                                             Intent intent1 = new Intent(CustomerLoginActivity.this,MainActivity.class);
                                             startActivity(intent1);
                                             finish();

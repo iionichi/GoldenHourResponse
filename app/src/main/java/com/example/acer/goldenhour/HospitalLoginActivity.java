@@ -104,7 +104,7 @@ public class HospitalLoginActivity extends AppCompatActivity {
                             else {
                                 final String userId = mAuth.getCurrentUser().getUid();
 
-                                DatabaseReference checkCustomer = FirebaseDatabase.getInstance().getReference().child("Users").child("Customers").child(userId);
+                                DatabaseReference checkCustomer = FirebaseDatabase.getInstance().getReference().child("Users").child("Hospital").child(userId);
                                 checkCustomer.addListenerForSingleValueEvent(new ValueEventListener() {
                                     @Override
                                     public void onDataChange(DataSnapshot dataSnapshot) {
@@ -117,7 +117,7 @@ public class HospitalLoginActivity extends AppCompatActivity {
                                         }
                                         else {
                                             FirebaseAuth.getInstance().signOut();
-                                            Toast.makeText(HospitalLoginActivity.this, "Error On Login", Toast.LENGTH_SHORT).show();
+                                            Toast.makeText(HospitalLoginActivity.this, "Wrong Login", Toast.LENGTH_SHORT).show();
                                             Intent intent1 = new Intent(HospitalLoginActivity.this,MainActivity.class);
                                             startActivity(intent1);
                                             finish();

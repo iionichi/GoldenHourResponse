@@ -31,7 +31,6 @@ public class onAppKilled extends Service {
     public void onTaskRemoved(Intent rootIntent) {
         super.onTaskRemoved(rootIntent);
 
-
         String userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
         try {
             DatabaseReference ref = FirebaseDatabase.getInstance().getReference("driversAvailable");

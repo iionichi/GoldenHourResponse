@@ -71,7 +71,7 @@ public class HospitalActivity extends AppCompatActivity implements NavigationVie
         mToggleHospital.syncState();
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        mNavigationView = findViewById(R.id.nv2);
+        mNavigationView = findViewById(R.id.hospitalNavigation);
 
         if (mNavigationView != null){
             mNavigationView.setNavigationItemSelectedListener(this);

@@ -47,12 +47,12 @@
             android:name=".DriverMapActivity"
             android:label="@string/title_activity_driver_map" />
         <activity android:name=".CustomerMapActivity" />
-        <activity android:name=".CustomerSettingsActivity" />
-        <activity android:name=".DriverSettingsActivity" />
+        <activity android:name=".CustomerSettingsActivity" android:parentActivityName=".CustomerMapActivity"/>
+        <activity android:name=".DriverSettingsActivity" android:parentActivityName=".DriverMapActivity"/>
         <activity
             android:name=".HospitalLoginActivity"
-            android:parentActivityName=".MainActivity" />
-        <activity android:name=".HospitalRegisterActivity" />
+            android:parentActivityName=".MainActivity"></activity>
+        <activity android:name=".HospitalRegisterActivity" android:parentActivityName=".HospitalLoginActivity" />
         <activity android:name=".HospitalActivity" />
         <activity android:name=".WelcomeScreen">
             <intent-filter>
@@ -61,15 +61,14 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".DriverRegisterActivity" />
+        <activity android:name=".DriverRegisterActivity" android:parentActivityName=".DriverLoginActivity" />
         <activity
             android:name=".StrangerMapActivity"
             android:label="@string/title_activity_stranger_map" />
-        <activity android:name=".CustomerMainActivity" />
-        <activity android:name=".HospitalSettingsActivity" />
-        <activity
-            android:name=".AuthActivity"
-            android:parentActivityName=".MainActivity" />
+        <activity android:name=".CustomerMainActivity" android:parentActivityName=".CustomerMapActivity" />
+        <activity android:name=".HospitalSettingsActivity" android:parentActivityName=".HospitalActivity" />
+        <activity android:name=".AuthActivity"
+            android:parentActivityName=".MainActivity"></activity>
         <activity android:name=".HistoryActivty" />
         <activity android:name=".HistorySingleActivity" />
         <activity

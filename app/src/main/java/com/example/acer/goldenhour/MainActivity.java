@@ -283,7 +283,6 @@ public class MainActivity extends AppCompatActivity {
                 else {
                     loaderText.setText("No Login Found");
                     loaderDialog.dismiss();
-                    loaderDialog.dismiss();
                 }
             }
         };

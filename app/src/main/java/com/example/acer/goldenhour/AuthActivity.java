@@ -25,6 +25,7 @@ import com.google.firebase.auth.PhoneAuthProvider;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
+import java.util.HashMap;
 import java.util.concurrent.TimeUnit;
 
 public class AuthActivity extends AppCompatActivity {
@@ -118,6 +119,9 @@ public class AuthActivity extends AppCompatActivity {
                                 String userId = mAuth.getCurrentUser().getUid();
                                 DatabaseReference currentUserDB = FirebaseDatabase.getInstance().getReference().child("Users").child("Customers").child(userId);
                                 currentUserDB.setValue(true);
+                                HashMap newMap = new HashMap();
+                                newMap.put("donate","no");
+                                currentUserDB.updateChildren(newMap);
 
                                 Intent intent = new Intent(AuthActivity.this, CustomerMapActivity.class);
                                 startActivity(intent);

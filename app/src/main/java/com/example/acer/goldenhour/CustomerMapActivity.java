@@ -20,6 +20,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.telephony.SmsManager;
 import android.view.KeyEvent;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
@@ -69,7 +70,7 @@ import java.util.Map;
 
 public class CustomerMapActivity extends AppCompatActivity implements OnMapReadyCallback, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, LocationListener, RoutingListener, NavigationView.OnNavigationItemSelectedListener{
 
-    private static final int SEND_SMS_PERMISSION_REQUEST_CODE = 111;
+    private static final int SEND_SMS_PERMISSION_REQUEST_CODE = 111, REQUEST_PHONE_CALL = 1;
 
     private GoogleMap mMap;
     GoogleApiClient mGoogleApiClient;
@@ -86,14 +87,14 @@ public class CustomerMapActivity extends AppCompatActivity implements OnMapReady
     private Button mRequest,mHospi,mHelp;
     private LatLng pickupLocation, pickupLocation2, destinationLatLng;
 
-    private Boolean requestBol = false, addedCustomerToHospital = false, onlyHospital = false;
+    private Boolean requestBol = false, addedCustomerToHospital = false, onlyHospital = false, stopRequest = false, stopRequestH = false, showHospitalBool = true;
     private Marker pickupMarker, destinationMarker;
 
     private String requestService, userId, mePhone, msg, requestHospitalId;
 
-    private LinearLayout mDriverInfo;
+    private LinearLayout mDriverInfo, mhospitalInfo;
     private ImageView mDriverProfileImage;
-    private TextView mDriverName, mDriverPhone, mDriverAmbulance, mDriverAmbulanceNumber;
+    private TextView mDriverName, mDriverPhone, mDriverAmbulance, mDriverAmbulanceNumber, mHospitalName, mHospitalNumber, mhospitalAddress;
 
     private RadioGroup mRadioGroup;
     private RatingBar mRatingBar;
@@ -105,6 +106,7 @@ public class CustomerMapActivity extends AppCompatActivity implements OnMapReady
     private DrawerLayout mDrawerLayout;
     private ActionBarDrawerToggle mToggle;
     private NavigationView mNavigationView;
+    private Menu mNavigationMenu;
     private DatabaseReference mCustomerDatabase1;
 
     //For adding polylines which marks in the map
@@ -136,10 +138,14 @@ public class CustomerMapActivity extends AppCompatActivity implements OnMapReady
             mapFragment.getMapAsync(this);
         }
 
+        //Asking for SMS Permissions
+        if (ActivityCompat.checkSelfPermission(this,Manifest.permission.SEND_SMS) != PackageManager.PERMISSION_GRANTED){
+            ActivityCompat.requestPermissions(CustomerMapActivity.this, new String[]{Manifest.permission.SEND_SMS}, SEND_SMS_PERMISSION_REQUEST_CODE);
+        }
+
+
         mDriverInfo = (LinearLayout) findViewById(R.id.driverInfo);
-
         mDriverProfileImage = (ImageView) findViewById(R.id.driverProfileImage);
-
         mDriverName = (TextView) findViewById(R.id.driverName);
         mDriverPhone = (TextView) findViewById(R.id.driverPhone);
         mDriverAmbulance = (TextView) findViewById(R.id.driverAmbulance);
@@ -149,15 +155,20 @@ public class CustomerMapActivity extends AppCompatActivity implements OnMapReady
         mRadioGroup = (RadioGroup) findViewById(R.id.radioGroup);
         mRadioGroup.check(R.id.normalAmbulance);
 
+        mhospitalInfo = (LinearLayout) findViewById(R.id.hospitalInfo);
+        mHospitalName = (TextView) findViewById(R.id.hospitalName);
+        mHospitalNumber = (TextView) findViewById(R.id.hospitalPhone);
+        mhospitalAddress = (TextView) findViewById(R.id.hospitalAddress);
 
         mRequest = findViewById(R.id.request);
         mHospi = findViewById(R.id.hospi);
         mHelp = findViewById(R.id.help);
 
-
         mAuth1 = FirebaseAuth.getInstance();
         userID1 = mAuth1.getCurrentUser().getUid();
         mNavigationView = findViewById(R.id.nv);
+        mNavigationMenu = mNavigationView.getMenu();
+        mNavigationMenu.findItem(R.id.show_hospital).setVisible(false);
 
         if (mNavigationView != null){
             mNavigationView.setNavigationItemSelectedListener(this);
@@ -167,22 +178,25 @@ public class CustomerMapActivity extends AppCompatActivity implements OnMapReady
             @Override
             public void onClick(View view) {
                 if (requestBol){
-                    endRide();
+                    //For ending the search of ambulance
+                    if (!driverFound){
+                        stopRequest = true;
+                    }
+                    else {
+                        endRide();
+                    }
                 }
                 else {
                     int selectId = mRadioGroup.getCheckedRadioButtonId();
-
-                    final RadioButton radioButton = (RadioButton)  findViewById(selectId);
+                    RadioButton radioButton = (RadioButton)  findViewById(selectId);
                     if(radioButton.getText() == null){
                         return;
                     }
-
                     requestService = radioButton.getText().toString();
 
                     requestBol = true;
 
                     userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
-
                     DatabaseReference ref = FirebaseDatabase.getInstance().getReference("customerRequest");
                     GeoFire geoFire = new GeoFire(ref);
                     geoFire.setLocation(userId, new GeoLocation(mLastLocation.getLatitude(), mLastLocation.getLongitude()));
@@ -191,7 +205,6 @@ public class CustomerMapActivity extends AppCompatActivity implements OnMapReady
                     pickupMarker = mMap.addMarker(new MarkerOptions().position(pickupLocation).title("Pickup Here").icon(BitmapDescriptorFactory.fromResource(R.mipmap.ghr_pickup)));
 
                     mRequest.setText("Getting Your Driver");
-
                     getClosestDriver();
                 }
             }
@@ -207,21 +220,28 @@ public class CustomerMapActivity extends AppCompatActivity implements OnMapReady
                         getHospital();
                         break;
                     case 2:
+                        if (!hospitalFound){
+                            stopRequestH = true;
+                        }
+                        else {
+                            mNavigationMenu.findItem(R.id.show_hospital).setVisible(false);
+                            geoQueryH.removeAllListeners();
+                            hospitalFound = false;
+                            erasePolyLines();
+                            if (destinationMarker != null){
+                                destinationMarker.remove();
+                            }
+                            DatabaseReference hospiRef = FirebaseDatabase.getInstance().getReference().child("customerRequestH").child(userID1);
+                            hospiRef.removeValue();
+                            //Removing the customer Id from hospital table
+                            if (hospitalFoundId != null){
+                                String customerId = FirebaseAuth.getInstance().getCurrentUser().getUid();
+                                DatabaseReference removeCustomerRef = FirebaseDatabase.getInstance().getReference().child("Users").child("Hospital").child(hospitalFoundId).child("customerRequestId").child(customerId);
+                                removeCustomerRef.removeValue();
+                                hospitalFoundId = null;
+                            }
+                        }
                         geoQueryH.removeAllListeners();
-                        hospitalFound = false;
-                        erasePolyLines();
-                        if (destinationMarker != null){
-                            destinationMarker.remove();
-                        }
-                        final DatabaseReference hospiRef = FirebaseDatabase.getInstance().getReference().child("customerRequestH").child(userID1);
-                        hospiRef.removeValue();
-                        //Removing the customer Id from hospital table
-                        if (hospitalFoundId != null){
-                            String customerId = FirebaseAuth.getInstance().getCurrentUser().getUid();
-                            DatabaseReference removeCustomerRef = FirebaseDatabase.getInstance().getReference().child("Users").child("Hospital").child(hospitalFoundId).child("customerRequestId").child(customerId);
-                            removeCustomerRef.removeValue();
-                            hospitalFoundId = null;
-                        }
                         mHospi.setText("Get Hospital");
                         hospitalToggle = 1;
                         onlyHospital = false;
@@ -259,11 +279,6 @@ public class CustomerMapActivity extends AppCompatActivity implements OnMapReady
                 startActivity(intent);
                 break;
 
-            case R.id.get_ambulance:
-//                Intent intent1 = new Intent(CustomerMapActivity.this, CustomerMapActivity.class);
-//                startActivity(intent1);
-                break;
-
             case R.id.ambu_history:
                 Intent intent5 = new Intent(CustomerMapActivity.this, HistoryActivty.class);
                 intent5.putExtra("customerOrDriver", "Customers");
@@ -276,7 +291,6 @@ public class CustomerMapActivity extends AppCompatActivity implements OnMapReady
                 break;
 
             case R.id.call_police:
-                final int REQUEST_PHONE_CALL = 1;
                 Intent callIntent = new Intent(Intent.ACTION_CALL);
                 callIntent.setData(Uri.parse("tel:100"));
 
@@ -307,7 +321,7 @@ public class CustomerMapActivity extends AppCompatActivity implements OnMapReady
                             SmsManager smsManager = SmsManager.getDefault();
                             smsManager.sendTextMessage(mePhone, null, msg, null, null);
                         } else {
-                            Toast.makeText(CustomerMapActivity.this, "Permission denied", Toast.LENGTH_SHORT).show();
+                            ActivityCompat.requestPermissions(CustomerMapActivity.this,new String[]{Manifest.permission.SEND_SMS},SEND_SMS_PERMISSION_REQUEST_CODE);
                         }
                     }
 
@@ -315,6 +329,28 @@ public class CustomerMapActivity extends AppCompatActivity implements OnMapReady
                     public void onCancelled(DatabaseError databaseError) {
                     }
                 });
+                break;
+
+            case R.id.show_hospital:
+                if (showHospitalBool){
+                    getHospitalInfo();
+                    item.setTitle("Hide Hospital Information");
+                    mhospitalInfo.setVisibility(View.VISIBLE);
+                    showHospitalBool = false;
+                }
+                else {
+                    mhospitalInfo.setVisibility(View.GONE);
+                    item.setTitle("Show Hospital Information");
+                    try {
+                        if (driverFoundId != null){
+                            mDriverInfo.setVisibility(View.VISIBLE);
+
+                        }
+                    }catch (Exception e){
+
+                    }
+                    showHospitalBool = true;
+                }
                 break;
 
             case R.id.Log_out:
@@ -340,7 +376,19 @@ public class CustomerMapActivity extends AppCompatActivity implements OnMapReady
         switch (requestCode) {
             case SEND_SMS_PERMISSION_REQUEST_CODE:
                 if(grantResults.length > 0 && (grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
+                    Toast.makeText(CustomerMapActivity.this, "SMS Permission Provided", Toast.LENGTH_SHORT).show();
+                }
+                else {
+                    Toast.makeText(CustomerMapActivity.this, "SMS Permission denied", Toast.LENGTH_SHORT).show();
+                }
+                break;
 
+            case REQUEST_PHONE_CALL:
+                if(grantResults.length > 0 && (grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
+                    Toast.makeText(CustomerMapActivity.this, "Call Permission Provided", Toast.LENGTH_SHORT).show();
+                }
+                else {
+                    Toast.makeText(CustomerMapActivity.this, "Call Permission denied", Toast.LENGTH_SHORT).show();
                 }
                 break;
         }
@@ -352,6 +400,24 @@ public class CustomerMapActivity extends AppCompatActivity implements OnMapReady
 
     GeoQuery geoQuery;
     private void getClosestDriver(){
+        //For ending the ambulance request if ambulance is not found
+        if (stopRequest){
+            mRequest.setText("Call Ambulance");
+            requestBol = false;
+            stopRequest = false;
+
+            String userId = FirebaseAuth.getInstance().getUid();
+            DatabaseReference ref = FirebaseDatabase.getInstance().getReference("customerRequest");
+            GeoFire geoFire = new GeoFire(ref);
+            geoFire.removeLocation(userId);
+
+            if (pickupMarker != null){
+                pickupMarker.remove();
+            }
+
+            return;
+        }
+
         DatabaseReference driverLocation = FirebaseDatabase.getInstance().getReference().child("driversAvailable");
         GeoFire geoFire = new GeoFire(driverLocation);
         geoQuery  = geoFire.queryAtLocation(new GeoLocation(pickupLocation.latitude, pickupLocation.longitude),radius);
@@ -590,6 +656,8 @@ public class CustomerMapActivity extends AppCompatActivity implements OnMapReady
         }
         mRequest.setText("Call Ambulance");
 
+        mNavigationMenu.findItem(R.id.show_hospital).setVisible(false);
+        mhospitalInfo.setVisibility(View.GONE);
         mDriverInfo.setVisibility(View.GONE);
         mDriverName.setText("");
         mDriverPhone.setText("");
@@ -617,6 +685,8 @@ public class CustomerMapActivity extends AppCompatActivity implements OnMapReady
                 ActivityCompat.requestPermissions(CustomerMapActivity.this, new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION}, LOCATION_REQUEST_CODE);
             }
         }
+
+
         buildGoogleApiClient();
         mMap.setMyLocationEnabled(true);
         googleMap.setTrafficEnabled(true);
@@ -697,6 +767,10 @@ public class CustomerMapActivity extends AppCompatActivity implements OnMapReady
     private String hospitalFoundId;
     GeoQuery geoQueryH;
     private void getHospital(){
+        //To stop the request if hospital is not found for long time
+        if (stopRequestH){
+            return;
+        }
         DatabaseReference hospitalLocation = FirebaseDatabase.getInstance().getReference().child("Users").child("Hospital");
         GeoFire geoFireH = new GeoFire(hospitalLocation);
         geoQueryH  = geoFireH.queryAtLocation(new GeoLocation(pickupLocation2.latitude, pickupLocation2.longitude),radiusH);
@@ -732,6 +806,8 @@ public class CustomerMapActivity extends AppCompatActivity implements OnMapReady
                                     map1.put("hospitalFoundId", hospitalFoundId);
                                     driverRef1.updateChildren(map1);
                                 }
+                                //Enabling the navigation view of hospital
+                                mNavigationMenu.findItem(R.id.show_hospital).setVisible(true);
 
                                 //Adding customer information to the hospital found
                                 DatabaseReference addCustomerToHospital = FirebaseDatabase.getInstance().getReference().child("Users").child("Hospital").child(hospitalFoundId).child("customerRequestId");
@@ -800,6 +876,7 @@ public class CustomerMapActivity extends AppCompatActivity implements OnMapReady
                                         destinationMarker = mMap.addMarker(new MarkerOptions().position(destinationLatLng).title("Hospital Location").icon(BitmapDescriptorFactory.fromResource(R.mipmap.ghr_pickup)));
                                         getRouteToHospital(destinationLatLng);
                                         hospitalToggle = 2;
+                                        getHospitalInfo();
                                     }
                                 }
                             }
@@ -812,6 +889,32 @@ public class CustomerMapActivity extends AppCompatActivity implements OnMapReady
             }
             @Override
             public void onCancelled(DatabaseError databaseError) {
+            }
+        });
+        Toast.makeText(this, "Toggle hospital information from Navigation Drawer", Toast.LENGTH_SHORT).show();
+    }
+
+    private void getHospitalInfo(){
+        DatabaseReference hospiRef = FirebaseDatabase.getInstance().getReference().child("Users").child("Hospital").child(hospitalFoundId);
+        hospiRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists()){
+                    Map<String ,Object> newMap = (Map<String ,Object>) dataSnapshot.getValue();
+                    String name = newMap.get("Name").toString();
+                    String phone = newMap.get("Phone").toString();
+                    String address = newMap.get("Address").toString();
+
+                    mHospitalName.setText(name);
+                    mHospitalNumber.setText(phone);
+                    mhospitalAddress.setText(address);
+                    mHospi.setText("Hospital Found");
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
             }
         });
     }
@@ -846,15 +949,6 @@ public class CustomerMapActivity extends AppCompatActivity implements OnMapReady
         });
     }
 
-//    private void getRouteToHospital(LatLng destinationLatLng) {
-//        Routing routing = new Routing.Builder()
-//                .travelMode(AbstractRouting.TravelMode.DRIVING)
-//                .withListener(this)
-//                .alternativeRoutes(false)
-//                .waypoints(new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude()), destinationLatLng)
-//                .build();
-//        routing.execute();
-//    }
 
     private void getRouteToHospital(LatLng destinationLatLng) {
         Routing routing = new Routing.Builder()

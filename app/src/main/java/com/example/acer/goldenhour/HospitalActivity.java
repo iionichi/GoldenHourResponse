@@ -33,6 +33,8 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Vector;
@@ -134,6 +136,7 @@ public class HospitalActivity extends AppCompatActivity implements NavigationVie
             @Override
             public void onChildRemoved(DataSnapshot dataSnapshot) {
                 userId = dataSnapshot.getValue(String.class);
+                recordHistory(userId);
 
                 DatabaseReference customerName = FirebaseDatabase.getInstance().getReference().child("Users").child("Customers").child(userId).child("name");
                 customerName.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -315,9 +318,9 @@ public class HospitalActivity extends AppCompatActivity implements NavigationVie
                     if (mMap.get("ephone").toString() != null){
                         mEPhone.setText(mMap.get("ephone").toString());
                     }
-//                    if (mMap.get("BloodGroup").toString() != null && mMap.get("RHFactor").toString() != null){
-//                        mBloodGroup.setText(mMap.get("BloodGroup").toString() + " " + mMap.get("RHFactor").toString());
-//                    }
+                    if (mMap.get("BloodGroup").toString() != null && mMap.get("RHFactor").toString() != null){
+                        mBloodGroup.setText(mMap.get("BloodGroup").toString() + " " + mMap.get("RHFactor").toString());
+                    }
                 }
             }
 
@@ -326,57 +329,26 @@ public class HospitalActivity extends AppCompatActivity implements NavigationVie
 
             }
         });
+
         mGetUserInfoDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.WHITE));//Background color for dialog
         mGetUserInfoDialog.show();//Show the dialog
     }
 
-//    private void getDonor(){
-//        DatabaseReference donorReference = FirebaseDatabase.getInstance().getReference().child("Users").child("Customers");
-//        donorReference.addChildEventListener(new ChildEventListener() {
-//            @Override
-//            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-//                if (requestDonor){
-//                    String donorId = dataSnapshot.getKey();
-////                    Toast.makeText(HospitalActivity.this, donorId, Toast.LENGTH_SHORT).show();
-//                    getDonorInfo(donorId);
-//                }
-//            }
-//
-//            @Override
-//            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
-//
-//            }
-//
-//            @Override
-//            public void onChildRemoved(DataSnapshot dataSnapshot) {
-//
-//            }
-//
-//            @Override
-//            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
-//
-//            }
-//
-//            @Override
-//            public void onCancelled(DatabaseError databaseError) {
-//
-//            }
-//        });
-//    }
-//
-//    private void getDonorInfo(String donorId){
-//        DatabaseReference donorInfo = FirebaseDatabase.getInstance().getReference().child("Users").child("Customers").child(donorId);
-//        donorInfo.addListenerForSingleValueEvent(new ValueEventListener() {
-//            @Override
-//            public void onDataChange(DataSnapshot dataSnapshot) {
-//                if (dataSnapshot.exists()){
-//                }
-//            }
-//
-//            @Override
-//            public void onCancelled(DatabaseError databaseError) {
-//
-//            }
-//        });
-//    }
+    private void recordHistory(String userid){
+        String hospitalid = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        Date currentTime = Calendar.getInstance().getTime();
+        //Creating a new History Node for Hospital
+        DatabaseReference historyRef = FirebaseDatabase.getInstance().getReference().child("HistoryH");
+        String uniqueKey = historyRef.push().getKey();
+        HashMap historyMap =  new HashMap();
+        historyMap.put("customerId",userid);
+        historyMap.put("hospitalId",hospitalid);
+        historyMap.put("timeStamp",currentTime);
+        historyRef.child(uniqueKey).updateChildren(historyMap);
+
+        DatabaseReference hospitalHistory = FirebaseDatabase.getInstance().getReference().child("Users").child("Hospital").child(hospitalid).child("History");
+        HashMap historyMap2 = new HashMap();
+        historyMap2.put(uniqueKey,uniqueKey);
+        hospitalHistory.updateChildren(historyMap2);
+    }
 }

@@ -1,10 +1,15 @@
 package com.example.acer.goldenhour;
 
 import android.Manifest;
+import android.app.Dialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.location.Location;
 import android.location.LocationListener;
+import android.media.MediaPlayer;
+import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Build;
 import android.provider.ContactsContract;
@@ -92,6 +97,8 @@ public class DriverMapActivity extends AppCompatActivity implements OnMapReadyCa
     private ImageView mCustomerProfileImage;
     private TextView mCustomerName, mCustomerPhone;
 
+    private Dialog ringtoneDialog;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -121,6 +128,8 @@ public class DriverMapActivity extends AppCompatActivity implements OnMapReadyCa
         }
 
         destination = new LatLng(0.0, 0.0);
+
+        ringtoneDialog = new Dialog(this);
 
         mCustomerInfo = (LinearLayout) findViewById(R.id.customerInfo);
 
@@ -262,6 +271,7 @@ public class DriverMapActivity extends AppCompatActivity implements OnMapReadyCa
                     customerId = dataSnapshot.getValue().toString();
                     getAssignedCustomerPickupLocation();
                     getAssignedCustomerInfo();
+                    startRingtone();
                 } else {
                     /*erasePolylines();
                     customerId = "";
@@ -351,6 +361,24 @@ public class DriverMapActivity extends AppCompatActivity implements OnMapReadyCa
             public void onCancelled(DatabaseError databaseError) {
             }
         });
+    }
+
+    private void startRingtone(){
+        Uri notification = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_RINGTONE);
+        final MediaPlayer mp = MediaPlayer.create(getApplicationContext(), notification);
+        mp.start();
+        ringtoneDialog.setContentView(R.layout.driver_ringtone);
+        Button closeRingtone = ringtoneDialog.findViewById(R.id.closeAlarm);
+        closeRingtone.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mp.stop();
+                ringtoneDialog.dismiss();
+            }
+        });
+        ringtoneDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.WHITE));
+        ringtoneDialog.show();
+        ringtoneDialog.setCanceledOnTouchOutside(false);
     }
 
     private void endRide() {
@@ -516,7 +544,6 @@ public class DriverMapActivity extends AppCompatActivity implements OnMapReadyCa
         LocationServices.FusedLocationApi.removeLocationUpdates(mGoogleApiClient, this);
         String userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
         DatabaseReference ref = FirebaseDatabase.getInstance().getReference("driversAvailable");
-
         GeoFire geoFire = new GeoFire(ref);
         geoFire.removeLocation(userId);
     }

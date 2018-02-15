@@ -11,7 +11,6 @@
         <item>Customer</item>
         <item>Driver</item>
         <item>Hospital</item>
-        <item>Unregistered</item>
         <item>Admin</item>
     </string-array>
 
@@ -43,8 +42,8 @@
 
     <string-array name="answerCustomer">
         <item>Would you like to donate for the noble cause?</item>
-        <item>yes</item>
-        <item>no</item>
+        <item>Yes</item>
+        <item>No</item>
     </string-array>
 
     <string name="title_activity_stranger_map">Map</string>

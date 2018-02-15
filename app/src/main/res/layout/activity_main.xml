@@ -10,21 +10,21 @@
 
 
     <ImageView
+        android:id="@+id/imageView4"
         android:layout_width="130dp"
         android:layout_height="130dp"
         android:layout_above="@+id/textView6"
         android:layout_centerHorizontal="true"
-        android:layout_marginBottom="18dp"
-        android:src="@drawable/temporary_logo"
-        android:id="@+id/imageView4" />
+        android:layout_marginBottom="14dp"
+        android:src="@drawable/temporary_logo" />
 
     <TextView
         android:id="@+id/textView6"
         android:layout_width="280dp"
         android:layout_height="80dp"
-        android:layout_above="@+id/next"
+        android:layout_above="@+id/role"
         android:layout_centerHorizontal="true"
-        android:layout_marginBottom="100dp"
+        android:layout_marginBottom="78dp"
         android:text="WELCOME TO GOLDEN HOUR"
         android:textAlignment="center"
         android:textColor="@color/LightGrey"
@@ -35,19 +35,20 @@
         android:id="@+id/role"
         android:layout_width="250dp"
         android:layout_height="40dp"
-        android:layout_marginBottom="40dp"
         android:layout_above="@+id/next"
-        android:layout_centerHorizontal="true"
 
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="21dp"
         android:outlineProvider="bounds" />
 
     <Button
         android:id="@+id/next"
         android:layout_width="250dp"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginBottom="87dp"
+        android:layout_above="@+id/unregistered"
+        android:layout_alignLeft="@+id/role"
+        android:layout_alignStart="@+id/role"
+        android:layout_marginBottom="13dp"
         android:background="@drawable/rounded_shape"
         android:gravity="center"
         android:text="Continue"
@@ -61,7 +62,7 @@
         android:layout_alignLeft="@+id/next"
         android:layout_alignParentBottom="true"
         android:layout_alignStart="@+id/next"
-        android:layout_marginBottom="24dp"
+        android:layout_marginBottom="20dp"
         android:background="@drawable/rounded_shape"
         android:gravity="center"
         android:text="Unregistered"

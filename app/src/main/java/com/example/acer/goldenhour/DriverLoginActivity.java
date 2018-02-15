@@ -1,6 +1,9 @@
 package com.example.acer.goldenhour;
 
+import android.app.Dialog;
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
@@ -9,6 +12,7 @@ import android.text.TextUtils;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -21,6 +25,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.wang.avi.AVLoadingIndicatorView;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -32,10 +37,19 @@ public class DriverLoginActivity extends AppCompatActivity {
     private FirebaseAuth mAuth;
     private FirebaseAuth.AuthStateListener firebaseAuthListener;
 
+    Dialog loaderDialog;
+    AVLoadingIndicatorView avi;
+    TextView loaderText;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_driver_login);
+
+        loaderDialog = new Dialog(this);
+        loaderDialog.setContentView(R.layout.loading_file_main);
+        avi = (AVLoadingIndicatorView) loaderDialog.findViewById(R.id.aviLoader);
+        loaderText = (TextView) loaderDialog.findViewById(R.id.loadingText);
 
         mAuth = FirebaseAuth.getInstance();
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -62,11 +76,8 @@ public class DriverLoginActivity extends AppCompatActivity {
         mRegistration.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
-
                 Intent intent = new Intent(DriverLoginActivity.this, DriverRegisterActivity.class);
                 startActivity(intent);
-
                 return;
 //                final String email = mEmail.getText().toString();
 //                final String password = mPassword.getText().toString();
@@ -100,10 +111,18 @@ public class DriverLoginActivity extends AppCompatActivity {
                     Toast.makeText(DriverLoginActivity.this, "Please Fill All The Fields", Toast.LENGTH_SHORT).show();
                 } else {
 
+                    loaderText.setText("Checking Credentials");
+                    loaderDialog.show();
+                    loaderDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));//Background color for dialog
+                    loaderDialog.show();//Show the dialog
+                    loaderDialog.setCanceledOnTouchOutside(false);
+                    avi.smoothToShow();
+
                     mAuth.signInWithEmailAndPassword(email, password).addOnCompleteListener(DriverLoginActivity.this, new OnCompleteListener<AuthResult>() {
                         @Override
                         public void onComplete(@NonNull Task<AuthResult> task) {
                             if (!task.isSuccessful()) {
+                                loaderDialog.dismiss();
                                 Toast.makeText(DriverLoginActivity.this, "Sign In Error", Toast.LENGTH_SHORT).show();
                             }
                             else {
@@ -115,6 +134,7 @@ public class DriverLoginActivity extends AppCompatActivity {
                                     public void onDataChange(DataSnapshot dataSnapshot) {
                                         if (dataSnapshot.exists()){
                                             addAmbulanceLogin(userId);//Adding Ambulance Login
+                                            loaderDialog.dismiss();
                                             Intent intent1 = new Intent(DriverLoginActivity.this,DriverMapActivity.class);
                                             startActivity(intent1);
                                             finish();
@@ -122,6 +142,9 @@ public class DriverLoginActivity extends AppCompatActivity {
                                         }
                                         else {
                                             FirebaseAuth.getInstance().signOut();
+
+                                            loaderDialog.dismiss();
+
                                             Toast.makeText(DriverLoginActivity.this, "Wrong Login", Toast.LENGTH_SHORT).show();
                                             Intent intent1 = new Intent(DriverLoginActivity.this,MainActivity.class);
                                             startActivity(intent1);

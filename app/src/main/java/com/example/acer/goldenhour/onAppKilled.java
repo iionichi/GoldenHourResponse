@@ -31,8 +31,8 @@ public class onAppKilled extends Service {
     public void onTaskRemoved(Intent rootIntent) {
         super.onTaskRemoved(rootIntent);
 
-        String userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
         try {
+            String userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
             DatabaseReference ref = FirebaseDatabase.getInstance().getReference("driversAvailable");
             GeoFire geoFire = new GeoFire(ref);
             geoFire.removeLocation(userId);
@@ -52,8 +52,5 @@ public class onAppKilled extends Service {
         catch (Exception e){
 
         }
-//        DatabaseReference ref = FirebaseDatabase.getInstance().getReference("driversAvailable");
-//        GeoFire geoFire = new GeoFire(ref);
-//        geoFire.removeLocation(userId);
     }
 }

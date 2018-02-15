@@ -1,15 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:id="@+id/get_ambulance"
-        android:title="Get Ambulance And Hospital Services"
-        android:icon="@drawable/hospi"/>
     <item android:id="@+id/db"
         android:title="Donar Notifications"
         android:icon="@drawable/ic_dashboard_black_24dp" />
     <item android:id="@+id/ambu_history"
         android:title="Ambulance Call History"
         android:icon="@drawable/history"/>
-
     <item android:id="@+id/call_police"
         android:title="Call Police"
         android:icon="@drawable/police2"/>
@@ -18,6 +14,9 @@
         android:icon="@drawable/sos2"/>
     <item android:id="@+id/profile_settings"
         android:title="Settings"
+        android:icon="@drawable/ic_settings_black_24dp"/>
+    <item android:id="@+id/show_hospital"
+        android:title="Show Hospital Information"
         android:icon="@drawable/ic_settings_black_24dp"/>
     <item android:id="@+id/Log_out"
         android:title="Logout"

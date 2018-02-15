@@ -13,10 +13,7 @@
         android:id="@+id/settingH"
         android:title="Settings"
         android:icon="@drawable/ic_settings_black_24dp"/>
-    <item
-        android:id="@+id/historyH"
-        android:title="Ride History"
-        android:icon="@drawable/history" />
+
     <item
         android:id="@+id/logoutH"
         android:title="Logout"

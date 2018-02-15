@@ -32,7 +32,7 @@ public class MainActivity extends AppCompatActivity {
 
 
     private String userType,type,typeC;
-    private Button mNext;
+    private Button mNext,mUnregistered;
 
     private FirebaseAuth mAuth;
     private FirebaseAuth.AuthStateListener firebaseAuthListener;
@@ -42,7 +42,8 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         mNext = (Button) findViewById(R.id.next);
-        Spinner Role = (Spinner) findViewById(R.id.role);
+        mUnregistered = (Button) findViewById(R.id.unregistered);
+            Spinner Role = (Spinner) findViewById(R.id.role);
 
         ArrayAdapter<String> myAdapter = new ArrayAdapter<String>(MainActivity.this, android.R.layout.simple_list_item_1, getResources().getStringArray(R.array.role));
         myAdapter.setDropDownViewResource(android.R.layout.simple_dropdown_item_1line);
@@ -111,36 +112,70 @@ public class MainActivity extends AppCompatActivity {
                     return;
                 }
 
-                else if (type == "unregistered"){
-                    Task<AuthResult> resultTask = mAuth.signInAnonymously();
-                    resultTask.addOnSuccessListener(new OnSuccessListener<AuthResult>() {
-                        @Override
-                        public void onSuccess(AuthResult authResult) {
-                            final String key = FirebaseAuth.getInstance().getCurrentUser().getUid();
-                            final DatabaseReference anonymousReference = FirebaseDatabase.getInstance().getReference().child("Users").child("Customers");
-                            anonymousReference.addListenerForSingleValueEvent(new ValueEventListener() {
-                                @Override
-                                public void onDataChange(DataSnapshot dataSnapshot) {
-                                    if (dataSnapshot.exists()){
-                                        DatabaseReference addAnon = FirebaseDatabase.getInstance().getReference().child("Users").child("Customers").child(key);
-                                        HashMap strangerMap2 = new HashMap();
-                                        strangerMap2.put("type","Anonymous");
-                                        addAnon.updateChildren(strangerMap2);
-                                    }
-                                }
+//                else if (type == "unregistered"){
+//                    Task<AuthResult> resultTask = mAuth.signInAnonymously();
+//                    resultTask.addOnSuccessListener(new OnSuccessListener<AuthResult>() {
+//                        @Override
+//                        public void onSuccess(AuthResult authResult) {
+//                            final String key = FirebaseAuth.getInstance().getCurrentUser().getUid();
+//                            final DatabaseReference anonymousReference = FirebaseDatabase.getInstance().getReference().child("Users").child("Customers");
+//                            anonymousReference.addListenerForSingleValueEvent(new ValueEventListener() {
+//                                @Override
+//                                public void onDataChange(DataSnapshot dataSnapshot) {
+//                                    if (dataSnapshot.exists()){
+//                                        DatabaseReference addAnon = FirebaseDatabase.getInstance().getReference().child("Users").child("Customers").child(key);
+//                                        HashMap strangerMap2 = new HashMap();
+//                                        strangerMap2.put("type","Anonymous");
+//                                        addAnon.updateChildren(strangerMap2);
+//                                    }
+//                                }
+//
+//                                @Override
+//                                public void onCancelled(DatabaseError databaseError) {
+//
+//                                }
+//                            });
+//                            Intent intent = new Intent(MainActivity.this, StrangerMapActivity.class);
+//                            startActivity(intent);
+//                            finish();
+//                            return;
+//                        }
+//                    });
+//                }
+            }
+        });
 
-                                @Override
-                                public void onCancelled(DatabaseError databaseError) {
-
+        mUnregistered.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Task<AuthResult> resultTask = mAuth.signInAnonymously();
+                resultTask.addOnSuccessListener(new OnSuccessListener<AuthResult>() {
+                    @Override
+                    public void onSuccess(AuthResult authResult) {
+                        final String key = FirebaseAuth.getInstance().getCurrentUser().getUid();
+                        final DatabaseReference anonymousReference = FirebaseDatabase.getInstance().getReference().child("Users").child("Customers");
+                        anonymousReference.addListenerForSingleValueEvent(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(DataSnapshot dataSnapshot) {
+                                if (dataSnapshot.exists()){
+                                    DatabaseReference addAnon = FirebaseDatabase.getInstance().getReference().child("Users").child("Customers").child(key);
+                                    HashMap strangerMap2 = new HashMap();
+                                    strangerMap2.put("type","Anonymous");
+                                    addAnon.updateChildren(strangerMap2);
                                 }
-                            });
-                            Intent intent = new Intent(MainActivity.this, StrangerMapActivity.class);
-                            startActivity(intent);
-                            finish();
-                            return;
-                        }
-                    });
-                }
+                            }
+
+                            @Override
+                            public void onCancelled(DatabaseError databaseError) {
+
+                            }
+                        });
+                        Intent intent = new Intent(MainActivity.this, StrangerMapActivity.class);
+                        startActivity(intent);
+                        finish();
+                        return;
+                    }
+                });
             }
         });
 

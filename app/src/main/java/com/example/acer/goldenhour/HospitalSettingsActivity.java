@@ -25,13 +25,10 @@ import com.google.firebase.database.ValueEventListener;
 import java.util.HashMap;
 import java.util.Map;
 
-public class HospitalSettingsActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener{
+public class HospitalSettingsActivity extends AppCompatActivity{
 
 
 
-    private DrawerLayout mDrawerLayoutHospital;
-    private ActionBarDrawerToggle mToggleHospital;
-    private NavigationView mNavigationView;
 
 
     private EditText mNameField, mPhoneField, mAddressField;
@@ -53,17 +50,7 @@ public class HospitalSettingsActivity extends AppCompatActivity implements Navig
         setContentView(R.layout.activity_hospital_settings);
 
 
-        mDrawerLayoutHospital = (DrawerLayout) findViewById(R.id.drawerSaur);
-        mToggleHospital = new ActionBarDrawerToggle(this,mDrawerLayoutHospital,R.string.open,R.string.close);
-        mDrawerLayoutHospital.addDrawerListener(mToggleHospital);
-        mToggleHospital.syncState();
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        mNavigationView = findViewById(R.id.nv2);
-
-        if (mNavigationView != null){
-            mNavigationView.setNavigationItemSelectedListener(this);
-        }
 
         mNameField = (EditText) findViewById(R.id.name);
         mPhoneField = (EditText) findViewById(R.id.phone);
@@ -96,32 +83,7 @@ public class HospitalSettingsActivity extends AppCompatActivity implements Navig
     }
 
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item_driver) {
-        if (mToggleHospital.onOptionsItemSelected(item_driver)) {
-            return true;
-        }
-        return super.onOptionsItemSelected(item_driver);
-    }
 
-
-    @Override
-    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-        int id = item.getItemId();
-
-        switch (id){
-            case R.id.dashboard:
-                Intent intent = new Intent(HospitalSettingsActivity.this, HospitalActivity.class);
-                startActivity(intent);
-                break;
-
-            case R.id.settingH:
-                break;
-
-
-        }
-        return true;
-    }
 
     private void getUserInfo(){
         mHospitalDatabase.addValueEventListener(new ValueEventListener() {

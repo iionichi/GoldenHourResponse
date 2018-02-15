@@ -30,13 +30,11 @@ import com.google.firebase.database.ValueEventListener;
 import java.util.HashMap;
 import java.util.Map;
 
-public class DriverSettingsActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener{
+public class DriverSettingsActivity extends AppCompatActivity{
 
 
 
-    private DrawerLayout mDrawerLayoutDriver;
-    private ActionBarDrawerToggle mToggleDriver;
-    private NavigationView mNavigationView;
+
 
 
     private EditText mNameField, mPhoneField, mAmbulanceField, mAmbulanceNumberField;
@@ -61,17 +59,9 @@ public class DriverSettingsActivity extends AppCompatActivity implements Navigat
         setContentView(R.layout.activity_driver_settings);
 
 
-        mDrawerLayoutDriver = (DrawerLayout) findViewById(R.id.drawerD);
-        mToggleDriver = new ActionBarDrawerToggle(this,mDrawerLayoutDriver,R.string.open,R.string.close);
-        mDrawerLayoutDriver.addDrawerListener(mToggleDriver);
-        mToggleDriver.syncState();
+
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        mNavigationView = findViewById(R.id.nv1);
-
-        if (mNavigationView != null){
-            mNavigationView.setNavigationItemSelectedListener(this);
-        }
 
         mNameField = (EditText) findViewById(R.id.name);
         mPhoneField = (EditText) findViewById(R.id.phoneEditText);
@@ -106,49 +96,7 @@ public class DriverSettingsActivity extends AppCompatActivity implements Navigat
     }
 
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item_driver) {
-        if (mToggleDriver.onOptionsItemSelected(item_driver)) {
-            return true;
-        }
-        return super.onOptionsItemSelected(item_driver);
-    }
 
-
-    @Override
-    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-        int id = item.getItemId();
-
-        switch (id){
-            case R.id.Patient_Service:
-                Intent intent = new Intent(DriverSettingsActivity.this, DriverMapActivity.class);
-                startActivity(intent);
-                break;
-
-            case R.id.call_policeD:
-                final int REQUEST_PHONE_CALL = 1;
-                Intent callIntent = new Intent(Intent.ACTION_CALL);
-                callIntent.setData(Uri.parse("tel:100"));
-
-                if(android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M){
-                    if(ContextCompat.checkSelfPermission(DriverSettingsActivity.this, android.Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED){
-                        ActivityCompat.requestPermissions(DriverSettingsActivity.this, new String[]{android.Manifest.permission.CALL_PHONE}, REQUEST_PHONE_CALL);
-                    }
-                    else {
-                        startActivity(callIntent);
-                    }
-                }
-                break;
-
-            case R.id.profile_settings_driver:
-//                Intent intent1 = new Intent(DriverSettingsActivity.this, DriverSettingsActivity.class);
-//                startActivity(intent1);
-                break;
-
-
-        }
-        return true;
-    }
 
     private void getUserInfo(){
         mDriverDatabase.addValueEventListener(new ValueEventListener() {

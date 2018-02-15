@@ -27,10 +27,10 @@
         <activity android:name=".MainActivity" />
         <activity
             android:name=".DriverLoginActivity"
-            android:parentActivityName=".MainActivity"></activity>
+            android:parentActivityName=".MainActivity" />
         <activity
             android:name=".CustomerLoginActivity"
-            android:parentActivityName=".MainActivity"></activity>
+            android:parentActivityName=".MainActivity" />
         <!--
              The API key for Google Maps-based APIs is defined as a string resource.
              (See the file "res/values/google_maps_api.xml").
@@ -71,7 +71,14 @@
             android:parentActivityName=".MainActivity"></activity>
         <activity android:name=".HistoryActivty" />
         <activity android:name=".HistorySingleActivity" />
-        <activity android:name=".AdminActivity" android:parentActivityName=".MainActivity"></activity>
+        <activity
+            android:name=".AdminActivity"
+            android:parentActivityName=".MainActivity" />
+        <activity android:name=".HelpActivity" />
+        <activity android:name=".AccidentVideoActivity" />
+        <activity android:name=".AnxietyVideoActivity" />
+        <activity android:name=".CardiacVideoActivity" />
+        <activity android:name=".SeizureVideoActivity"></activity>
     </application>
 
 </manifest>

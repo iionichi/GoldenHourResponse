@@ -17,6 +17,9 @@ android {
         }
     }
     buildToolsVersion '26.0.2'
+    sourceSets {
+        main { res.srcDirs = ['src/main/res', 'src/main/res/videos', 'src/main/res/raw'] }
+    }
 }
 
 dependencies {
@@ -36,5 +39,6 @@ dependencies {
     implementation 'com.google.android.gms:play-services-location:11.6.2'
     implementation 'com.github.jd-alexander:library:1.1.0'
     implementation 'com.github.bumptech.glide:glide:3.8.0'
+    implementation files('libs/YouTubeAndroidPlayerApi.jar')
 }
 apply plugin: 'com.google.gms.google-services'

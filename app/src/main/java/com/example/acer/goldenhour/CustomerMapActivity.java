@@ -83,7 +83,7 @@ public class CustomerMapActivity extends AppCompatActivity implements OnMapReady
 
     private int hospitalToggle = 1;
 
-    private Button mRequest,mHospi,mHistory;
+    private Button mRequest,mHospi,mHelp;
     private LatLng pickupLocation, pickupLocation2, destinationLatLng;
 
     private Boolean requestBol = false, addedCustomerToHospital = false, onlyHospital = false;
@@ -152,7 +152,7 @@ public class CustomerMapActivity extends AppCompatActivity implements OnMapReady
 
         mRequest = findViewById(R.id.request);
         mHospi = findViewById(R.id.hospi);
-
+        mHelp = findViewById(R.id.help);
 
 
         mAuth1 = FirebaseAuth.getInstance();
@@ -227,6 +227,14 @@ public class CustomerMapActivity extends AppCompatActivity implements OnMapReady
                         onlyHospital = false;
                         break;
                 }
+            }
+        });
+
+        mHelp.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(CustomerMapActivity.this, HelpActivity.class);
+                startActivity(intent);
             }
         });
     }

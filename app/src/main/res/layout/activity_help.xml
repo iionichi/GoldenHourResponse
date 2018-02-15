@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.example.acer.goldenhour.HelpActivity">
+
+    <Button
+        android:id="@+id/accidentVideo"
+        android:layout_width="match_parent"
+        android:layout_height="125dp"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:text="Transporting Accident Victims Safely" />
+
+    <Button
+        android:id="@+id/anxietyVideo"
+        android:layout_width="match_parent"
+        android:layout_height="125dp"
+        android:layout_below="@+id/accidentVideo"
+        android:layout_centerHorizontal="true"
+        android:text="Basic CPR Procedure" />
+
+    <Button
+        android:id="@+id/cardiacVideo"
+        android:layout_width="match_parent"
+        android:layout_height="125dp"
+        android:layout_below="@+id/anxietyVideo"
+        android:text="Cardiac Arrest" />
+
+    <Button
+        android:id="@+id/seizureVideo"
+        android:layout_width="match_parent"
+        android:layout_height="125dp"
+        android:layout_below="@+id/cardiacVideo"
+        android:text="Snake Bite First Aid Treatment" />
+
+
+</RelativeLayout>

@@ -2,8 +2,11 @@ package com.example.acer.goldenhour;
 
 import android.Manifest;
 import android.app.Activity;
+import android.app.Dialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.location.Location;
 import android.net.Uri;
 import android.os.Build;
@@ -62,6 +65,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.wang.avi.AVLoadingIndicatorView;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -80,11 +84,11 @@ public class CustomerMapActivity extends AppCompatActivity implements OnMapReady
     SupportMapFragment mapFragment;
 
     private FirebaseAuth mAuth1;
-    private String userID1;
+    private String userID1, userId2;
 
     private int hospitalToggle = 1;
 
-    private Button mRequest,mHospi,mHelp;
+    private Button mRequest,mHospi;
     private LatLng pickupLocation, pickupLocation2, destinationLatLng;
 
     private Boolean requestBol = false, addedCustomerToHospital = false, onlyHospital = false, stopRequest = false, stopRequestH = false, showHospitalBool = true;
@@ -99,8 +103,6 @@ public class CustomerMapActivity extends AppCompatActivity implements OnMapReady
     private RadioGroup mRadioGroup;
     private RatingBar mRatingBar;
 
-
-
     final int LOCATION_REQUEST_CODE = 1;
 
     private DrawerLayout mDrawerLayout;
@@ -113,11 +115,22 @@ public class CustomerMapActivity extends AppCompatActivity implements OnMapReady
     private List<Polyline> polylines;
     private static final int[] COLORS = new int[]{R.color.primary_dark_material_light};
 
+    Dialog loaderDialog;
+    AVLoadingIndicatorView avi;
+    TextView loaderText;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_customer_map);
+
+        loaderDialog = new Dialog(this);
+        loaderDialog.setContentView(R.layout.loading_file_main);
+        avi = (AVLoadingIndicatorView) loaderDialog.findViewById(R.id.aviLoader);
+        loaderText = (TextView) loaderDialog.findViewById(R.id.loadingText);
+
+        userId2 = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        mCustomerDatabase1 = FirebaseDatabase.getInstance().getReference().child("Users").child("Customers").child(userId2);
 
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer);
         mToggle = new ActionBarDrawerToggle(this,mDrawerLayout,R.string.open,R.string.close);
@@ -162,7 +175,6 @@ public class CustomerMapActivity extends AppCompatActivity implements OnMapReady
 
         mRequest = findViewById(R.id.request);
         mHospi = findViewById(R.id.hospi);
-        mHelp = findViewById(R.id.help);
 
         mAuth1 = FirebaseAuth.getInstance();
         userID1 = mAuth1.getCurrentUser().getUid();
@@ -249,14 +261,6 @@ public class CustomerMapActivity extends AppCompatActivity implements OnMapReady
                 }
             }
         });
-
-        mHelp.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(CustomerMapActivity.this, HelpActivity.class);
-                startActivity(intent);
-            }
-        });
     }
 
     @Override
@@ -305,6 +309,13 @@ public class CustomerMapActivity extends AppCompatActivity implements OnMapReady
                 break;
 
             case R.id.sos:
+                loaderText.setText("Sending SMS");
+                loaderDialog.show();
+                loaderDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));//Background color for dialog
+                loaderDialog.show();//Show the dialog
+                loaderDialog.setCanceledOnTouchOutside(false);
+                avi.smoothToShow();
+
                 mCustomerDatabase1.addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
@@ -320,6 +331,8 @@ public class CustomerMapActivity extends AppCompatActivity implements OnMapReady
                         if (checkPermission(Manifest.permission.SEND_SMS)) {
                             SmsManager smsManager = SmsManager.getDefault();
                             smsManager.sendTextMessage(mePhone, null, msg, null, null);
+                            loaderDialog.dismiss();
+                            Toast.makeText(CustomerMapActivity.this, "Message Sent", Toast.LENGTH_SHORT).show();
                         } else {
                             ActivityCompat.requestPermissions(CustomerMapActivity.this,new String[]{Manifest.permission.SEND_SMS},SEND_SMS_PERMISSION_REQUEST_CODE);
                         }
@@ -351,6 +364,11 @@ public class CustomerMapActivity extends AppCompatActivity implements OnMapReady
                     }
                     showHospitalBool = true;
                 }
+                break;
+
+            case R.id.help_videos:
+                Intent intent1 = new Intent(CustomerMapActivity.this, HelpActivity.class);
+                startActivity(intent1);
                 break;
 
             case R.id.Log_out:
@@ -415,6 +433,7 @@ public class CustomerMapActivity extends AppCompatActivity implements OnMapReady
                 pickupMarker.remove();
             }
 
+            geoQuery.removeAllListeners();
             return;
         }
 
@@ -634,7 +653,7 @@ public class CustomerMapActivity extends AppCompatActivity implements OnMapReady
         //Remove the customer child from the Hospital
         if(addedCustomerToHospital){
             addedCustomerToHospital = false;
-            DatabaseReference addCustomerToHospital = FirebaseDatabase.getInstance().getReference().child("Hospital").child(hospitalFoundId).child("customerRequestId");
+            DatabaseReference addCustomerToHospital = FirebaseDatabase.getInstance().getReference().child("Users").child("Hospital").child(hospitalFoundId).child("customerRequestId").child(userId);
             addCustomerToHospital.removeValue();
             hospitalFoundId = null;
         }
@@ -769,6 +788,7 @@ public class CustomerMapActivity extends AppCompatActivity implements OnMapReady
     private void getHospital(){
         //To stop the request if hospital is not found for long time
         if (stopRequestH){
+            geoQueryH.removeAllListeners();
             return;
         }
         DatabaseReference hospitalLocation = FirebaseDatabase.getInstance().getReference().child("Users").child("Hospital");

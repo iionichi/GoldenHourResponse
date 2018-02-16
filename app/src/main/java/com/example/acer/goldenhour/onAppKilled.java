@@ -2,6 +2,7 @@ package com.example.acer.goldenhour;
 
 import android.app.Service;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.IBinder;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -19,6 +20,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.security.Provider;
+import java.util.Map;
 
 public class onAppKilled extends Service {
     @Nullable

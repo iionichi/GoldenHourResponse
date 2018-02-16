@@ -13,6 +13,9 @@
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
         android:layout_alignParentTop="true"
+        android:background="@color/LightGrey"
+        android:textColor="@color/colorWhite"
+        android:layout_marginTop="5dp"
         android:text="Transporting Accident Victims Safely" />
 
     <Button
@@ -21,6 +24,9 @@
         android:layout_height="125dp"
         android:layout_below="@+id/accidentVideo"
         android:layout_centerHorizontal="true"
+        android:background="@color/LightGrey"
+        android:textColor="@color/colorWhite"
+        android:layout_marginTop="5dp"
         android:text="Basic CPR Procedure" />
 
     <Button
@@ -28,6 +34,9 @@
         android:layout_width="match_parent"
         android:layout_height="125dp"
         android:layout_below="@+id/anxietyVideo"
+        android:background="@color/LightGrey"
+        android:textColor="@color/colorWhite"
+        android:layout_marginTop="5dp"
         android:text="Cardiac Arrest" />
 
     <Button
@@ -35,6 +44,9 @@
         android:layout_width="match_parent"
         android:layout_height="125dp"
         android:layout_below="@+id/cardiacVideo"
+        android:background="@color/LightGrey"
+        android:textColor="@color/colorWhite"
+        android:layout_marginTop="5dp"
         android:text="Snake Bite First Aid Treatment" />
 
 

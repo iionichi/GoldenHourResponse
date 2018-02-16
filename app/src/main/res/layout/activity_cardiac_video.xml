@@ -13,11 +13,13 @@
 
     <Button
         android:id="@+id/cardiacPlay"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@+id/cardiacPlayerView"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="101dp"
+        android:background="@color/LightGrey"
+        android:textColor="@color/colorWhite"
         android:text="Play" />
 
 </RelativeLayout>

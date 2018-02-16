@@ -1,6 +1,9 @@
 package com.example.acer.goldenhour;
 
+import android.app.Dialog;
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
@@ -10,6 +13,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -23,13 +27,12 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.wang.avi.AVLoadingIndicatorView;
 
 import java.util.HashMap;
 import java.util.Map;
 
 public class MainActivity extends AppCompatActivity {
-
-
 
     private String userType,type,typeC;
     private Button mNext,mUnregistered;
@@ -37,13 +40,23 @@ public class MainActivity extends AppCompatActivity {
     private FirebaseAuth mAuth;
     private FirebaseAuth.AuthStateListener firebaseAuthListener;
 
+    Dialog loaderDialog;
+    AVLoadingIndicatorView avi;
+    TextView loaderText;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        loaderDialog = new Dialog(this);
+        loaderDialog.setContentView(R.layout.loading_file_main);
+        avi = (AVLoadingIndicatorView) loaderDialog.findViewById(R.id.aviLoader);
+        loaderText = (TextView) loaderDialog.findViewById(R.id.loadingText);
+
         mNext = (Button) findViewById(R.id.next);
         mUnregistered = (Button) findViewById(R.id.unregistered);
-            Spinner Role = (Spinner) findViewById(R.id.role);
+        Spinner Role = (Spinner) findViewById(R.id.role);
 
         ArrayAdapter<String> myAdapter = new ArrayAdapter<String>(MainActivity.this, android.R.layout.simple_list_item_1, getResources().getStringArray(R.array.role));
         myAdapter.setDropDownViewResource(android.R.layout.simple_dropdown_item_1line);
@@ -67,9 +80,6 @@ public class MainActivity extends AppCompatActivity {
                 }
 
                 else if (position==3){
-                    type="unregistered";
-                }
-                else if (position==4){
                     type = "admin";
                 }
             }
@@ -111,43 +121,19 @@ public class MainActivity extends AppCompatActivity {
 
                     return;
                 }
-
-//                else if (type == "unregistered"){
-//                    Task<AuthResult> resultTask = mAuth.signInAnonymously();
-//                    resultTask.addOnSuccessListener(new OnSuccessListener<AuthResult>() {
-//                        @Override
-//                        public void onSuccess(AuthResult authResult) {
-//                            final String key = FirebaseAuth.getInstance().getCurrentUser().getUid();
-//                            final DatabaseReference anonymousReference = FirebaseDatabase.getInstance().getReference().child("Users").child("Customers");
-//                            anonymousReference.addListenerForSingleValueEvent(new ValueEventListener() {
-//                                @Override
-//                                public void onDataChange(DataSnapshot dataSnapshot) {
-//                                    if (dataSnapshot.exists()){
-//                                        DatabaseReference addAnon = FirebaseDatabase.getInstance().getReference().child("Users").child("Customers").child(key);
-//                                        HashMap strangerMap2 = new HashMap();
-//                                        strangerMap2.put("type","Anonymous");
-//                                        addAnon.updateChildren(strangerMap2);
-//                                    }
-//                                }
-//
-//                                @Override
-//                                public void onCancelled(DatabaseError databaseError) {
-//
-//                                }
-//                            });
-//                            Intent intent = new Intent(MainActivity.this, StrangerMapActivity.class);
-//                            startActivity(intent);
-//                            finish();
-//                            return;
-//                        }
-//                    });
-//                }
             }
         });
 
         mUnregistered.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                loaderText.setText("Signing In Anonmously");
+                loaderDialog.show();
+                loaderDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));//Background color for dialog
+                loaderDialog.show();//Show the dialog
+                loaderDialog.setCanceledOnTouchOutside(false);
+                avi.smoothToShow();
+
                 Task<AuthResult> resultTask = mAuth.signInAnonymously();
                 resultTask.addOnSuccessListener(new OnSuccessListener<AuthResult>() {
                     @Override
@@ -170,6 +156,7 @@ public class MainActivity extends AppCompatActivity {
 
                             }
                         });
+                        loaderDialog.dismiss();
                         Intent intent = new Intent(MainActivity.this, StrangerMapActivity.class);
                         startActivity(intent);
                         finish();
@@ -179,11 +166,17 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-
         mAuth = FirebaseAuth.getInstance();
         firebaseAuthListener = new FirebaseAuth.AuthStateListener() {
             @Override
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
+                loaderText.setText("Trying To Login");
+                loaderDialog.show();
+                loaderDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));//Background color for dialog
+                loaderDialog.show();//Show the dialog
+                loaderDialog.setCanceledOnTouchOutside(false);
+                avi.smoothToShow();
+
                 final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
 
                 if (user != null){
@@ -200,12 +193,14 @@ public class MainActivity extends AppCompatActivity {
                                         aUser.delete().addOnCompleteListener(new OnCompleteListener<Void>() {
                                             @Override
                                             public void onComplete(@NonNull Task<Void> task) {
+                                                loaderText.setText("Removing previous Login");
                                                 FirebaseAuth.getInstance().signOut();
                                                 Toast.makeText(MainActivity.this, "User Deleted", Toast.LENGTH_SHORT).show();
                                             }
                                         });
                                         DatabaseReference strangerRef = FirebaseDatabase.getInstance().getReference().child("Users").child("Customers").child(userId2).child("type");
                                         strangerRef.removeValue();
+                                        loaderDialog.dismiss();
                                     }catch (Exception e){
 
                                     }
@@ -229,26 +224,31 @@ public class MainActivity extends AppCompatActivity {
                             if (dataSnapshot.exists()){
                                 Map<String, Object> map =  (Map<String, Object>) dataSnapshot.getValue();
                                 userType = map.get("Type").toString();
+                                loaderText.setText("Logging In as " + userType);
 
                                 if (userType.equals("Customers")){
+                                    loaderDialog.dismiss();
                                     Intent intentC = new Intent(MainActivity.this,CustomerMapActivity.class);
                                     startActivity(intentC);
                                     finish();
                                     return;
                                 }
                                 else if (userType.equals("Drivers")){
+                                    loaderDialog.dismiss();
                                     Intent intentC = new Intent(MainActivity.this,DriverMapActivity.class);
                                     startActivity(intentC);
                                     finish();
                                     return;
                                 }
                                 else if (userType.equals("Hospital")){
+                                    loaderDialog.dismiss();
                                     Intent intentC = new Intent(MainActivity.this,HospitalActivity.class);
                                     startActivity(intentC);
                                     finish();
                                     return;
                                 }
                                 else {
+
                                     String userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
                                     DatabaseReference anonymousUser = FirebaseDatabase.getInstance().getReference().child("Users").child("Customers").child(userId);
                                     anonymousUser.addValueEventListener(new ValueEventListener() {
@@ -281,7 +281,8 @@ public class MainActivity extends AppCompatActivity {
                     });
                 }
                 else {
-
+                    loaderText.setText("No Login Found");
+                    loaderDialog.dismiss();
                 }
             }
         };

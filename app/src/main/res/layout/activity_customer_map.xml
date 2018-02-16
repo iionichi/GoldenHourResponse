@@ -35,13 +35,6 @@
             android:text="Get Hospital"
             android:textColor="@color/colorWhite" />
 
-        <Button
-            android:id="@+id/help"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Help" />
-
-
     </LinearLayout>
 
     <LinearLayout
@@ -102,6 +95,41 @@
                     android:stepSize="0.1"/>
             </LinearLayout>
         </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/hospitalInfo"
+            android:layout_gravity="bottom"
+            android:orientation="horizontal"
+            android:background="@android:color/white"
+            android:visibility="gone">
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:paddingLeft="40sp">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/hospitalName"
+                    android:paddingBottom="10sp"
+                    android:paddingTop="20sp"/>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/hospitalPhone"
+                    android:paddingBottom="10sp"
+                    android:paddingTop="20sp"/>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/hospitalAddress"
+                    android:paddingBottom="10sp"
+                    android:paddingTop="20sp"/>
+            </LinearLayout>
+        </LinearLayout>
+
         <LinearLayout
             android:background="@android:color/white"
             android:layout_width="match_parent"

@@ -1,6 +1,9 @@
 package com.example.acer.goldenhour;
 
+import android.app.Dialog;
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
@@ -11,6 +14,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -20,6 +24,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.wang.avi.AVLoadingIndicatorView;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -39,11 +44,20 @@ public class DriverRegisterActivity extends AppCompatActivity {
     private String mService;
     private RadioGroup mRadioGroup;
 
+    Dialog loaderDialog;
+    AVLoadingIndicatorView avi;
+    TextView loaderText;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_driver_register);
+
+        loaderDialog = new Dialog(this);
+        loaderDialog.setContentView(R.layout.loading_file_main);
+        avi = (AVLoadingIndicatorView) loaderDialog.findViewById(R.id.aviLoader);
+        loaderText = (TextView) loaderDialog.findViewById(R.id.loadingText);
 
         mAuth = FirebaseAuth.getInstance();
 
@@ -99,10 +113,18 @@ public class DriverRegisterActivity extends AppCompatActivity {
                 if (TextUtils.isEmpty(email) || TextUtils.isEmpty(password) || TextUtils.isEmpty(mName) || TextUtils.isEmpty(mPhone) || TextUtils.isEmpty(mAmbulance) || TextUtils.isEmpty(mAmbulanceNumber)) {
                     Toast.makeText(DriverRegisterActivity.this, "Please Fill All The Fields", Toast.LENGTH_SHORT).show();
                 } else {
+                    loaderText.setText("Checking Credentials");
+                    loaderDialog.show();
+                    loaderDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));//Background color for dialog
+                    loaderDialog.show();//Show the dialog
+                    loaderDialog.setCanceledOnTouchOutside(false);
+                    avi.smoothToShow();
+
                     mAuth.createUserWithEmailAndPassword(email, password).addOnCompleteListener(DriverRegisterActivity.this, new OnCompleteListener<AuthResult>() {
                         @Override
                         public void onComplete(@NonNull Task<AuthResult> task) {
                             if (!task.isSuccessful()) {
+                                loaderDialog.dismiss();
                                 Toast.makeText(DriverRegisterActivity.this, "Sign Up Error", Toast.LENGTH_SHORT).show();
                             } else {
                                 String userId = mAuth.getCurrentUser().getUid();
@@ -111,6 +133,7 @@ public class DriverRegisterActivity extends AppCompatActivity {
 
                                 addAmbulanceLogin(userId);//Adding Ambulance Login
 
+                                loaderDialog.dismiss();
 
                                DatabaseReference  mDriverDatabase = FirebaseDatabase.getInstance().getReference().child("Users").child("Drivers").child(userId);
                                 Map userInfo = new HashMap();

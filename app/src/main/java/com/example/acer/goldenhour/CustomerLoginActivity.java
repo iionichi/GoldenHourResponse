@@ -1,6 +1,9 @@
 package com.example.acer.goldenhour;
 
+import android.app.Dialog;
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
@@ -9,6 +12,7 @@ import android.text.TextUtils;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -21,6 +25,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.wang.avi.AVLoadingIndicatorView;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -33,13 +38,21 @@ public class CustomerLoginActivity extends AppCompatActivity {
     private FirebaseAuth mAuth;
     private FirebaseAuth.AuthStateListener firebaseAuthListener;
 
+    Dialog loaderDialog;
+    AVLoadingIndicatorView avi;
+    TextView loaderText;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_customer_login);
 
-        mAuth = FirebaseAuth.getInstance();
+        loaderDialog = new Dialog(this);
+        loaderDialog.setContentView(R.layout.loading_file_main);
+        avi = (AVLoadingIndicatorView) loaderDialog.findViewById(R.id.aviLoader);
+        loaderText = (TextView) loaderDialog.findViewById(R.id.loadingText);
 
+        mAuth = FirebaseAuth.getInstance();
         firebaseAuthListener = new FirebaseAuth.AuthStateListener() {
             @Override
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
@@ -68,14 +81,26 @@ public class CustomerLoginActivity extends AppCompatActivity {
                 final String password = mPassword.getText().toString();
 
                 if (TextUtils.isEmpty(email) || TextUtils.isEmpty(password)) {
+                    loaderDialog.dismiss();
                     Toast.makeText(CustomerLoginActivity.this, "Please Fill All The Fields", Toast.LENGTH_SHORT).show();
                 } else {
+                    loaderText.setText("Checking Credentials");
+                    loaderDialog.show();
+                    loaderDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));//Background color for dialog
+                    loaderDialog.show();//Show the dialog
+                    loaderDialog.setCanceledOnTouchOutside(false);
+                    avi.smoothToShow();
+
                     mAuth.createUserWithEmailAndPassword(email, password).addOnCompleteListener(CustomerLoginActivity.this, new OnCompleteListener<AuthResult>() {
                         @Override
                         public void onComplete(@NonNull Task<AuthResult> task) {
                             if (!task.isSuccessful()) {
+                                loaderText.setText("SignUp Error");
+                                loaderDialog.dismiss();
                                 Toast.makeText(CustomerLoginActivity.this, "Sign Up Error", Toast.LENGTH_SHORT).show();
                             } else {
+                                loaderText.setText("Registration Successful");
+
                                 String userId = mAuth.getCurrentUser().getUid();
                                 DatabaseReference currentUserDB = FirebaseDatabase.getInstance().getReference().child("Users").child("Customers").child(userId);
                                 currentUserDB.setValue(true);
@@ -98,10 +123,19 @@ public class CustomerLoginActivity extends AppCompatActivity {
                     Toast.makeText(CustomerLoginActivity.this, "Please Fill All The Fields", Toast.LENGTH_SHORT).show();
                 } else
                 {
+                    loaderText.setText("Checking Credentials");
+                    loaderDialog.show();
+                    loaderDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));//Background color for dialog
+                    loaderDialog.show();//Show the dialog
+                    loaderDialog.setCanceledOnTouchOutside(false);
+                    avi.smoothToShow();
+
                     mAuth.signInWithEmailAndPassword(email, password).addOnCompleteListener(CustomerLoginActivity.this, new OnCompleteListener<AuthResult>() {
                         @Override
                         public void onComplete(@NonNull Task<AuthResult> task) {
                             if (!task.isSuccessful()) {
+                                loaderText.setText("Sign In Error");
+                                loaderDialog.dismiss();
                                 Toast.makeText(CustomerLoginActivity.this, "Sign In Error", Toast.LENGTH_SHORT).show();
                             }
                             else {
@@ -111,13 +145,21 @@ public class CustomerLoginActivity extends AppCompatActivity {
                                     @Override
                                     public void onDataChange(DataSnapshot dataSnapshot) {
                                         if (dataSnapshot.exists()){
+                                            loaderText.setText("Signing in as Customer");
+
                                             addCustomerLogin(userId);//For adding the customer logged in.
+
+                                            loaderDialog.dismiss();
+
                                             Intent intent1 = new Intent(CustomerLoginActivity.this,CustomerMapActivity.class);
                                             startActivity(intent1);
                                             finish();
                                             return;
                                         }
                                         else {
+                                            loaderText.setText("Wrong Login");
+                                            loaderDialog.dismiss();
+
                                             FirebaseAuth.getInstance().signOut();
                                             Toast.makeText(CustomerLoginActivity.this, "Wrong Login", Toast.LENGTH_SHORT).show();
                                             Intent intent1 = new Intent(CustomerLoginActivity.this,MainActivity.class);

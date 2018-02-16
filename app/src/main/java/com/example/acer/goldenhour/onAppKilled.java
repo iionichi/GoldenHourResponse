@@ -2,6 +2,7 @@ package com.example.acer.goldenhour;
 
 import android.app.Service;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.IBinder;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -19,6 +20,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.security.Provider;
+import java.util.Map;
 
 public class onAppKilled extends Service {
     @Nullable
@@ -31,8 +33,8 @@ public class onAppKilled extends Service {
     public void onTaskRemoved(Intent rootIntent) {
         super.onTaskRemoved(rootIntent);
 
-        String userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
         try {
+            String userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
             DatabaseReference ref = FirebaseDatabase.getInstance().getReference("driversAvailable");
             GeoFire geoFire = new GeoFire(ref);
             geoFire.removeLocation(userId);
@@ -52,8 +54,5 @@ public class onAppKilled extends Service {
         catch (Exception e){
 
         }
-//        DatabaseReference ref = FirebaseDatabase.getInstance().getReference("driversAvailable");
-//        GeoFire geoFire = new GeoFire(ref);
-//        geoFire.removeLocation(userId);
     }
 }

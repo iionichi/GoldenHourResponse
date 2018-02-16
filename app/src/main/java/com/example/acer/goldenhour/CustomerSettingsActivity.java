@@ -43,8 +43,6 @@ public class CustomerSettingsActivity extends AppCompatActivity{
 
     private String userID, mName, mPhone, mMedicompany, mMedino, bloodGroup, rhFactor, answer,mePhone;
 
-
-
     Spinner mBloodGroup, mRHFactor, mAnswer;
     ArrayAdapter<String> bloodGroupAdapter, rhGroupAdapter, answerAdapter;
 
@@ -53,10 +51,7 @@ public class CustomerSettingsActivity extends AppCompatActivity{
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_customer_settings);
 
-
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-
-
 
         //Creating Spinner For BloodGroup
         mBloodGroup = (Spinner) findViewById(R.id.bloodGroup);
@@ -129,13 +124,13 @@ public class CustomerSettingsActivity extends AppCompatActivity{
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
                 switch (i){
                     case 0:
-                        answer = "no";
+                        answer = "No";
                         break;
                     case 1:
-                        answer = "yes";
+                        answer = "Yes";
                         break;
                     case 2:
-                        answer = "no";
+                        answer = "No";
                         break;
                 }
             }
@@ -179,10 +174,6 @@ public class CustomerSettingsActivity extends AppCompatActivity{
             }
         });
     }
-
-
-
-
 
     private void getUserInfo(){
         mCustomerDatabase.addValueEventListener(new ValueEventListener() {

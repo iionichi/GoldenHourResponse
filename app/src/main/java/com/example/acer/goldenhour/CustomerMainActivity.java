@@ -7,6 +7,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.provider.Settings;
 import android.support.design.widget.NavigationView;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -201,7 +202,7 @@ public class CustomerMainActivity extends AppCompatActivity{
                 if (dataSnapshot.exists()){
                     Map<String, Object> mMap = (Map<String, Object>) dataSnapshot.getValue();
                     try{
-                        if (mMap.get("donate").toString().equals("yes")){
+                        if (mMap.get("donate").toString().equals("Yes")){
                             donate = true;
                             bloodGroup = mMap.get("BloodGroup").toString();
                             rhFactor = mMap.get("RHFactor").toString();

@@ -18,6 +18,8 @@
         android:layout_below="@+id/accidentPlayerView"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="101dp"
+        android:background="@color/LightGrey"
+        android:textColor="@color/colorWhite"
         android:text="Play" />
 
 </RelativeLayout>

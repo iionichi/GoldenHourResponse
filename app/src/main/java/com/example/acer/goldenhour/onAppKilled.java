@@ -22,6 +22,8 @@ import com.google.firebase.database.ValueEventListener;
 import java.security.Provider;
 import java.util.Map;
 
+import javax.sql.StatementEvent;
+
 public class onAppKilled extends Service {
     @Nullable
     @Override
@@ -32,27 +34,13 @@ public class onAppKilled extends Service {
     @Override
     public void onTaskRemoved(Intent rootIntent) {
         super.onTaskRemoved(rootIntent);
-
         try {
             String userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
             DatabaseReference ref = FirebaseDatabase.getInstance().getReference("driversAvailable");
             GeoFire geoFire = new GeoFire(ref);
             geoFire.removeLocation(userId);
-
-//            String userid = FirebaseAuth.getInstance().getCurrentUser().getUid();
-//            DatabaseReference strangerRef = FirebaseDatabase.getInstance().getReference().child("Users").child("Customers").child(userid).child("type");
-//            strangerRef.removeValue();
-//            FirebaseUser aUser = FirebaseAuth.getInstance().getCurrentUser();
-//            aUser.delete().addOnCompleteListener(new OnCompleteListener<Void>() {
-//                @Override
-//                public void onComplete(@NonNull Task<Void> task) {
-//                    FirebaseAuth.getInstance().signOut();
-//                    Toast.makeText(onAppKilled.this, "User Deleted", Toast.LENGTH_SHORT).show();
-//                }
-//            });
         }
         catch (Exception e){
-
         }
     }
 }

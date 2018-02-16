@@ -22,20 +22,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="20dp"
+                android:textSize="20dp"
                 android:hint="Name" />
-
-        </RelativeLayout>
-        <RelativeLayout
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1">
-
-            <TextView
-                android:id="@+id/userPhoneH"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_margin="20dp"
-                android:hint="Phone" />
 
         </RelativeLayout>
     </LinearLayout>
@@ -46,7 +34,8 @@
         android:layout_height="wrap_content"
         android:hint="Mediclaim Company"
         android:layout_below="@+id/linearlayout1"
-        android:layout_margin="10dp"/>
+        android:layout_margin="10dp"
+        android:textSize="20dp"/>
 
     <TextView
         android:id="@+id/userMedicalimNumber"
@@ -54,7 +43,8 @@
         android:layout_height="wrap_content"
         android:layout_margin="10dp"
         android:layout_below="@+id/userMedicalimCompany"
-        android:hint="Mediclaim Number"/>
+        android:hint="Mediclaim Number"
+        android:textSize="20dp"/>
 
 
 
@@ -75,7 +65,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="Phone Number"
-                android:layout_margin="10dp"/>
+                android:layout_margin="10dp"
+                android:textSize="20dp"/>
 
         </RelativeLayout>
         <RelativeLayout
@@ -88,7 +79,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="Emergency Phone Number"
-                android:layout_margin="10dp"/>
+                android:layout_margin="10dp"
+                android:textSize="20dp"/>
 
         </RelativeLayout>
     </LinearLayout>
@@ -99,7 +91,8 @@
         android:layout_height="wrap_content"
         android:hint="Blood Group"
         android:layout_below="@+id/linearlayout2"
-        android:layout_margin="20dp"/>
+        android:layout_margin="20dp"
+        android:textSize="20dp"/>
     
 </RelativeLayout>
 

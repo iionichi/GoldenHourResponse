@@ -103,7 +103,7 @@ public class StrangerMapActivity extends AppCompatActivity implements OnMapReady
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         polylines = new ArrayList<>();
 
-        buildGoogleApiClient();
+//        buildGoogleApiClient();
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
@@ -166,7 +166,25 @@ public class StrangerMapActivity extends AppCompatActivity implements OnMapReady
                 break;
 
             case R.id.callCardiacAmbulance:
+                Toast.makeText(this, item.getTitle(), Toast.LENGTH_SHORT).show();
                 requestService = "Cardiac";
+
+                mItem = item;
+
+                requestBol = true;
+
+                userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
+
+                DatabaseReference ref = FirebaseDatabase.getInstance().getReference("customerRequest");
+                GeoFire geoFire = new GeoFire(ref);
+                geoFire.setLocation(userId, new GeoLocation(mLastLocation.getLatitude(), mLastLocation.getLongitude()));
+
+                pickupLocation = new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude());
+                pickupMarker = mMap.addMarker(new MarkerOptions().position(pickupLocation).title("Pickup Here").icon(BitmapDescriptorFactory.fromResource(R.mipmap.ghr_pickup)));
+
+                item.setTitle("Looking for ambulance");
+
+                getClosestDriver();
                 break;
 
             case R.id.getHospital:
@@ -473,7 +491,7 @@ public class StrangerMapActivity extends AppCompatActivity implements OnMapReady
                 ActivityCompat.requestPermissions(StrangerMapActivity.this, new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION}, LOCATION_REQUEST_CODE);
             }
         }
-//        buildGoogleApiClient();
+        buildGoogleApiClient();
         mMap.setMyLocationEnabled(true);
         googleMap.setTrafficEnabled(true);
     }
@@ -506,13 +524,6 @@ public class StrangerMapActivity extends AppCompatActivity implements OnMapReady
         mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
 
         if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            // TODO: Consider calling
-            //    ActivityCompat#requestPermissions
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details.
             if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
                 ActivityCompat.requestPermissions(StrangerMapActivity.this, new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION}, LOCATION_REQUEST_CODE);
             }

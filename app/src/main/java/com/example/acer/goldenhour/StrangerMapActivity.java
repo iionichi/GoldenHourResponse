@@ -103,7 +103,7 @@ public class StrangerMapActivity extends AppCompatActivity implements OnMapReady
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         polylines = new ArrayList<>();
 
-//        buildGoogleApiClient();
+        buildGoogleApiClient();
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
@@ -491,7 +491,7 @@ public class StrangerMapActivity extends AppCompatActivity implements OnMapReady
                 ActivityCompat.requestPermissions(StrangerMapActivity.this, new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION}, LOCATION_REQUEST_CODE);
             }
         }
-        buildGoogleApiClient();
+//        buildGoogleApiClient();
         mMap.setMyLocationEnabled(true);
         googleMap.setTrafficEnabled(true);
     }

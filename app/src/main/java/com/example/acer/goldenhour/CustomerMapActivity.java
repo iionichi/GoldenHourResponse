@@ -356,6 +356,7 @@ public class CustomerMapActivity extends AppCompatActivity implements OnMapReady
                 if (showHospitalBool){
                     getHospitalInfo();
                     item.setTitle("Hide Hospital Information");
+                    mDriverInfo.setVisibility(View.GONE);
                     mhospitalInfo.setVisibility(View.VISIBLE);
                     showHospitalBool = false;
                 }

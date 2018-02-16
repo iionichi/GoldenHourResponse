@@ -18,8 +18,12 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RadioButton;
+import android.widget.RatingBar;
 import android.widget.Switch;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.directions.route.AbstractRouting;
@@ -72,11 +76,16 @@ public class StrangerMapActivity extends AppCompatActivity implements OnMapReady
     LocationRequest mLocationRequest;
     Marker destinationMarker, pickupMarker;
 
+    private LinearLayout mDriverInfo;
+    private TextView mDriverName, mDriverPhone, mDriverAmbulance, mDriverAmbulanceNumber, mHospitalName, mHospitalNumber, mhospitalAddress;
+    private RatingBar mRatingBar;
+
     private MenuItem mItem;
 
     private DrawerLayout mDrawerLayoutStranger;
     private ActionBarDrawerToggle mToggleStranger;
     NavigationView mNavigationView;
+    private Menu mNavigationMenu;
 
     private LatLng pickupLocation, destinationLatLng, pickupLocation2;
 
@@ -96,6 +105,13 @@ public class StrangerMapActivity extends AppCompatActivity implements OnMapReady
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_stranger_map);
 
+        mDriverInfo = (LinearLayout) findViewById(R.id.driverInfo);
+        mDriverName = (TextView) findViewById(R.id.driverName);
+        mDriverPhone = (TextView) findViewById(R.id.driverPhone);
+        mDriverAmbulance = (TextView) findViewById(R.id.driverAmbulance);
+        mDriverAmbulanceNumber = (TextView) findViewById(R.id.driverAmbulanceNumber);
+        mRatingBar = (RatingBar) findViewById(R.id.ratingbar);
+
         mDrawerLayoutStranger = (DrawerLayout) findViewById(R.id.drawerSt);
         mToggleStranger = new ActionBarDrawerToggle(this,mDrawerLayoutStranger,R.string.open,R.string.close);
         mDrawerLayoutStranger.addDrawerListener(mToggleStranger);
@@ -110,6 +126,8 @@ public class StrangerMapActivity extends AppCompatActivity implements OnMapReady
         mapFragment.getMapAsync(this);
 
         mNavigationView = findViewById(R.id.strangerNavigation);
+        mNavigationMenu = mNavigationView.getMenu();
+        mNavigationMenu.findItem(R.id.show_hospitalS).setVisible(false);
 
         if (mNavigationView != null) {
             mNavigationView.setNavigationItemSelectedListener(this);
@@ -219,6 +237,8 @@ public class StrangerMapActivity extends AppCompatActivity implements OnMapReady
                 }
                 break;
 
+
+
             case  R.id.logoutS:
                 final DatabaseReference removeId = FirebaseDatabase.getInstance().getReference().child("Users").child("Customers").child(userId);
                 removeId.removeValue();
@@ -275,7 +295,7 @@ public class StrangerMapActivity extends AppCompatActivity implements OnMapReady
                                     driverRef.updateChildren(map);
 
                                     getDriverLocation();
-//                                    getDriverInfo();
+                                    getDriverInfo();
                                     getHasRideEnded();
                                     getHospital();
 
@@ -386,34 +406,44 @@ public class StrangerMapActivity extends AppCompatActivity implements OnMapReady
     |  Note: --
     *-------------------------------------------------------------------*/
 
-//    private void getDriverInfo(){
-//        mDriverInfo.setVisibility(View.VISIBLE);
-//        DatabaseReference mCustomerDatabase = FirebaseDatabase.getInstance().getReference().child("Users").child("Drivers").child(driverFoundId);
-//        mCustomerDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
-//            @Override
-//            public void onDataChange(DataSnapshot dataSnapshot) {
-//                if (dataSnapshot.exists() && dataSnapshot.getChildrenCount()>0){
-//                    Map<String, Object> map = (Map<String, Object>) dataSnapshot.getValue();
-//                    if(map.get("name") != null){
-//                        mDriverName.setText(map.get("name").toString());
-//                    }
-//                    if(map.get("phone") != null){
-//                        mDriverPhone.setText(map.get("phone").toString());
-//                    }
-//                    if(map.get("ambulance") != null){
-//                        mDriverAmbulance.setText(map.get("ambulance").toString());
-//                    }
-//                    if(map.get("ambulanceNumber") != null){
-//                        mDriverAmbulanceNumber.setText(map.get("ambulanceNumber").toString());
-//                    }
-//                }
-//            }
-//
-//            @Override
-//            public void onCancelled(DatabaseError databaseError) {
-//            }
-//        });
-//    }
+    private void getDriverInfo(){
+        mDriverInfo.setVisibility(View.VISIBLE);
+        DatabaseReference mCustomerDatabase = FirebaseDatabase.getInstance().getReference().child("Users").child("Drivers").child(driverFoundId);
+        mCustomerDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists() && dataSnapshot.getChildrenCount()>0){
+                    Map<String, Object> map = (Map<String, Object>) dataSnapshot.getValue();
+                    if(map.get("name") != null){
+                        mDriverName.setText(map.get("name").toString());
+                    }
+                    if(map.get("phone") != null){
+                        mDriverPhone.setText(map.get("phone").toString());
+                    }
+                    if(map.get("ambulance") != null){
+                        mDriverAmbulance.setText(map.get("ambulance").toString());
+                    }
+                    if(map.get("ambulanceNumber") != null){
+                        mDriverAmbulanceNumber.setText(map.get("ambulanceNumber").toString());
+                    }
+                    int ratingSum = 0;
+                    float ratingsTotal = 0;
+                    float ratingsAvg = 0;
+                    for (DataSnapshot child : dataSnapshot.child("rating").getChildren()){
+                        ratingSum = ratingSum + Integer.valueOf(child.getValue().toString());
+                    }
+                    if(ratingsTotal!= 0){
+                        ratingsAvg = ratingSum/ratingsTotal;
+                        mRatingBar.setRating(ratingsAvg);
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+            }
+        });
+    }
 
     private DatabaseReference driveHasEndedRef;
     private ValueEventListener driveHasEndedRefListener;//This event listener give us the ability to cancel the event listener
@@ -473,12 +503,11 @@ public class StrangerMapActivity extends AppCompatActivity implements OnMapReady
         }
         mItem.setTitle("Call Ambulance");
 
-//        mDriverInfo.setVisibility(View.GONE);
-//        mDriverName.setText("");
-//        mDriverPhone.setText("");
-//        mDriverAmbulance.setText("");
-//        mDriverAmbulanceNumber.setText("");
-//        mDriverProfileImage.setImageResource(R.mipmap.ic_launcher);
+        mDriverInfo.setVisibility(View.GONE);
+        mDriverName.setText("");
+        mDriverPhone.setText("");
+        mDriverAmbulance.setText("");
+        mDriverAmbulanceNumber.setText("");
     }
 
 

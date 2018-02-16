@@ -14,6 +14,9 @@
         android:title="Get Hospital"
         android:icon="@drawable/hospi">
     </item>
+    <item android:id="@+id/show_hospitalS"
+        android:title="Show Hospital Information"
+        android:icon="@drawable/ic_settings_black_24dp"/>
     <item android:id="@+id/logoutS"
         android:title="Logout"
         android:icon="@drawable/logout_clipart">

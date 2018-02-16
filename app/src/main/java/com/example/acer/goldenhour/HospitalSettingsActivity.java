@@ -27,10 +27,6 @@ import java.util.Map;
 
 public class HospitalSettingsActivity extends AppCompatActivity{
 
-
-
-
-
     private EditText mNameField, mPhoneField, mAddressField;
     private Button mBack, mConfirm;
 
@@ -42,20 +38,14 @@ public class HospitalSettingsActivity extends AppCompatActivity{
     private String mPhone;
     private String mAddress;
 
-
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_hospital_settings);
 
-
-
-
         mNameField = (EditText) findViewById(R.id.name);
         mPhoneField = (EditText) findViewById(R.id.phone);
         mAddressField= (EditText) findViewById(R.id.address);
-
 
         mBack = (Button) findViewById(R.id.back);
         mConfirm = (Button) findViewById(R.id.confirm);

@@ -4,6 +4,8 @@ package com.example.acer.goldenhour;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.location.Address;
+import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationManager;
 import android.provider.Settings;
@@ -15,6 +17,8 @@ import android.text.TextUtils;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.firebase.geofire.GeoFire;
@@ -28,7 +32,10 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
+import java.io.IOException;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 
@@ -38,6 +45,10 @@ public class HospitalRegisterActivity extends AppCompatActivity {
     LocationManager locationManager;
     Location mLastLocation;
     LocationRequest mLocationRequest;
+
+    Geocoder geocoder;
+    List<Address> addresses;
+    String fulladdress;
 
     private EditText mEmail, mPassword,mName,mPhone,mAddress;
     private Button mRegistration;
@@ -58,10 +69,9 @@ public class HospitalRegisterActivity extends AppCompatActivity {
         locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         getLocation();
 
+        Toast.makeText(this, "Address will be set automatically by the GPS", Toast.LENGTH_SHORT).show();
 
         mAuth = FirebaseAuth.getInstance();
-
-
 
         firebaseAuthListener = new FirebaseAuth.AuthStateListener() {
             @Override
@@ -73,8 +83,6 @@ public class HospitalRegisterActivity extends AppCompatActivity {
                     finish();
                     return;
                 }
-
-
             }
         };
         mEmail = (EditText) findViewById(R.id.email);
@@ -91,7 +99,8 @@ public class HospitalRegisterActivity extends AppCompatActivity {
                 final String email = mEmail.getText().toString();
                 final String password = mPassword.getText().toString();
                 final String name = mName.getText().toString();
-                final String address = mAddress.getText().toString();
+//                final String address = mAddress.getText().toString();
+                final String address = fulladdress;
                 final String phone = mPhone.getText().toString();
                 if (TextUtils.isEmpty(email) || TextUtils.isEmpty(password) || TextUtils.isEmpty(name) || TextUtils.isEmpty(address) || TextUtils.isEmpty(phone) ) {
                     Toast.makeText(HospitalRegisterActivity.this, "Please Fill All The Fields", Toast.LENGTH_SHORT).show();
@@ -104,26 +113,16 @@ public class HospitalRegisterActivity extends AppCompatActivity {
                             } else {
                                 String userId = mAuth.getCurrentUser().getUid();
                                 addHospitalLogin(userId);
-//
-
-
 
                                 DatabaseReference refHospital = FirebaseDatabase.getInstance().getReference().child("Users").child("Hospital");
-
                                 GeoFire geoFireHospital = new GeoFire(refHospital);
                                 geoFireHospital.setLocation(userId, new GeoLocation(latitude, longitude));
-
-
-
 
                                 Intent intent = new Intent(HospitalRegisterActivity.this, HospitalActivity.class);
                                 startActivity(intent);
                                 finish();
 
                                 saveUserInfo();
-
-
-
 
                             }
                         }
@@ -151,6 +150,21 @@ public class HospitalRegisterActivity extends AppCompatActivity {
                 ((EditText) findViewById(R.id.etLocationLat)).setText("Latitude: " + latti);
                 ((EditText) findViewById(R.id.etLocationLong)).setText("Longitude: " + longi);
 
+                try{
+                    geocoder = new Geocoder(this, Locale.getDefault());
+                    addresses = geocoder.getFromLocation(latti,longi,1);
+                    String address = addresses.get(0).getAddressLine(0);
+                    String area = addresses.get(0).getLocality();
+                    String city = addresses.get(0).getAdminArea();
+                    String country = addresses.get(0).getCountryName();
+                    String postalCode = addresses.get(0).getPostalCode();
+
+                    fulladdress = address + ", " + area + ", " + city + ", " + country + ", " + postalCode;
+                    Toast.makeText(this, fulladdress, Toast.LENGTH_SHORT).show();
+                }catch (IOException e){
+                    e.printStackTrace();
+                }
+
                 latitude = latti;
                 longitude = longi;
             } else {
@@ -174,7 +188,8 @@ public class HospitalRegisterActivity extends AppCompatActivity {
     }
     private void saveUserInfo(){
         final String name = mName.getText().toString();
-        final String address = mAddress.getText().toString();
+//        final String address = mAddress.getText().toString();
+        final String address = fulladdress;
         final String phone = mPhone.getText().toString();
         String userId1 = mAuth.getCurrentUser().getUid();
         addHospitalLogin(userId1);

@@ -8,14 +8,73 @@
     tools:context="com.example.acer.goldenhour.StrangerMapActivity"
     android:orientation="vertical">
 
-<fragment xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:map="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/map"
-    android:name="com.google.android.gms.maps.SupportMapFragment"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context="com.example.acer.goldenhour.StrangerMapActivity" />
+    <FrameLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context="com.example.acer.goldenhour.StrangerMapActivity">
+
+        <fragment
+            android:id="@+id/map"
+            android:name="com.google.android.gms.maps.SupportMapFragment"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_gravity="bottom">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/driverInfo"
+                android:layout_gravity="bottom"
+                android:orientation="horizontal"
+                android:background="@android:color/white"
+                android:visibility="gone">
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:paddingLeft="40sp">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/driverName"
+                        android:paddingBottom="10sp"
+                        android:paddingTop="20sp"/>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/driverPhone"
+                        android:paddingBottom="10sp"
+                        android:paddingTop="20sp"/>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/driverAmbulance"
+                        android:paddingBottom="10sp"
+                        android:paddingTop="20sp"/>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/driverAmbulanceNumber"
+                        android:paddingBottom="10sp"
+                        android:paddingTop="20sp"/>
+                    <RatingBar
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/ratingbar"
+                        android:layout_gravity="center"
+                        android:numStars="5"
+                        android:stepSize="0.1"/>
+                </LinearLayout>
+            </LinearLayout>
+        </LinearLayout>
+    </FrameLayout>
 
 
     <android.support.design.widget.NavigationView
@@ -26,6 +85,5 @@
         android:layout_gravity="start">
 
     </android.support.design.widget.NavigationView>
-
 
 </android.support.v4.widget.DrawerLayout>

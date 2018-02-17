@@ -111,6 +111,15 @@ public class DriverMapActivity extends AppCompatActivity implements OnMapReadyCa
         mToggleDriver.syncState();
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
+        try {
+            //Clearing Previous Ride
+            String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
+            DatabaseReference clearRide = FirebaseDatabase.getInstance().getReference().child("Users").child("Drivers").child(uid).child("customerRequest");
+            clearRide.removeValue();
+        }catch (Exception e){
+
+        }
+
         mNavigationView = findViewById(R.id.nv1);
 
         if (mNavigationView != null){
@@ -392,7 +401,11 @@ public class DriverMapActivity extends AppCompatActivity implements OnMapReadyCa
         DatabaseReference ref = FirebaseDatabase.getInstance().getReference("customerRequest");
         GeoFire geoFire = new GeoFire(ref);
         geoFire.removeLocation(customerId);
+
+        DatabaseReference ref2 = FirebaseDatabase.getInstance().getReference().child("Users").child("Hospital").child(hospitalFoundId).child("customerRequestId").child(customerId);
+        ref2.removeValue();
         customerId = "";
+        hospitalFoundId = "";
 
         if (pickupMarker != null) {
             pickupMarker.remove();
@@ -469,6 +482,7 @@ public class DriverMapActivity extends AppCompatActivity implements OnMapReadyCa
     }
 
     public static int n = 0;
+    String hosid,cusid;
 
     @Override
     public void onLocationChanged(Location location) {
@@ -504,6 +518,47 @@ public class DriverMapActivity extends AppCompatActivity implements OnMapReadyCa
 
                     break;
             }
+        }
+
+        try {
+            DatabaseReference ifClearRide = FirebaseDatabase.getInstance().getReference().child("customerRequest").child(customerId);
+            ifClearRide.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    if (!dataSnapshot.exists()){
+                        //Clearing Previous Ride
+                        String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
+                        DatabaseReference clearRideGetInfo = FirebaseDatabase.getInstance().getReference().child("Users").child("Drivers").child(uid).child("customerRequest");
+                        clearRideGetInfo.addListenerForSingleValueEvent(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(DataSnapshot dataSnapshot) {
+                                if (dataSnapshot.exists()){
+                                    Map<String, Object> newMap = (Map<String, Object>) dataSnapshot.getValue();
+                                    hosid = newMap.get("customerRideId").toString();
+                                    cusid = newMap.get("hospitalFoundId").toString();
+                                    String uid2 = FirebaseAuth.getInstance().getCurrentUser().getUid();
+                                    DatabaseReference clearRide = FirebaseDatabase.getInstance().getReference().child("Users").child("Drivers").child(uid2).child("customerRequest");
+                                    clearRide.removeValue();
+                                    DatabaseReference clearHospital = FirebaseDatabase.getInstance().getReference().child("Users").child("Hospital").child(hosid).child("customerRequestId").child(cusid);
+                                    clearHospital.removeValue();
+                                }
+                            }
+
+                            @Override
+                            public void onCancelled(DatabaseError databaseError) {
+
+                            }
+                        });
+                    }
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+
+                }
+            });
+        }catch (Exception e){
+
         }
     }
 

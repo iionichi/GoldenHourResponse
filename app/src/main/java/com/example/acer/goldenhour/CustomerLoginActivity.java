@@ -100,11 +100,11 @@ public class CustomerLoginActivity extends AppCompatActivity {
                                 Toast.makeText(CustomerLoginActivity.this, "Sign Up Error", Toast.LENGTH_SHORT).show();
                             } else {
                                 loaderText.setText("Registration Successful");
-
                                 String userId = mAuth.getCurrentUser().getUid();
                                 DatabaseReference currentUserDB = FirebaseDatabase.getInstance().getReference().child("Users").child("Customers").child(userId);
                                 currentUserDB.setValue(true);
                                 addCustomerLogin(userId);//For adding the customer logged in.
+                                loaderDialog.dismiss();
                             }
                         }
                     });

@@ -86,7 +86,8 @@
         android:textColor="@color/colorBlack"
         android:textColorHint="@color/colorBlack"
         android:hint="Address"
-        android:inputType="textPersonName" />
+        android:inputType="textPersonName"
+        android:visibility="gone"/>
 
 
     <Button

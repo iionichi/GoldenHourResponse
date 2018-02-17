@@ -124,6 +124,14 @@ public class CustomerMapActivity extends AppCompatActivity implements OnMapReady
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_customer_map);
 
+        try{
+            String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
+            DatabaseReference dref = FirebaseDatabase.getInstance().getReference().child("customerRequest").child(uid);
+            dref.removeValue();
+        }catch (Exception e){
+
+        }
+
         loaderDialog = new Dialog(this);
         loaderDialog.setContentView(R.layout.loading_file_main);
         avi = (AVLoadingIndicatorView) loaderDialog.findViewById(R.id.aviLoader);
@@ -348,6 +356,7 @@ public class CustomerMapActivity extends AppCompatActivity implements OnMapReady
                 if (showHospitalBool){
                     getHospitalInfo();
                     item.setTitle("Hide Hospital Information");
+                    mDriverInfo.setVisibility(View.GONE);
                     mhospitalInfo.setVisibility(View.VISIBLE);
                     showHospitalBool = false;
                 }

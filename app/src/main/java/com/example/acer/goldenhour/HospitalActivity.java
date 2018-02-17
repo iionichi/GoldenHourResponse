@@ -136,7 +136,7 @@ public class HospitalActivity extends AppCompatActivity implements NavigationVie
             @Override
             public void onChildRemoved(DataSnapshot dataSnapshot) {
                 userId = dataSnapshot.getValue(String.class);
-                recordHistory(userId);
+                //recordHistory(userId);
 
                 DatabaseReference customerName = FirebaseDatabase.getInstance().getReference().child("Users").child("Customers").child(userId).child("name");
                 customerName.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -304,7 +304,7 @@ public class HospitalActivity extends AppCompatActivity implements NavigationVie
                 if (dataSnapshot.exists()){
                     Map<String, Object> mMap = (Map<String, Object>) dataSnapshot.getValue();
                     if (mMap.get("name").toString() != null){
-                        mName.setText(mMap.get("name").toString());
+                        mName.setText("Name : " + mMap.get("name").toString());
                     }
                     if (mMap.get("Medicompany").toString() != null){
                         mMediC.setText(mMap.get("Medicompany").toString());
